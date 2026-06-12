@@ -1,0 +1,723 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>My Bookings - RideShare</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Real-Time Car Rental Booking History" name="description">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/cars.css'%}">
+
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <style>
+        /* Professional Navbar CSS overrides to match showroom page */
+        .premium-navbar {
+            background-color: #65a7e9 !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border-color: #0666af !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        body {
+            padding-top: 60px !important;
+            background-color: #f4f6f9;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        [data-theme="dark"] body {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem !important;
+            margin-right: 8px !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* High-end sliding underline and capsule hover effect */
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            border-radius: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+            position: relative !important;
+            overflow: hidden;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+
+        .premium-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37 !important; /* Gold highlight accent for premium touch */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .premium-navbar .nav-link:hover::after,
+        .premium-navbar .nav-item.active .nav-link::after,
+        .premium-navbar .nav-item.show .nav-link::after {
+            width: 80%; /* Expands smoothly from center */
+        }
+
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-item.show .nav-link {
+            background-color: rgba(255, 255, 255, 0.12) !important; /* Semi-transparent white capsule highlight */
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-navbar .nav-item.active .nav-link {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        .premium-navbar .nav-link i {
+            font-size: 14px !important;
+            margin-right: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Sophisticated Dropdown Styling */
+        .premium-dropdown {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0px !important;
+            padding: 6px 0 !important;
+            overflow: visible !important;
+            animation: fadeInDropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dropdown::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -15px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 15px !important;
+            background: transparent !important;
+            z-index: -1 !important;
+        }
+
+        @keyframes fadeInDropdown {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .premium-dropdown .dropdown-item {
+            color: #2c3e50 !important;
+            padding: 8px 18px !important;
+            margin: 2px 6px !important;
+            width: calc(100% - 12px) !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            transition: all 0.25s ease !important;
+            border: none !important;
+            font-family: 'Rubik', sans-serif !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #65a7e9;
+            transition: color 0.25s ease;
+        }
+
+        .premium-dropdown .dropdown-item:hover {
+            background-color: #65a7e9 !important;
+            color: #ffffff !important;
+        }
+
+        .premium-dropdown .dropdown-item:hover i {
+            color: #ffffff !important;
+        }
+
+        /* Explicit Outline Removal on Hover & Active States */
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-link:focus,
+        .premium-navbar .nav-link:active,
+        .premium-navbar .dropdown-toggle:hover,
+        .premium-navbar .dropdown-toggle:focus,
+        .premium-navbar .dropdown-toggle:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+
+        .premium-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            margin: 10px 0 !important;
+            height: 40px !important;
+        }
+
+        .premium-navbar .navbar-toggler .fa-bars {
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991px) {
+            .premium-navbar .navbar-collapse {
+                background-color: #01579b !important;
+                position: absolute !important;
+                top: 60px !important;
+                left: 0 !important;
+                width: 100% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .premium-navbar .container-fluid {
+                height: auto !important;
+                min-height: 60px !important;
+            }
+
+            .navbar-nav {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .premium-navbar .nav-link {
+                height: 50px !important;
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+
+            .premium-navbar .nav-item {
+                width: 100% !important;
+            }
+
+            .premium-dropdown {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+        }
+
+        /* Glassmorphic Order Card Styling */
+        .booking-card {
+            border-radius: 20px;
+            background: #ffffff;
+            border: 1px solid rgba(0, 123, 255, 0.15);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        [data-theme="dark"] .booking-card {
+            background: rgba(30, 30, 30, 0.7);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+        }
+
+        .booking-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 123, 255, 0.15);
+            border-color: #007bff;
+        }
+
+        [data-theme="dark"] .booking-card:hover {
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.2);
+            border-color: #00d2ff;
+        }
+
+        .booking-card-header {
+            background: linear-gradient(135deg, #001f3f, #004080);
+            color: white;
+            padding: 15px 25px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-status-badge {
+            background-color: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .booking-details-table th {
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border: none;
+            padding: 8px 0;
+        }
+
+        .booking-details-table td {
+            font-weight: 500;
+            color: #333;
+            border: none;
+            padding: 8px 0;
+        }
+
+        [data-theme="dark"] .booking-details-table td {
+            color: #ddd;
+        }
+
+        .payment-mask-card {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            border-radius: 12px;
+            color: white;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.2);
+        }
+
+        .addon-pill {
+            background-color: rgba(0, 123, 255, 0.08);
+            color: #007bff;
+            border: 1px solid rgba(0, 123, 255, 0.2);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        [data-theme="dark"] .addon-pill {
+            background-color: rgba(0, 210, 255, 0.12);
+            color: #00d2ff;
+            border-color: rgba(0, 210, 255, 0.25);
+        }
+
+        .empty-bookings-card {
+            border-radius: 20px;
+            border: 2px dashed rgba(0, 123, 255, 0.3);
+            background: transparent;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .text-navy {
+            color: #000080 !important;
+        }
+
+        [data-theme="dark"] .text-navy {
+            color: #00d2ff !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Professional Navbar Start -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid">
+            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
+                <i class="fas fa-car-side mr-2"></i>RideShare
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-bars"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
+                            Showroom</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
+                            Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>
+                            Drive with Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
+                                class="fas fa-shield-alt mr-1"></i>Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
+                            Reports</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
+                            <a class="dropdown-item" href="{% url 'login' %}"><i
+                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
+                            <a class="dropdown-item" href="{% url 'register' %}"><i
+                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Professional Navbar End -->
+
+    <!-- Premium Header Start -->
+    <div class="container-fluid page-header position-relative"
+        style="background: linear-gradient(rgba(0, 31, 63, 0.85), rgba(0, 123, 255, 0.4)), url('/media/images/gallery-3.jpg') center center no-repeat; background-size: cover; padding: 100px 0; border-bottom: 4px solid #007bff; box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);">
+        <div class="container text-center">
+            <h1 class="display-3 text-uppercase text-white mb-3"
+                style="text-shadow: 0 0 25px rgba(0, 123, 255, 0.8); font-weight: 700;">My Booking Orders</h1>
+            <div class="d-inline-flex text-white">
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue" href="http://127.0.0.1:8000/"><i
+                            class="fas fa-home mr-2"></i>Home</a></h6>
+                <h6 class="text-body m-0 px-3" style="color: #007bff !important; font-weight: bold;">/</h6>
+                <h6 class="text-uppercase m-0" style="color: #00d2ff; font-weight: 600;">My Bookings</h6>
+            </div>
+        </div>
+    </div>
+    <!-- Premium Header End -->
+
+    <!-- Bookings Container Start -->
+    <div class="container py-5">
+        {% if messages %}
+        <div class="row mb-4">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm rounded-lg"
+                    role="alert"
+                    style="border-left: 5px solid {% if message.tags == 'success' %}#28a745{% else %}#dc3545{% endif %};">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle text-success{% else %}fa-exclamation-triangle text-danger{% endif %} mr-2"
+                        style="font-size: 1.1rem;"></i>
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-5">
+            <div class="col-lg-8">
+                <h2 class="font-weight-bold text-navy mb-2"><i class="fas fa-history text-primary mr-2"></i>Booking
+                    Records</h2>
+                <p class="text-muted">Review and track your real-time car rental orders, total costs, and schedule
+                    status.</p>
+            </div>
+            <div class="col-lg-4 text-lg-right align-self-center">
+                <a href="http://127.0.0.1:8000/car/"
+                    class="btn btn-primary px-4 py-2 rounded-lg hover-glow-classic gold-touch-effect font-weight-bold"><i
+                        class="fas fa-car mr-2"></i>Browse More Cars</a>
+            </div>
+        </div>
+
+        {% if bookings %}
+        <div class="row">
+            {% for b in bookings %}
+            <div class="col-12 mb-5">
+                <div class="booking-card">
+                    <div class="booking-card-header">
+                        <span><i class="fas fa-bookmark mr-2 text-warning"></i>BOOKING REFERENCE: RS-{{ b.id }}</span>
+                        <span class="booking-status-badge">Confirmed</span>
+                    </div>
+                    <div class="p-4">
+                        <div class="row align-items-center">
+                            <!-- Car Image and Name Column -->
+                            <div class="col-lg-4 text-center mb-4 mb-lg-0 border-right">
+                                <img src="/media/images/{{ b.car_image }}" alt="{{ b.car_name }}" class="img-fluid mb-3"
+                                    style="max-height: 180px; object-fit: contain; filter: drop-shadow(0px 5px 15px rgba(0,0,0,0.1));">
+                                <h4 class="font-weight-bold text-navy">{{ b.car_name }}</h4>
+                                <p class="text-primary font-weight-bold mb-0">Base Rate: Rs. {{
+                                    b.car_price|floatformat:0 }}/day</p>
+                            </div>
+
+                            <!-- Booking Details Table Column -->
+                            <div class="col-lg-5">
+                                <h5 class="font-weight-bold text-navy mb-3"><i
+                                        class="fas fa-info-circle mr-2 text-primary"></i>Reservation Details</h5>
+                                <table class="table booking-details-table">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 40%;">Primary Renter</th>
+                                            <td>{{ b.first_name }} {{ b.last_name }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Contact Detail</th>
+                                            <td>{{ b.mobile_number }} <br> <span class="text-muted"
+                                                    style="font-size: 0.85rem;">{{ b.email }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Locations</th>
+                                            <td>
+                                                <i class="fas fa-arrow-circle-up text-success mr-1" title="Pickup"></i>
+                                                {{ b.pickup_location }} <br>
+                                                <i class="fas fa-arrow-circle-down text-danger mr-1"
+                                                    title="Dropoff"></i> {{ b.drop_location }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Pickup Schedule</th>
+                                            <td>{{ b.pickup_date }} at {{ b.pickup_time }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Passengers</th>
+                                            <td>{{ b.adults }} Adult(s), {{ b.children }} Child(ren)</td>
+                                        </tr>
+                                        {% if b.special_request %}
+                                        <tr>
+                                            <th>Requests</th>
+                                            <td><span class="text-muted italic">"{{ b.special_request }}"</span></td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Payment & Total Price Column -->
+                            <div class="col-lg-3 text-center text-lg-left align-self-start">
+                                <div class="p-3 border rounded-lg bg-light mb-3"
+                                    style="border-color: rgba(0, 123, 255, 0.15) !important;">
+                                    <h6 class="font-weight-bold text-muted mb-1 text-uppercase"
+                                        style="font-size: 0.75rem;">Total Payment</h6>
+                                    <h2 class="text-primary font-weight-bold mb-0">Rs. {{ b.total_price|floatformat:0 }}
+                                    </h2>
+                                    <small class="text-muted font-weight-bold">All taxes & add-ons included</small>
+                                </div>
+
+                                <h6 class="font-weight-bold text-navy mb-2"><i
+                                        class="fas fa-credit-card mr-2 text-primary"></i>Payment Method</h6>
+                                {% if b.payment_method == 'creditcard' %}
+                                <div class="payment-mask-card mb-2">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span style="font-size: 0.7rem; font-weight: bold; letter-spacing: 1px;">SECURED
+                                            CARD</span>
+                                        <i class="fab fa-cc-visa text-warning" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div class="font-weight-bold mb-1"
+                                        style="letter-spacing: 2.5px; font-size: 0.9rem;">
+                                        {% if b.card_number %}
+                                        •••• •••• •••• {{ b.card_number|slice:"-4:" }}
+                                        {% else %}
+                                        •••• •••• •••• ••••
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between"
+                                        style="font-size: 0.7rem; opacity: 0.8;">
+                                        <span>EXP: {{ b.card_expiry|default:"MM/YY" }}</span>
+                                        <span>CVV: ***</span>
+                                    </div>
+                                </div>
+                                {% elif b.payment_method == 'paypal' %}
+                                <div
+                                    class="py-2 px-3 bg-white text-primary border rounded-lg font-weight-bold d-inline-block shadow-sm">
+                                    <i class="fab fa-paypal mr-1"></i> PayPal Account
+                                </div>
+                                {% else %}
+                                <div
+                                    class="py-2 px-3 bg-white text-info border rounded-lg font-weight-bold d-inline-block shadow-sm">
+                                    <i class="fas fa-university mr-1"></i> Bank Transfer
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Add-ons pills footer row -->
+                        {% if b.addon_child_seat or b.addon_additional_driver or b.addon_premium_insurance %}
+                        <div class="border-top mt-4 pt-3">
+                            <span class="font-weight-bold text-muted mr-3" style="font-size: 0.85rem;"><i
+                                    class="fas fa-plus-circle mr-1"></i>Selected Add-ons:</span>
+                            {% if b.addon_child_seat %}
+                            <span class="addon-pill"><i class="fas fa-baby mr-1"></i>Child Seat (+Rs. 1,500/day)</span>
+                            {% endif %}
+                            {% if b.addon_additional_driver %}
+                            <span class="addon-pill"><i class="fas fa-user-friends mr-1"></i>Additional Driver (+Rs.
+                                2,500/day)</span>
+                            {% endif %}
+                            {% if b.addon_premium_insurance %}
+                            <span class="addon-pill"><i class="fas fa-user-shield mr-1"></i>Premium Insurance (+Rs.
+                                5,000/day)</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="row">
+            <div class="col-12">
+                <div class="empty-bookings-card wow fadeInUp">
+                    <img src="https://cdn-icons-png.freepik.com/512/13319/13319888.png" alt="No bookings"
+                        class="img-fluid mb-4" style="max-height: 120px; filter: grayscale(100%); opacity: 0.6;">
+                    <h3 class="font-weight-bold text-navy mb-2">No Bookings Yet</h3>
+                    <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">You have not reserved any cars
+                        yet. Browse our selection of luxury, premium, and executive cars in our real-time showroom and
+                        book your first ride today!</p>
+                    <a href="http://127.0.0.1:8000/car/"
+                        class="btn btn-primary px-5 py-3 rounded-lg hover-glow-classic gold-touch-effect font-weight-bold"><i
+                            class="fas fa-car mr-2"></i>Explore Car Showroom</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <!-- Bookings Container End -->
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-body py-4 px-sm-3 px-md-5">
+        <p class="mb-2 text-center">&copy; <a href="#">My website</a>. All Rights Reserved.</p>
+        <p class="m-0 text-center">Designed by <a href="https://">srikanth chepuri</a></p>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleBtn = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const body = document.body;
+
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+                updateIcon(savedTheme);
+            }
+
+            toggleBtn.addEventListener("click", () => {
+                const currentTheme = body.getAttribute("data-theme");
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+                body.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                updateIcon(newTheme);
+            });
+
+            function updateIcon(theme) {
+                if (theme === "dark") {
+                    themeIcon.classList.remove("fa-moon");
+                    themeIcon.classList.add("fa-sun");
+                } else {
+                    themeIcon.classList.remove("fa-sun");
+                    themeIcon.classList.add("fa-moon");
+                }
+            }
+        });
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1741 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Leaflet CSS for Interactive Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<!-- Google Web Fonts for Modern Typography -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap"
+    rel="stylesheet">
+
+<!-- Icon Font Stylesheet -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Premium Stylesheet -->
+<link href="{% static 'css/premium_home.css' %}" rel="stylesheet">
+
+<!-- Dark Mode Toggle Button -->
+<button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<style>
+    /* Premium CSS Variables & Core Styles */
+    :root {
+        --primary-gold: #D4AF37;
+        --royal-navy: #000080;
+        --sky-blue: #65a7e9;
+        --deep-slate: #0f172a;
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+        --glow-primary: 0 0 25px rgba(101, 167, 233, 0.3);
+        --hero-text-title: #0f172a;
+        --hero-text-body: #475569;
+    }
+
+    [data-theme="dark"] {
+        --glass-bg: rgba(15, 23, 42, 0.95);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        --hero-text-title: #ffffff;
+        --hero-text-body: #94a3b8;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    [data-theme="dark"] body {
+        background-color: #0b0f19;
+        color: #e2e8f0;
+    }
+
+    .outfit-font {
+        font-family: 'Outfit', sans-serif;
+    }
+
+    /* IMMERSIVE HERO VIEWPORT */
+    .premium-hero-immersive {
+        position: relative !important;
+        height: calc(100vh - 60px) !important;
+        min-height: 650px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        background: #e2e8f0;
+        transition: background 0.3s ease;
+    }
+
+    [data-theme="dark"] .premium-hero-immersive {
+        background: #09132e;
+    }
+
+    #homeHeroMapImmersive {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 1 !important;
+        border: none !important;
+    }
+
+    /* FLOATING STATUS PILL (TOP RIGHT) */
+    .floating-grid-status {
+        position: absolute !important;
+        top: 20px !important;
+        right: 20px !important;
+        z-index: 1000 !important;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid var(--glass-border) !important;
+        padding: 8px 18px !important;
+        border-radius: 30px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-size: 0.8rem !important;
+        font-weight: 700 !important;
+        color: var(--hero-text-title) !important;
+        box-shadow: var(--card-shadow) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .status-indicator-ping {
+        width: 10px;
+        height: 10px;
+        background-color: #10b981;
+        border-radius: 50%;
+        animation: statusPing 1.5s infinite;
+    }
+
+    @keyframes statusPing {
+        0% {
+            transform: scale(0.8);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+
+        70% {
+            transform: scale(1.2);
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            transform: scale(0.8);
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    .status-divider {
+        opacity: 0.2;
+        color: var(--hero-text-title);
+    }
+
+    /* FLOATING COMMAND CENTER (LEFT) */
+    .floating-command-center {
+        position: absolute !important;
+        top: 20px !important;
+        left: 20px !important;
+        bottom: 20px !important;
+        width: 420px !important;
+        z-index: 1000 !important;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(25px) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 24px !important;
+        padding: 24px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: var(--card-shadow) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .floating-command-center .text-title {
+        color: var(--hero-text-title);
+    }
+
+    .floating-command-center .text-body {
+        color: var(--hero-text-body);
+    }
+
+    .divider-premium {
+        height: 1px;
+        background: var(--glass-border);
+        width: 100%;
+    }
+
+    /* MODE SELECT GRID */
+    .mode-select-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .mode-btn {
+        background: rgba(0, 0, 0, 0.03) !important;
+        border: 1px solid rgba(0, 0, 0, 0.06) !important;
+        border-radius: 12px !important;
+        padding: 10px 4px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 6px !important;
+        cursor: pointer !important;
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1) !important;
+    }
+
+    [data-theme="dark"] .mode-btn {
+        background: rgba(255, 255, 255, 0.02) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .mode-btn i {
+        font-size: 1.15rem;
+        color: #64748b;
+        transition: color 0.25s ease;
+    }
+
+    [data-theme="dark"] .mode-btn i {
+        color: #94a3b8;
+    }
+
+    .mode-btn span {
+        font-size: 0.68rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        color: #64748b;
+        transition: color 0.25s ease;
+    }
+
+    [data-theme="dark"] .mode-btn span {
+        color: #94a3b8;
+    }
+
+    .mode-btn:hover {
+        transform: translateY(-2px);
+        background: rgba(101, 167, 233, 0.08) !important;
+        border-color: var(--sky-blue) !important;
+    }
+
+    .mode-btn.active {
+        background: var(--royal-navy) !important;
+        border-color: var(--royal-navy) !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 128, 0.2) !important;
+    }
+
+    [data-theme="dark"] .mode-btn.active {
+        background: var(--sky-blue) !important;
+        border-color: var(--sky-blue) !important;
+        box-shadow: 0 6px 15px rgba(101, 167, 233, 0.3) !important;
+    }
+
+    .mode-btn.active i,
+    .mode-btn.active span {
+        color: #ffffff !important;
+    }
+
+    [data-theme="dark"] .mode-btn.active i,
+    [data-theme="dark"] .mode-btn.active span {
+        color: #0b0f19 !important;
+    }
+
+    .immersive-pane {
+        display: none;
+        animation: paneFadeIn 0.35s ease;
+    }
+
+    .immersive-pane.active {
+        display: block;
+    }
+
+    @keyframes paneFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-group-premium {
+        margin-bottom: 12px;
+    }
+
+    .form-group-premium label {
+        font-weight: 700;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--hero-text-body);
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    /* PERFECT VERTICAL ICON ALIGNMENT WRAPPERS */
+    .input-wrapper-premium {
+        position: relative !important;
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .input-wrapper-premium .form-input-premium {
+        width: 100% !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 2px solid #cbd5e1 !important;
+        border-radius: 10px !important;
+        padding: 8px 12px 8px 36px !important;
+        font-size: 0.85rem !important;
+        font-weight: 600 !important;
+        color: #0f172a !important;
+        transition: all 0.3s ease !important;
+        height: 42px !important;
+    }
+
+    [data-theme="dark"] .input-wrapper-premium .form-input-premium {
+        background: rgba(15, 23, 42, 0.6) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #f8fafc !important;
+    }
+
+    .input-wrapper-premium .form-input-premium:focus {
+        border-color: var(--sky-blue) !important;
+        outline: none !important;
+        box-shadow: var(--glow-primary) !important;
+        background: #ffffff !important;
+    }
+
+    .input-wrapper-premium i.input-icon {
+        position: absolute !important;
+        left: 12px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        color: #64748b !important;
+        font-size: 0.95rem !important;
+        transition: color 0.3s ease !important;
+        pointer-events: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 100% !important;
+        margin: 0 !important;
+        z-index: 5 !important;
+    }
+
+    .btn-action-immersive {
+        width: 100% !important;
+        padding: 10px !important;
+        border-radius: 10px !important;
+        border: none !important;
+        font-weight: 800 !important;
+        font-size: 0.85rem !important;
+        letter-spacing: 0.5px !important;
+        text-transform: uppercase !important;
+        color: #ffffff !important;
+        background: linear-gradient(135deg, var(--royal-navy) 0%, #00004d 100%) !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 80, 0.15) !important;
+        cursor: pointer !important;
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+
+    [data-theme="dark"] .btn-action-immersive {
+        background: linear-gradient(135deg, var(--sky-blue) 0%, #4682b4 100%) !important;
+        color: #0b0f19 !important;
+        box-shadow: 0 6px 15px rgba(101, 167, 233, 0.25) !important;
+    }
+
+    .btn-action-immersive:hover {
+        transform: translateY(-2px) !important;
+        filter: brightness(1.15) !important;
+    }
+
+    /* RADAR SCAN WIDGET CSS */
+    .radar-scan-wrapper {
+        margin-top: 5px;
+    }
+
+    .btn-radar-scan {
+        width: 100% !important;
+        padding: 10px !important;
+        border-radius: 10px !important;
+        border: 2px dashed rgba(101, 167, 233, 0.6) !important;
+        background: rgba(101, 167, 233, 0.05) !important;
+        color: var(--sky-blue) !important;
+        font-weight: 800 !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-radar-scan:hover {
+        background: rgba(101, 167, 233, 0.12) !important;
+        border-color: var(--sky-blue) !important;
+        transform: translateY(-1px);
+    }
+
+    /* ACTIVITY FEED LOG CONSOLE (BOTTOM RIGHT) */
+    .floating-activity-feed {
+        position: absolute !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 330px !important;
+        height: 150px !important;
+        z-index: 1000 !important;
+        background: rgba(15, 23, 42, 0.9) !important;
+        backdrop-filter: blur(15px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        border-radius: 16px !important;
+        padding: 14px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+        color: #cbd5e1 !important;
+        transition: all 0.3s ease;
+    }
+
+    .feed-title {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: #38bdf8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-live-pill {
+        background: rgba(16, 185, 129, 0.15) !important;
+        color: #10b981 !important;
+        font-size: 0.65rem !important;
+        font-weight: 800 !important;
+        padding: 2px 8px !important;
+        border-radius: 20px !important;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        animation: activePulse 2s infinite;
+    }
+
+    @keyframes activePulse {
+        0% {
+            opacity: 0.6;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            opacity: 0.6;
+        }
+    }
+
+    .feed-log-body {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        font-family: 'Consolas', 'Courier New', Courier, monospace !important;
+        font-size: 0.7rem !important;
+        line-height: 1.5 !important;
+        margin-top: 8px !important;
+    }
+
+    .feed-log-body::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .feed-log-body::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+    }
+
+    .feed-item {
+        margin-bottom: 5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        padding-bottom: 2px;
+    }
+
+    /* COLLAPSIBLE DRIVER MATCH DRAWER (BOTTOM CENTER) */
+    .floating-driver-drawer {
+        position: absolute !important;
+        bottom: -320px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 460px !important;
+        z-index: 1005 !important;
+        background: var(--glass-bg) !important;
+        backdrop-filter: blur(25px) !important;
+        border: 1px solid var(--glass-border) !important;
+        border-radius: 20px 20px 0 0 !important;
+        padding: 24px 24px 20px 24px !important;
+        box-shadow: 0 -10px 40px rgba(15, 23, 42, 0.1) !important;
+        transition: bottom 0.45s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    }
+
+    .floating-driver-drawer.active {
+        bottom: 0 !important;
+    }
+
+    .drawer-drag-pill {
+        width: 44px;
+        height: 6px;
+        background-color: #cbd5e1;
+        border-radius: 3px;
+        margin: -10px auto 18px auto;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+    }
+
+    .drawer-drag-pill:hover {
+        opacity: 1;
+    }
+
+    .floating-driver-drawer .text-title {
+        color: var(--hero-text-title);
+    }
+
+    .driver-avatar-wrapper {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--sky-blue);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .driver-avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .vehicle-card-details {
+        background: rgba(0, 0, 0, 0.02) !important;
+        border: 1px solid var(--glass-border) !important;
+    }
+
+    [data-theme="dark"] .vehicle-card-details {
+        background: rgba(255, 255, 255, 0.02) !important;
+    }
+
+    /* RADAR PING RING BACKGROUND OVERLAY */
+    .radar-pulse-overlay {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        width: 0 !important;
+        height: 0 !important;
+        transform: translate(-50%, -50%) !important;
+        border: 3px solid rgba(101, 167, 233, 0.5) !important;
+        border-radius: 50% !important;
+        pointer-events: none !important;
+        z-index: 2 !important;
+        opacity: 0 !important;
+    }
+
+    .radar-pulse-overlay.active {
+        animation: radarScanRing 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite !important;
+    }
+
+    @keyframes radarScanRing {
+        0% {
+            width: 0px;
+            height: 0px;
+            opacity: 1;
+            border-width: 8px;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            width: 850px;
+            height: 850px;
+            opacity: 0;
+            border-width: 1px;
+        }
+    }
+
+    /* MAP MARKERS OVERRIDES */
+    .pulsing-user-marker {
+        width: 18px;
+        height: 18px;
+        background: #007bff;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #007bff;
+        animation: userMarkerPulse 1.8s infinite;
+    }
+
+    @keyframes userMarkerPulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 12px rgba(0, 123, 255, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+        }
+    }
+
+    .custom-vehicle-div-icon {
+        background: transparent !important;
+        border: none !important;
+    }
+
+    .vehicle-map-pin {
+        width: 36px;
+        height: 36px;
+        background: #ffffff;
+        border: 2px solid var(--royal-navy);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    [data-theme="dark"] .vehicle-map-pin {
+        background: #1e293b;
+        border-color: var(--sky-blue);
+    }
+
+    .vehicle-map-pin.cab-pin {
+        color: #0056b3;
+    }
+
+    .vehicle-map-pin.bike-pin {
+        color: #eab308;
+    }
+
+    .vehicle-map-pin:hover {
+        transform: scale(1.15);
+        border-color: #D4AF37 !important;
+    }
+
+    /* FLAGSHIP SERVICES SECTION & OTHERS BELOW VIEWPORT */
+    .service-card-premium {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .service-card-premium:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(101, 167, 233, 0.15);
+        border-color: var(--sky-blue);
+    }
+
+    [data-theme="dark"] .service-card-premium:hover {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .service-card-header-bg {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .service-card-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        color: var(--primary-gold);
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 800;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .service-icon-floating {
+        width: 60px;
+        height: 60px;
+        background: var(--royal-navy);
+        color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        position: absolute;
+        bottom: -30px;
+        left: 25px;
+        box-shadow: 0 8px 20px rgba(0, 0, 128, 0.3);
+        border: 3px solid #ffffff;
+    }
+
+    [data-theme="dark"] .service-icon-floating {
+        background: var(--sky-blue);
+        color: var(--deep-slate);
+        border-color: #0b0f19;
+        box-shadow: 0 8px 20px rgba(101, 167, 233, 0.3);
+    }
+
+    .service-card-body {
+        padding: 45px 25px 25px 25px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .service-eta {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #10b981;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 12px;
+    }
+
+    .service-card-premium p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #64748b;
+    }
+
+    [data-theme="dark"] .service-card-premium p {
+        color: #94a3b8;
+    }
+
+    .service-card-footer {
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        padding: 20px 25px 25px 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(0, 0, 0, 0.01);
+    }
+
+    [data-theme="dark"] .service-card-footer {
+        border-top-color: rgba(255, 255, 255, 0.05);
+        background: rgba(255, 255, 255, 0.01);
+    }
+
+    /* IMMERSIVE FULL-BLEED PARTNER CALCULATOR SECTION */
+    .immersive-calculator-section {
+        width: 100vw !important;
+        position: relative !important;
+        left: 50% !important;
+        right: 50% !important;
+        margin-left: -50vw !important;
+        margin-right: -50vw !important;
+        background: linear-gradient(135deg, #818591 0%, #42444d 100%) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        padding: 80px 0 !important;
+        overflow: hidden !important;
+        color: #ffffff;
+    }
+
+    .immersive-calculator-section::before {
+        content: '';
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(101, 167, 233, 0.06) 0%, transparent 70%);
+        bottom: -200px;
+        right: -100px;
+        pointer-events: none;
+    }
+
+    .immersive-calculator-section::after {
+        content: '';
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
+        top: -100px;
+        left: -100px;
+        pointer-events: none;
+    }
+
+    .slider-container {
+        margin: 25px 0;
+    }
+
+    .premium-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.1);
+        outline: none;
+        transition: background 0.3s;
+    }
+
+    .premium-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--sky-blue);
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(101, 167, 233, 0.8);
+        transition: transform 0.2s ease;
+    }
+
+    .premium-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+</style>
+
+<!-- Immersive Homepage Hero Control Center -->
+<section class="premium-hero-immersive">
+    <!-- Immersive Interactive Map Background -->
+    <div id="homeHeroMapImmersive"></div>
+
+    <!-- Floating Live System Metrics Capsule (Top Right) -->
+    <div class="floating-grid-status">
+        <div class="status-indicator-ping"></div>
+        <span id="gridStatusText"><i class="fas fa-bolt text-warning mr-1"></i> Surge: 1.0x</span>
+        <span class="status-divider">|</span>
+        <span><i class="fas fa-gauge-high mr-1 text-primary"></i> Traffic: Moderate</span>
+        <span class="status-divider">|</span>
+        <span id="gridDriversCount"><i class="fas fa-car mr-1 text-success"></i> 12 Active Fleet</span>
+    </div>
+
+    <!-- Floating Glassmorphic Command Center Card (Left Panel) -->
+    <div class="floating-command-center">
+        <div class="card-glass-header">
+            <span class="badge bg-primary text-uppercase px-3 py-1 mb-2"
+                style="font-size: 0.7rem; letter-spacing: 0.5px; border-radius: 12px; background: rgba(101, 167, 233, 0.2) !important; color: #65a7e9 !important; border: 1px solid rgba(101, 167, 233, 0.4);">
+                <i class="fas fa-tower-broadcast mr-1"></i> Live Grid Command
+            </span>
+            <h2 class="outfit-font text-title mb-1"><b>Explore Commutes</b></h2>
+            <p class="text-body mb-3" style="font-size: 0.82rem; line-height: 1.4;">Find active vehicles nearest to your
+                location. Select a travel category below to start booking, sharing, or renting instantly.</p>
+        </div>
+
+        <!-- Mode Tab Selectors -->
+        <div class="mode-select-grid">
+            <button class="mode-btn active" id="modeBtnCab"
+                onclick="switchImmersiveMode(event, 'immersive-cab', 'cab')">
+                <i class="fas fa-car"></i>
+                <span>Cabs</span>
+            </button>
+            <button class="mode-btn" id="modeBtnBike" onclick="switchImmersiveMode(event, 'immersive-bike', 'bike')">
+                <i class="fas fa-motorcycle"></i>
+                <span>Swift Bike</span>
+            </button>
+            <button class="mode-btn" id="modeBtnCarpool"
+                onclick="switchImmersiveMode(event, 'immersive-carpool', 'carpool')">
+                <i class="fas fa-users"></i>
+                <span>Carpool</span>
+            </button>
+            <button class="mode-btn" id="modeBtnRent" onclick="switchImmersiveMode(event, 'immersive-rent', 'rental')">
+                <i class="fas fa-key"></i>
+                <span>Rentals</span>
+            </button>
+        </div>
+
+        <!-- Dynamic Form Panes -->
+        <div class="mode-content-panes mt-3">
+            <!-- MODE 1: Cabs (Uber Style) -->
+            <div id="immersive-cab" class="immersive-pane active">
+                <form action="http://127.0.0.1:8000/car/" method="GET">
+                    <div class="form-group-premium">
+                        <label>Pickup Location</label>
+                        <div class="input-wrapper-premium">
+                            <input type="text" class="form-input-premium" value="Madhapur Metro Station, Hyderabad"
+                                required>
+                            <i class="fas fa-dot-circle input-icon" style="color: #007bff;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group-premium">
+                        <label>Drop Destination</label>
+                        <div class="input-wrapper-premium">
+                            <input type="text" class="form-input-premium" placeholder="Where are you heading?" required>
+                            <i class="fas fa-map-marker-alt input-icon" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-action-immersive">
+                        <i class="fas fa-car-side mr-2"></i> Book Cab Ride
+                    </button>
+                </form>
+            </div>
+
+            <!-- MODE 2: Bike Taxi (Rapido Style) -->
+            <div id="immersive-bike" class="immersive-pane">
+                <form action="http://127.0.0.1:8000/ride_page/" method="GET">
+                    <div class="form-group-premium">
+                        <label>Quick Pick Point</label>
+                        <div class="input-wrapper-premium">
+                            <input type="text" class="form-input-premium" value="Madhapur, Hyderabad" required>
+                            <i class="fas fa-crosshairs input-icon" style="color: #eab308;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group-premium">
+                        <label>Drop Point</label>
+                        <div class="input-wrapper-premium">
+                            <input type="text" class="form-input-premium" placeholder="Enter target landmark..."
+                                required>
+                            <i class="fas fa-flag-checkered input-icon" style="color: #ef4444;"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-action-immersive"
+                        style="background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%) !important; color: #000000 !important; box-shadow: 0 6px 15px rgba(234, 179, 8, 0.25) !important;">
+                        <i class="fas fa-motorcycle mr-2"></i> Call Rapido Bike
+                    </button>
+                </form>
+            </div>
+
+            <!-- MODE 3: Carpool (BlaBlaCar Style) -->
+            <div id="immersive-carpool" class="immersive-pane">
+                <form action="http://127.0.0.1:8000/feature/" method="GET">
+                    <div class="row">
+                        <div class="col-md-6 form-group-premium pr-md-1">
+                            <label>Leaving From</label>
+                            <div class="input-wrapper-premium">
+                                <input type="text" class="form-input-premium" value="Hyderabad" required>
+                                <i class="fas fa-compass input-icon" style="color: #10b981;"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group-premium pl-md-1">
+                            <label>Going To</label>
+                            <div class="input-wrapper-premium">
+                                <input type="text" class="form-input-premium" placeholder="Destination..." required>
+                                <i class="fas fa-circle-chevron-right input-icon" style="color: #ef4444;"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group-premium pr-md-1">
+                            <label>Date</label>
+                            <div class="input-wrapper-premium">
+                                <input type="date" class="form-input-premium" required>
+                                <i class="fas fa-calendar-days input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group-premium pl-md-1">
+                            <label>Seats</label>
+                            <div class="input-wrapper-premium">
+                                <select class="form-input-premium" style="padding-left: 42px;">
+                                    <option value="1">1 Seat</option>
+                                    <option value="2">2 Seats</option>
+                                    <option value="3">3 Seats</option>
+                                </select>
+                                <i class="fas fa-user-check input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-action-immersive"
+                        style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25) !important;">
+                        <i class="fas fa-magnifying-glass mr-2"></i> Search Carpools
+                    </button>
+                </form>
+            </div>
+
+            <!-- MODE 4: Rentals (Showroom Style) -->
+            <div id="immersive-rent" class="immersive-pane">
+                <form action="http://127.0.0.1:8000/car/" method="GET">
+                    <div class="form-group-premium">
+                        <label>Showroom Fleet Pickup</label>
+                        <div class="input-wrapper-premium">
+                            <input type="text" class="form-input-premium" value="Madhapur Showroom, Hyderabad" required>
+                            <i class="fas fa-warehouse input-icon" style="color: #65a7e9;"></i>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 form-group-premium pr-md-1">
+                            <label>Duration</label>
+                            <div class="input-wrapper-premium">
+                                <select class="form-input-premium" style="padding-left: 42px;">
+                                    <option value="1">1 Day rental</option>
+                                    <option value="2">2 Days rental</option>
+                                    <option value="5">5 Days package</option>
+                                </select>
+                                <i class="fas fa-hourglass-half input-icon"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group-premium pl-md-1">
+                            <label>Fleet Tier</label>
+                            <div class="input-wrapper-premium">
+                                <select class="form-input-premium" style="padding-left: 42px;">
+                                    <option value="luxury">Luxury Cabs</option>
+                                    <option value="electric">Eco Electric</option>
+                                    <option value="suv">Robust SUVs</option>
+                                </select>
+                                <i class="fas fa-list input-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-action-immersive"
+                        style="background: linear-gradient(135deg, #475569 0%, #1e293b 100%) !important; box-shadow: 0 6px 15px rgba(71, 85, 105, 0.25) !important;">
+                        <i class="fas fa-key mr-2"></i> Book Luxury Rental
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="divider-premium mt-3 mb-3"></div>
+
+        <!-- Live Radar Driver Scanner (New Concept) -->
+        <div class="radar-scan-wrapper">
+            <button class="btn-radar-scan" id="radarScanBtn" onclick="triggerGridScan()">
+                <div class="status-indicator-ping mr-2" style="background: var(--sky-blue); width: 8px; height: 8px;">
+                </div>
+                <i class="fas fa-circle-notch fa-spin scan-loader-icon" id="scanLoaderIcon"
+                    style="display: none; margin-right: 6px;"></i>
+                <span id="scanBtnText"><i class="fas fa-wifi mr-1" style="transform: rotate(45deg);"></i> Scan for
+                    Drivers</span>
+            </button>
+            <div class="radar-results-info text-center mt-2" id="radarResultsInfo" style="display: none;">
+                <span class="text-success" style="font-size: 0.8rem; font-weight: 700;"><i
+                        class="fas fa-check-circle mr-1"></i> 4 Active Drivers matched in 3km radius</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Live activity Log Feed Console (Bottom Right) -->
+    <div class="floating-activity-feed">
+        <div class="feed-header d-flex justify-content-between align-items-center mb-1">
+            <span class="feed-title"><i class="fas fa-code-branch text-info mr-1"></i> Grid Activity Stream</span>
+            <span class="badge status-live-pill">LIVE</span>
+        </div>
+        <div class="feed-log-body" id="feedLogBody">
+            <div class="feed-item"><i>[System]</i> Grid Command Core Initialized.</div>
+            <div class="feed-item"><i>[Map]</i> Center: Madhapur Metro [17.4483, 78.3741].</div>
+            <div class="feed-item"><i>[Fleet]</i> 4 nearby drivers are tracking.</div>
+        </div>
+    </div>
+
+    <!-- Floating Collapsible Driver Details Drawer Card (Bottom Center) -->
+    <div class="floating-driver-drawer" id="matchedDriverDrawer">
+        <div class="drawer-drag-pill" onclick="toggleDriverDrawer()"></div>
+        <div class="drawer-grid-body">
+            <div class="driver-profile-info d-flex align-items-center gap-3">
+                <div class="driver-avatar-wrapper">
+                    <!-- Real Generated Avatar headshot Profile -->
+                    <img src="/media/images/driver_avatar.png" class="driver-avatar-img" alt="Srikanth Chepuri Profile">
+                </div>
+                <div class="driver-meta">
+                    <span class="badge bg-warning text-dark font-weight-bold mb-1"
+                        style="font-size: 0.65rem; border-radius: 4px;">HIGHLY RECOMMENDED</span>
+                    <h5 class="m-0 font-weight-bold text-title outfit-font" style="font-size: 1rem;">Srikanth Chepuri
+                    </h5>
+                    <small class="text-muted"><i class="fas fa-star text-warning"></i> 4.9 Rating (350+ orders)</small>
+                </div>
+            </div>
+            <div class="vehicle-card-details mt-3 p-3 rounded-lg">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong class="d-block text-title" style="font-size: 0.9rem;">Suzuki Swift Dzire</strong>
+                        <small class="text-muted text-uppercase"
+                            style="font-size: 0.72rem; letter-spacing: 0.5px;">TS-09-EQ-4589 | Chauffeur Comfort</small>
+                    </div>
+                    <div class="eta-pricing text-right">
+                        <strong class="d-block text-success" style="font-size: 1.15rem;">₹150</strong>
+                        <small class="text-muted" style="font-size: 0.72rem;">ETA: 3 mins away</small>
+                    </div>
+                </div>
+            </div>
+            <div class="drawer-action-btn-row mt-3 d-flex gap-2">
+                <button class="btn btn-outline-danger flex-fill rounded-lg py-2 font-weight-bold"
+                    style="font-size: 0.85rem;" onclick="dismissDriverDrawer()">
+                    Cancel Match
+                </button>
+                <button class="btn btn-primary flex-fill rounded-lg py-2 font-weight-bold" style="font-size: 0.85rem;"
+                    onclick="confirmMatchedRide()">
+                    Confirm Ride
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSS Pulsing Scanner Layer Overlay (Canvas Grid Effect) -->
+    <div class="radar-pulse-overlay" id="radarPulseOverlay"></div>
+</section>
+
+<!-- Flagship Options Services Showcase Grid Section -->
+<section class="py-5" style="background-color: transparent;">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <h6 class="text-primary text-uppercase font-weight-bold"
+                style="color: #65a7e9 !important; letter-spacing: 2px;">flagship options</h6>
+            <h2 class="display-5 font-weight-bold outfit-font mb-3"><b>How do you want to ride today?</b></h2>
+            <p class="text-muted max-width-600 mx-auto">Get where you need to go with options that suit your schedule,
+                comfort, and budget levels.</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Service 1: BlaBlaCar Carpool -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-card-premium">
+                    <div class="service-card-header-bg"
+                        style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/images/car-rent-1.png');">
+                        <span class="service-card-badge">Carpooling</span>
+                        <div class="service-icon-floating"><i class="fas fa-users-viewfinder"></i></div>
+                    </div>
+                    <div class="service-card-body">
+                        <div class="service-eta"><i class="fas fa-shield-halved"></i> 100% verified commuters</div>
+                        <h4 class="font-weight-bold outfit-font text-navy mb-3">RideShare Pool</h4>
+                        <p>Share travel expenses and make daily office commutes eco-friendly. Perfect for intercity
+                            trips and daily highways commutes.</p>
+                    </div>
+                    <div class="service-card-footer">
+                        <div>
+                            <small class="text-muted d-block">Fares start at</small>
+                            <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹5/km</strong>
+                        </div>
+                        <a href="http://127.0.0.1:8000/feature/"
+                            class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
+                            style="font-size: 0.85rem; font-weight: 700;">Find Ride</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 2: Rapido Bike Taxi -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-card-premium">
+                    <div class="service-card-header-bg"
+                        style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/images/person-1.png');">
+                        <span class="service-card-badge" style="color: #eab308; border-color: rgba(234,179,8,0.3);">Bike
+                            Taxi</span>
+                        <div class="service-icon-floating" style="background: #eab308; color: #000000;"><i
+                                class="fas fa-motorcycle"></i></div>
+                    </div>
+                    <div class="service-card-body">
+                        <div class="service-eta" style="color: #eab308;"><i class="fas fa-clock"></i> ETA under 3 mins
+                        </div>
+                        <h4 class="font-weight-bold outfit-font text-navy mb-3">RideShare Swift</h4>
+                        <p>Beat the peak hour traffic jams seamlessly. Comfortable, rapid, and single-rider rides with
+                            safety helmets provided on arrival.</p>
+                    </div>
+                    <div class="service-card-footer">
+                        <div>
+                            <small class="text-muted d-block">Rates start at</small>
+                            <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹35 flat
+                                rate</strong>
+                        </div>
+                        <a href="http://127.0.0.1:8000/ride_page/"
+                            class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
+                            style="font-size: 0.85rem; font-weight: 700;">Book Swift</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service 3: Uber Cabs & Rentals -->
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="service-card-premium">
+                    <div class="service-card-header-bg"
+                        style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('/media/images/car-1.png');">
+                        <span class="service-card-badge" style="color: #10b981; border-color: rgba(16,185,129,0.3);">Cab
+                            Rentals</span>
+                        <div class="service-icon-floating" style="background: #10b981; color: #ffffff;"><i
+                                class="fas fa-car"></i></div>
+                    </div>
+                    <div class="service-card-body">
+                        <div class="service-eta" style="color: #10b981;"><i class="fas fa-gem"></i> Premium Luxury fleet
+                        </div>
+                        <h4 class="font-weight-bold outfit-font text-navy mb-3">RideShare Showroom</h4>
+                        <p>Hire sedans, SUVs, or eco-friendly electric vehicles. Choose to drive yourself or hire a
+                            professional chauffeur for maximum luxury.</p>
+                    </div>
+                    <div class="service-card-footer">
+                        <div>
+                            <small class="text-muted d-block">Rentals start at</small>
+                            <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹15,000/day</strong>
+                        </div>
+                        <a href="http://127.0.0.1:8000/car/"
+                            class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
+                            style="font-size: 0.85rem; font-weight: 700;">View Fleet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Full-Bleed Immersive Partner Earnings Calculator Section -->
+<section class="immersive-calculator-section py-5 my-0">
+    <div class="container-fluid px-sm-3 px-md-5">
+        <div class="row align-items-center">
+
+            <!-- Left Info Panel -->
+            <div class="col-lg-6 mb-5 mb-lg-0 pr-lg-5">
+                <span class="badge bg-warning text-dark text-uppercase px-3 py-2 mb-3"
+                    style="font-weight: 800; border-radius: 20px; letter-spacing: 1px;">
+                    <i class="fas fa-handshake mr-1"></i> RideShare Partner Network
+                </span>
+                <h2 class="display-4 font-weight-bold outfit-font text-white mb-3" style="line-height: 1.2;">
+                    Turn empty seats<br>into <span style="color: #65a7e9;">live earnings</span>
+                </h2>
+                <p class="text-white-50 mb-4 fs-5" style="max-width: 550px;">
+                    Join Hyderabad's fastest growing smart commuter grid. Share fuel costs, meet verified local
+                    professionals, and split commute expenses seamlessly in real time.
+                </p>
+
+                <!-- Live Perks Grid -->
+                <div class="row g-3">
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
+                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
+                                <i class="fas fa-wallet" style="color: #65a7e9; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Real-time Pay
+                                    Split</h6>
+                                <small class="text-white-50">Instant digital fuel credits</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
+                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
+                                <i class="fas fa-shield-halved" style="color: #65a7e9; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">100% Secure
+                                    Grid</h6>
+                                <small class="text-white-50">Fully verified commuters</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
+                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
+                                <i class="fas fa-chart-line" style="color: #eab308; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Fuel Premium
+                                    Bonus</h6>
+                                <small class="text-white-50">Get up to 15% extra sharing cash</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
+                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
+                                <i class="fas fa-clock" style="color: #eab308; font-size: 1.2rem;"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Flexible
+                                    Schedule</h6>
+                                <small class="text-white-50">Share only when you drive</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Interactive Calculator Panel -->
+            <div class="col-lg-6">
+                <div class="row g-4 align-items-stretch">
+                    <!-- Config Controls Card -->
+                    <div class="col-md-7">
+                        <div class="p-4 rounded-lg h-100"
+                            style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                            <div class="form-group-premium mb-4">
+                                <label style="color: #ffffff; font-size: 0.75rem; letter-spacing: 0.8px;">Select Vehicle
+                                    Tier</label>
+                                <select id="calcVehicleType" class="form-input-premium"
+                                    style="background: rgba(0,0,0,0.4) !important; border-color: rgba(255,255,255,0.15) !important; color: #ffffff !important; padding-left: 18px !important; height: 46px !important;"
+                                    onchange="updateEarnings()">
+                                    <option value="bike">🏍️ Express Bike Taxi</option>
+                                    <option value="sedan" selected>🚘 Daily Comfort Sedan</option>
+                                    <option value="suv">🚙 Premium Luxury SUV</option>
+                                </select>
+                            </div>
+
+                            <div class="slider-container mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="font-weight-bold text-white-50" style="font-size: 0.8rem;">Daily
+                                        Commute Distance</span>
+                                    <span class="font-weight-bold" style="color: #65a7e9; font-size: 0.95rem;"
+                                        id="calcDistanceVal">40 km / day</span>
+                                </div>
+                                <input type="range" class="premium-slider" id="calcDistance" min="10" max="150"
+                                    value="40" oninput="updateEarnings()">
+                            </div>
+
+                            <div class="slider-container mb-0">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="font-weight-bold text-white-50" style="font-size: 0.8rem;">Travel
+                                        Frequencies / Week</span>
+                                    <span class="font-weight-bold" style="color: #65a7e9; font-size: 0.95rem;"
+                                        id="calcDaysVal">5 Days</span>
+                                </div>
+                                <input type="range" class="premium-slider" id="calcDays" min="1" max="7" value="5"
+                                    oninput="updateEarnings()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result Display Card -->
+                    <div class="col-md-5">
+                        <div class="earnings-display-box h-100 p-4 rounded-lg d-flex flex-column justify-content-center align-items-center"
+                            style="background: linear-gradient(135deg, rgba(101,167,233,0.1) 0%, rgba(101,167,233,0.02) 100%) !important; border: 1px solid rgba(101, 167, 233, 0.3) !important; border-radius: 24px !important; backdrop-filter: blur(15px) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;">
+                            <span class="text-uppercase text-white-50 font-weight-bold"
+                                style="font-size: 0.72rem; letter-spacing: 1.5px;">ESTIMATED SAVINGS</span>
+
+                            <!-- Counter Display with Glowing Effect -->
+                            <div class="earnings-number" id="earningsDisplay"
+                                style="font-size: 3.25rem; font-weight: 800; color: #65a7e9; text-shadow: 0 0 25px rgba(101,167,233,0.5); font-family: 'Outfit', sans-serif; margin: 15px 0;">
+                                ₹4,000
+                            </div>
+
+                            <span class="text-white-50 font-weight-bold"
+                                style="font-size: 0.8rem; letter-spacing: 0.5px;">per calendar month</span>
+
+                            <a href="http://127.0.0.1:8000/feature/"
+                                class="btn btn-primary btn-block rounded-lg py-3 mt-4 hover-glow-classic font-weight-bold"
+                                style="background: #65a7e9; border: none; color: #09132e; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 8px 25px rgba(101,167,233,0.35);">
+                                Register Vehicle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer Start -->
+<div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                India</p>
+            <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+            <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+            <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+            <div class="d-flex justify-content-start">
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Useful Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Privacy Policy</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Terms & Conditions</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member Registration</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FAQs</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+            <div class="row mx-n1">
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+            <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles and
+                professional drivers ensure a safe and enjoyable experience.</p>
+            <form method="POST"> {% csrf_token %}
+                <div class="w-100 mb-3">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                            placeholder="Your Email" required>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-dark py-4 px-sm-3 px-md-5">
+    <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+    <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+</div>
+<!-- Footer End -->
+
+<!-- Leaflet.js Script library -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<!-- Immersive Dashboard Scripts -->
+<script>
+    // Leaflet Map State variables
+    let immersiveMap;
+    let tileLayer;
+    let userMarker;
+    let activeVehicles = [];
+
+    // Map Tile URLs
+    const lightTiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    const darkTiles = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+    // Madhapur Coordinate Center
+    const myLocationCoord = [17.4483, 78.3741];
+
+    // Mockup vehicle data coordinates
+    const vehicleData = [
+        { id: 1, type: 'cab', lat: 17.4495, lng: 78.3725, title: 'Luxury Sedan' },
+        { id: 2, type: 'cab', lat: 17.4468, lng: 78.3762, title: 'Comfort Hatchback' },
+        { id: 3, type: 'bike', lat: 17.4502, lng: 78.3755, title: 'Express Bike Taxi' },
+        { id: 4, type: 'bike', lat: 17.4473, lng: 78.3718, title: 'Express Bike Taxi' }
+    ];
+
+    // Initialize Immersive Leaflet Map
+    function initImmersiveMap(theme) {
+        immersiveMap = L.map('homeHeroMapImmersive', {
+            zoomControl: false,
+            attributionControl: false
+        }).setView(myLocationCoord, 15);
+
+        // Load correct tile theme on launch
+        setMapTheme(theme);
+
+        // Pulse marker icon for current location
+        const pulsingIcon = L.divIcon({
+            html: '<div class="pulsing-user-marker"></div>',
+            className: 'custom-vehicle-div-icon',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+
+        // Add user marker
+        userMarker = L.marker(myLocationCoord, { icon: pulsingIcon }).addTo(immersiveMap)
+            .bindPopup("<b>Your Current Position</b><br>Madhapur Metro Station").openPopup();
+
+        // Spawn nearby fleet indicators
+        vehicleData.forEach(v => {
+            const iconHtml = v.type === 'cab'
+                ? '<div class="vehicle-map-pin cab-pin"><i class="fas fa-car"></i></div>'
+                : '<div class="vehicle-map-pin bike-pin"><i class="fas fa-motorcycle"></i></div>';
+
+            const divIcon = L.divIcon({
+                html: iconHtml,
+                className: 'custom-vehicle-div-icon',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+
+            const marker = L.marker([v.lat, v.lng], { icon: divIcon }).addTo(immersiveMap)
+                .bindPopup(`<b>${v.title}</b><br>ETA: 3 mins`);
+
+            activeVehicles.push({
+                marker: marker,
+                type: v.type,
+                baseLat: v.lat,
+                baseLng: v.lng,
+                currentLat: v.lat,
+                currentLng: v.lng
+            });
+        });
+    }
+
+    // Swapping Map tiles smoothly on the fly
+    function setMapTheme(theme) {
+        if (!immersiveMap) return;
+        if (tileLayer) {
+            immersiveMap.removeLayer(tileLayer);
+        }
+        const tileUrl = theme === 'dark' ? darkTiles : lightTiles;
+        tileLayer = L.tileLayer(tileUrl, { maxZoom: 20 });
+        tileLayer.addTo(immersiveMap);
+    }
+
+    // Dynamic marker movement simulator
+    function animateImmersiveVehicles() {
+        setInterval(() => {
+            activeVehicles.forEach(v => {
+                const deltaLat = (Math.random() - 0.5) * 0.00025;
+                const deltaLng = (Math.random() - 0.5) * 0.00025;
+
+                v.currentLat += deltaLat;
+                v.currentLng += deltaLng;
+
+                const dist = Math.sqrt(Math.pow(v.currentLat - v.baseLat, 2) + Math.pow(v.currentLng - v.baseLng, 2));
+                if (dist > 0.0025) {
+                    v.currentLat = v.baseLat;
+                    v.currentLng = v.baseLng;
+                }
+
+                v.marker.setLatLng([v.currentLat, v.currentLng]);
+            });
+        }, 3000);
+    }
+
+    // Filter vehicles displayed on the Leaflet grid
+    function filterImmersiveVehicles(type) {
+        if (!immersiveMap) return;
+
+        activeVehicles.forEach(v => {
+            if (type === 'all' || v.type === type) {
+                if (!immersiveMap.hasLayer(v.marker)) {
+                    v.marker.addTo(immersiveMap);
+                }
+            } else {
+                if (immersiveMap.hasLayer(v.marker)) {
+                    immersiveMap.removeLayer(v.marker);
+                }
+            }
+        });
+    }
+
+    // Switch between floating dashboard modal forms
+    function switchImmersiveMode(event, tabId, vehicleFilter) {
+        const buttons = document.querySelectorAll('.mode-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        const panes = document.querySelectorAll('.immersive-pane');
+        panes.forEach(pane => pane.classList.remove('active'));
+
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+
+        // Dynamic log console text
+        const modeLabel = event.currentTarget.querySelector('span').innerText;
+        appendLog(`[Console] Switched mode to: ${modeLabel}.`);
+
+        // Dynamic status adjustments
+        const statusValText = document.getElementById('gridStatusText');
+        const activeText = document.getElementById('gridDriversCount');
+
+        if (vehicleFilter === 'cab') {
+            filterImmersiveVehicles('cab');
+            statusValText.innerHTML = '<i class="fas fa-bolt text-warning mr-1"></i> Surge: 1.0x';
+            activeText.innerHTML = '<i class="fas fa-car mr-1 text-success"></i> 6 Cabs Nearby';
+        } else if (vehicleFilter === 'bike') {
+            filterImmersiveVehicles('bike');
+            statusValText.innerHTML = '<i class="fas fa-bolt text-warning mr-1"></i> Surge: 1.2x';
+            activeText.innerHTML = '<i class="fas fa-motorcycle mr-1 text-success"></i> 8 Bikes Nearby';
+        } else {
+            filterImmersiveVehicles('all');
+            statusValText.innerHTML = '<i class="fas fa-bolt text-warning mr-1"></i> Surge: 1.0x';
+            activeText.innerHTML = '<i class="fas fa-users mr-1 text-success"></i> 14 Shared Slots';
+        }
+    }
+
+    // Write real-time network items inside grid terminal console
+    function appendLog(text) {
+        const body = document.getElementById('feedLogBody');
+        const newItem = document.createElement('div');
+        newItem.className = 'feed-item';
+
+        // Generate timestamp
+        const now = new Date();
+        const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+        newItem.innerHTML = `<span class="text-white-50">${timeStr}</span> ${text}`;
+        body.appendChild(newItem);
+
+        // Scroll feed to bottom
+        body.scrollTop = body.scrollHeight;
+    }
+
+    // NEW CONCEPT FEATURE: Trigger dynamic grid scan & match srikanth chepuri
+    function triggerGridScan() {
+        const btn = document.getElementById('radarScanBtn');
+        const loader = document.getElementById('scanLoaderIcon');
+        const btnText = document.getElementById('scanBtnText');
+        const pulse = document.getElementById('radarPulseOverlay');
+        const resultInfo = document.getElementById('radarResultsInfo');
+        const drawer = document.getElementById('matchedDriverDrawer');
+
+        // Lock trigger
+        btn.disabled = true;
+        loader.style.display = 'inline-block';
+        btnText.innerText = 'Scanning Grid...';
+        pulse.classList.add('active');
+
+        appendLog('<i>[Radar]</i> Scanning local Hyderabad network nodes...');
+
+        setTimeout(() => {
+            // Unlock trigger
+            btn.disabled = false;
+            loader.style.display = 'none';
+            btnText.innerHTML = '<i class="fas fa-wifi mr-1" style="transform: rotate(45deg);"></i> Scan for Drivers';
+            pulse.classList.remove('active');
+            resultInfo.style.display = 'block';
+
+            appendLog('<i>[Radar]</i> Match found! Chauffeur Srikanth Chepuri is 3 mins away.');
+
+            // Slide upmatched driver drawer
+            drawer.classList.add('active');
+        }, 2200);
+    }
+
+    // Drawer interactions
+    function toggleDriverDrawer() {
+        const drawer = document.getElementById('matchedDriverDrawer');
+        drawer.classList.toggle('active');
+    }
+
+    function dismissDriverDrawer() {
+        const drawer = document.getElementById('matchedDriverDrawer');
+        drawer.classList.remove('active');
+        appendLog('<i>[System]</i> Match dismissed by user.');
+    }
+
+    function confirmMatchedRide() {
+        alert("Booking confirmed successfully!\nYour chauffeur Srikanth Chepuri is en route in TS-09-EQ-4589.");
+        const drawer = document.getElementById('matchedDriverDrawer');
+        drawer.classList.remove('remove');
+        appendLog('<span class="text-success"><i>[Booking]</i> Ride confirmed. Chauffeur is dispatching.</span>');
+    }
+
+    // Calculator Section Script with Smooth Count-Up Animation
+    let currentDisplayedEarnings = 4000;
+    let animationFrameId = null;
+
+    function updateEarnings() {
+        const vehicle = document.getElementById('calcVehicleType').value;
+        const distance = parseInt(document.getElementById('calcDistance').value);
+        const days = parseInt(document.getElementById('calcDays').value);
+
+        document.getElementById('calcDistanceVal').innerText = `${distance} km / day`;
+        document.getElementById('calcDaysVal').innerText = `${days} Days`;
+
+        let fuelRate = 100;
+        let efficiency = 15;
+        let passengers = 3;
+
+        if (vehicle === 'bike') {
+            efficiency = 45;
+            passengers = 1;
+        } else if (vehicle === 'suv') {
+            efficiency = 10;
+            passengers = 4;
+        }
+
+        const dailyCost = (distance / efficiency) * fuelRate;
+        const dailySavings = dailyCost * (passengers / (passengers + 1));
+        const monthlySavings = Math.round(dailySavings * days * 4.3);
+
+        // Animate counting up/down smoothly instead of snapping
+        animateSavingsNumber(monthlySavings);
+    }
+
+    function animateSavingsNumber(target) {
+        const display = document.getElementById('earningsDisplay');
+        if (!display) return;
+
+        // Cancel any active animation
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+
+        const duration = 350; // ms duration
+        const startTime = performance.now();
+        const startValue = currentDisplayedEarnings;
+
+        function step(currentTime) {
+            const elapsedTime = currentTime - startTime;
+            if (elapsedTime >= duration) {
+                display.innerText = `₹${target.toLocaleString('en-IN')}`;
+                currentDisplayedEarnings = target;
+                animationFrameId = null;
+            } else {
+                const progress = elapsedTime / duration;
+                // Ease-out Quad curve for premium elastic decelerating feel
+                const easeProgress = progress * (2 - progress);
+                const currentValue = Math.round(startValue + (target - startValue) * easeProgress);
+                display.innerText = `₹${currentValue.toLocaleString('en-IN')}`;
+                animationFrameId = requestAnimationFrame(step);
+            }
+        }
+        animationFrameId = requestAnimationFrame(step);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const body = document.body;
+        const savedTheme = localStorage.getItem("theme") || "light";
+        body.setAttribute("data-theme", savedTheme);
+
+        // Run map build
+        initImmersiveMap(savedTheme);
+        animateImmersiveVehicles();
+        updateEarnings();
+
+        // Theme Toggle Sync
+        const toggleBtn = document.getElementById("themeToggle");
+        const themeIcon = document.getElementById("themeIcon");
+
+        updateIcon(savedTheme);
+
+        toggleBtn.addEventListener("click", () => {
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            body.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateIcon(newTheme);
+            setMapTheme(newTheme); // INSTANTLY swap tile layers!
+            appendLog(`[System] Theme switched to: ${newTheme}.`);
+        });
+
+        function updateIcon(theme) {
+            if (theme === "dark") {
+                themeIcon.classList.remove("fa-moon");
+                themeIcon.classList.add("fa-sun");
+            } else {
+                themeIcon.classList.remove("fa-sun");
+                themeIcon.classList.add("fa-moon");
+            }
+        }
+    });
+</script>
+
+{% endblock %}

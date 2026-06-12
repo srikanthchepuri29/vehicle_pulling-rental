@@ -1,0 +1,2001 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Car Showroom</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+    <link href="https://cdn-icons-png.freepik.com/512/13319/13319888.png" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Template Stylesheet -->
+
+    <link rel="stylesheet" href="{% static 'css/cars.css'%}">
+
+
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Professional Navbar CSS overrides to match showroom page */
+        .premium-navbar {
+            background-color: #65a7e9 !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border-color: #0666af !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        body {
+            padding-top: 60px !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem !important;
+            margin-right: 8px !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* High-end sliding underline and capsule hover effect */
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            border-radius: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+            position: relative !important;
+            overflow: hidden;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+
+        .premium-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37 !important; /* Gold highlight accent for premium touch */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .premium-navbar .nav-link:hover::after,
+        .premium-navbar .nav-item.active .nav-link::after,
+        .premium-navbar .nav-item.show .nav-link::after {
+            width: 80%; /* Expands smoothly from center */
+        }
+
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-item.show .nav-link {
+            background-color: rgba(255, 255, 255, 0.12) !important; /* Semi-transparent white capsule highlight */
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-navbar .nav-item.active .nav-link {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        .premium-navbar .nav-link i {
+            font-size: 14px !important;
+            margin-right: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Sophisticated Dropdown Styling */
+        .premium-dropdown {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0px !important;
+            padding: 6px 0 !important;
+            overflow: visible !important;
+            animation: fadeInDropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dropdown::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -15px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 15px !important;
+            background: transparent !important;
+            z-index: -1 !important;
+        }
+
+        @keyframes fadeInDropdown {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .premium-dropdown .dropdown-item {
+            color: #2c3e50 !important;
+            padding: 8px 18px !important;
+            margin: 2px 6px !important;
+            width: calc(100% - 12px) !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            transition: all 0.25s ease !important;
+            border: none !important;
+            font-family: 'Rubik', sans-serif !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #65a7e9;
+            transition: color 0.25s ease;
+        }
+
+        .premium-dropdown .dropdown-item:hover {
+            background-color: #65a7e9 !important;
+            color: #ffffff !important;
+        }
+
+        .premium-dropdown .dropdown-item:hover i {
+            color: #ffffff !important;
+        }
+
+        /* Explicit Outline Removal on Hover & Active States */
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-link:focus,
+        .premium-navbar .nav-link:active,
+        .premium-navbar .dropdown-toggle:hover,
+        .premium-navbar .dropdown-toggle:focus,
+        .premium-navbar .dropdown-toggle:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+
+        .premium-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            margin: 10px 0 !important;
+            height: 40px !important;
+        }
+
+        .premium-navbar .navbar-toggler .fa-bars {
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991px) {
+            .premium-navbar .navbar-collapse {
+                background-color: #01579b !important;
+                position: absolute !important;
+                top: 60px !important;
+                left: 0 !important;
+                width: 100% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .premium-navbar .container-fluid {
+                height: auto !important;
+                min-height: 60px !important;
+            }
+
+            .navbar-nav {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .premium-navbar .nav-link {
+                height: 50px !important;
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+
+            .premium-navbar .nav-item {
+                width: 100% !important;
+            }
+
+            .premium-dropdown {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+        }
+
+        /* Blue Glow Animation for Container Boxes */
+        .hover-glow-blue-smooth {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .hover-glow-blue-smooth:hover {
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.6), 0 0 50px rgba(0, 123, 255, 0.3) !important;
+            transform: translateY(-8px) scale(1.03);
+            border-color: #007bff !important;
+            z-index: 10;
+        }
+
+        .blue-touch-effect {
+            transition: all 0.3s ease;
+        }
+
+        .blue-touch-effect:hover {
+            background-color: #0056b3 !important;
+            border-color: #0056b3 !important;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.8) !important;
+            color: #ffffff !important;
+        }
+
+        .hover-text-blue {
+            transition: color 0.3s ease;
+        }
+
+        .hover-text-blue:hover {
+            color: #007bff !important;
+            text-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        }
+
+        .car-badge-new {
+            position: absolute;
+            top: 20px;
+            right: -35px;
+            background: linear-gradient(45deg, #007bff, #00d2ff);
+            color: white;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0, 123, 255, 0.5);
+            z-index: 2;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #007bff !important;
+            color: white !important;
+            border-color: #007bff !important;
+            box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Suggestions Autocomplete Styling */
+        .position-relative {
+            position: relative;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1050;
+            /* Above search container elements */
+            margin-top: 5px;
+            display: none;
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 6px;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #333;
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            color: #007bff;
+            padding-left: 20px;
+        }
+
+        .suggestion-item i {
+            color: #007bff;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start 
+    <div class="container-fluid bg-dark py-3 px-lg-5 d-none d-lg-block">
+        <div class="row">
+            <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-body pr-3" href=""><i class="fa fa-phone-alt mr-2"></i>+9199124597</a>
+                    <span class="text-body">|</span>
+                    <a class="text-body px-3" href=""><i class="fa fa-envelope mr-2"></i>srikanthpatel@gmail.com</a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-body pl-3" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+     Topbar End -->
+
+
+    <!-- Professional Navbar Start -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid">
+            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
+                <i class="fas fa-car-side mr-2"></i>RideShare
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-bars"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
+                            Showroom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
+                            Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>
+                            Drive with Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
+                                class="fas fa-shield-alt mr-1"></i>Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
+                            Reports</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
+                            <a class="dropdown-item" href="{% url 'login' %}"><i
+                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
+                            <a class="dropdown-item" href="{% url 'register' %}"><i
+                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Professional Navbar End -->
+
+
+    <!-- Live Showroom Search Loader Overlay -->
+    <div id="showroomSearchLoader"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 31, 63, 0.95); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+        <div class="loader-box text-center p-5 rounded-lg shadow-2xl"
+            style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); max-width: 450px; width: 90%; border-radius: 15px;">
+            <div class="mb-4" style="position: relative; display: inline-block;">
+                <div class="spinner-border text-primary" role="status"
+                    style="width: 4rem; height: 4rem; border-width: 0.35em;">
+                    <span class="sr-only">Scanning...</span>
+                </div>
+                <i class="fas fa-search-location text-white"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem;"></i>
+            </div>
+            <h4 class="text-white text-uppercase font-weight-bold mb-3" style="letter-spacing: 2px;">Checking Fleet
+                Availability</h4>
+            <p id="loaderMessage" class="text-muted mb-0" style="font-size: 0.95rem; min-height: 48px;">Connecting to
+                fleet database...</p>
+            <div class="progress mt-4"
+                style="height: 6px; background-color: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
+                    style="width: 0%;" id="loaderProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-Width Premium Search Start -->
+    <div class="container-fluid p-0 m-0"
+        style="background: linear-gradient(135deg, #001f3f, #000080); border-bottom: 2px solid #D4AF37; position: relative; z-index: 1020;">
+        <div class="glass-card shadow-sm w-100"
+            style="border-radius: 0; padding: 25px 50px; background: rgba(255, 255, 255, 0.05); border: none; backdrop-filter: blur(10px);">
+            <div class="row g-2 align-items-end justify-content-center">
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-marker-alt mr-2" style="color: #D4AF37;"></i>Pickup Location</label>
+                    <input type="text" id="pickupLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="pickupLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-pin mr-2" style="color: #D4AF37;"></i>Drop-off Place</label>
+                    <input type="text" id="dropLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="dropLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-calendar-alt mr-2" style="color: #D4AF37;"></i>Pickup Date</label>
+                    <div class="date" id="dateSearch" data-target-input="nearest">
+                        <input type="text" id="pickupDateSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Date"
+                            data-target="#dateSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-clock mr-2"
+                            style="color: #D4AF37;"></i>Pickup Time</label>
+                    <div class="time" id="timeSearch" data-target-input="nearest">
+                        <input type="text" id="pickupTimeSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Time"
+                            data-target="#timeSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-car mr-2"
+                            style="color: #D4AF37;"></i>Car Type</label>
+                    <select id="carTypeSearch" class="custom-select px-4 shadow-sm"
+                        style="height: 45px; border-radius: 8px; border: none;">
+                        <option value="" selected>Select A Car</option>
+                        <option value="luxury-sedan">Luxury Sedan</option>
+                        <option value="premium-suv">Premium SUV</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <button id="showroomSearchBtn"
+                        class="btn btn-primary btn-block hover-glow-classic gold-touch-effect" type="button"
+                        style="height: 45px; border-radius: 8px; font-weight: bold; font-size: 1.05rem;">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full-Width Premium Search End -->
+
+
+    <!-- Premium Page Header Start -->
+    <div class="container-fluid page-header position-relative"
+        style="background: linear-gradient(rgba(0, 31, 63, 0.85), rgba(0, 123, 255, 0.4)), url('/media/images/gallery-3.jpg') center center no-repeat; background-size: cover; padding: 120px 0; border-bottom: 4px solid #007bff; box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);">
+        <div class="container text-center">
+            <h1 class="display-3 text-uppercase text-white mb-3 wow fadeInDown" data-wow-delay="0.1s"
+                style="text-shadow: 0 0 25px rgba(0, 123, 255, 0.8); font-weight: 700;">Premium Fleet</h1>
+            <div class="d-inline-flex text-white wow fadeInUp" data-wow-delay="0.3s">
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue" href="http://127.0.0.1:8000/"><i
+                            class="fas fa-home mr-2"></i>Home</a></h6>
+                <h6 class="text-body m-0 px-3" style="color: #007bff !important; font-weight: bold;">/</h6>
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue"
+                        href="http://127.0.0.1:8000/car/">Car Listing</a></h6>
+            </div>
+        </div>
+    </div>
+    <!-- Premium Page Header End -->
+
+
+    <!-- Professional Features Section Start -->
+    <div class="container-fluid py-5" style="background-color: #f4f7f6;">
+        <div class="container py-4">
+            <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-primary text-uppercase" style="color: #007bff !important; letter-spacing: 2px;">Why
+                    Choose Us</h6>
+                <h1 class="display-4 text-uppercase text-navy font-weight-bold">Professional Auto Standards</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="glass-card hover-glow-blue-smooth p-5 text-center h-100"
+                        style="border-radius: 15px; background: white; border: 1px solid #e0e0e0;">
+                        <div class="d-inline-flex align-items-center justify-content-center mb-4"
+                            style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 123, 255, 0.1);">
+                            <i class="fas fa-car-side fa-3x" style="color: #007bff;"></i>
+                        </div>
+                        <h4 class="text-uppercase mb-3 font-weight-bold">Immaculate Condition</h4>
+                        <p class="m-0 text-muted">Every vehicle in our fleet undergoes rigorous multipoint inspections
+                            and premium detailing before every single rental.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="glass-card hover-glow-blue-smooth p-5 text-center h-100"
+                        style="border-radius: 15px; background: white; border: 1px solid #e0e0e0;">
+                        <div class="d-inline-flex align-items-center justify-content-center mb-4"
+                            style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 123, 255, 0.1);">
+                            <i class="fas fa-shield-alt fa-3x" style="color: #007bff;"></i>
+                        </div>
+                        <h4 class="text-uppercase mb-3 font-weight-bold">Maximum Coverage</h4>
+                        <p class="m-0 text-muted">Drive with total peace of mind thanks to our comprehensive corporate
+                            insurance policies and 24/7 roadside assistance.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="glass-card hover-glow-blue-smooth p-5 text-center h-100"
+                        style="border-radius: 15px; background: white; border: 1px solid #e0e0e0;">
+                        <div class="d-inline-flex align-items-center justify-content-center mb-4"
+                            style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 123, 255, 0.1);">
+                            <i class="fas fa-bolt fa-3x" style="color: #007bff;"></i>
+                        </div>
+                        <h4 class="text-uppercase mb-3 font-weight-bold">Instant Booking</h4>
+                        <p class="m-0 text-muted">Our streamlined digital platform allows verified professionals to book
+                            and unlock vehicles in under 60 seconds.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Professional Features Section End -->
+
+    <!-- Rent A Car Start -->
+    <div class="container-fluid py-5">
+        <div class="container pt-5 pb-3">
+            <h1 class="display-4 text-uppercase text-center mb-4 text-navy font-weight-bold wow fadeInDown">Explore Our
+                Fleet</h1>
+
+            <!-- Fleet Filters -->
+            <div class="row mb-5 wow fadeInUp" data-wow-delay="0.2s">
+                <div class="col-12 text-center">
+                    <ul class="list-inline mb-0" id="fleet-filters">
+                        <li class="list-inline-item m-1">
+                            <button class="btn btn-outline-primary px-4 filter-btn active" data-filter="all-vehicles"
+                                style="border-radius: 30px; font-weight: 600; border-color: #007bff; color: white; background-color: #007bff;">All
+                                Vehicles</button>
+                        </li>
+                        <li class="list-inline-item m-1">
+                            <button class="btn btn-outline-primary px-4 filter-btn" data-filter="luxury-sedan"
+                                style="border-radius: 30px; font-weight: 600; border-color: #007bff; color: #007bff; background-color: transparent;">Luxury
+                                Sedan</button>
+                        </li>
+                        <li class="list-inline-item m-1">
+                            <button class="btn btn-outline-primary px-4 filter-btn" data-filter="premium-suv"
+                                style="border-radius: 30px; font-weight: 600; border-color: #007bff; color: #007bff; background-color: transparent;">Premium
+                                SUV</button>
+                        </li>
+                        <li class="list-inline-item m-1">
+                            <button class="btn btn-outline-primary px-4 filter-btn" data-filter="electric"
+                                style="border-radius: 30px; font-weight: 600; border-color: #007bff; color: #007bff; background-color: transparent;">Electric</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fleet Containers -->
+            <div id="fleet-containers">
+
+                <!-- All Vehicles (Carousel) -->
+                <div class="fleet-section" id="all-vehicles" style="display: block;">
+                    <div class="owl-carousel related-carousel position-relative" style="padding: 0 30px;">
+                        <!-- Luxury Sedans (6) -->
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes Benz S-Class</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>5K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:15000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW 7 Series</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2022</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>12K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:14000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi A8</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>8K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:14500.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lexus LS 500</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2021</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>20K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:12000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Jaguar XJ</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2020</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>25K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:11000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Panamera</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>10K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:16000.00/Day</a>
+                        </div>
+
+                        <!-- Premium SUVs (6) -->
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Range Rover</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>15K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:18000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW X7</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2022</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>18K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:17000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi Q8</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>12K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:16500.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes GLS</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2022</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>22K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:17500.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Cayenne</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>9K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:19000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lexus LX 600</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>5K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:18500.00/Day</a>
+                        </div>
+
+                        <!-- Electric (6) -->
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Tesla Model S</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>8K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:15000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Taycan</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>6K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:20000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi e-tron GT</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2022</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>15K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:18000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes EQS</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>10K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:19000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lucid Air</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>5K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:21000.00/Day</a>
+                        </div>
+                        <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                            style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; margin: 10px; position: relative;">
+                            <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                            <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW i7</h4>
+                            <div class="d-flex justify-content-center mb-4">
+                                <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>2023</span></div>
+                                <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                        style="color: #007bff !important;"></i><span>7K</span></div>
+                            </div>
+                            <a class="btn btn-primary px-4 blue-touch-effect"
+                                style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                href="">Rs:19500.00/Day</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Luxury Sedan -->
+                <div class="fleet-section" id="luxury-sedan" style="display: none;">
+                    <div class="row">
+                        <!-- We put exactly the same cars but inside grid -->
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes Benz S-Class
+                                </h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>5K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:15000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW 7 Series</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2022</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>12K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:14000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi A8</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>8K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:14500.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lexus LS 500</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2021</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>20K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:12000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Jaguar XJ</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2020</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>25K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:11000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Panamera</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>10K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:16000.00/Day</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Premium SUV -->
+                <div class="fleet-section" id="premium-suv" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Range Rover</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>15K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:18000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW X7</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2022</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>18K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:17000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi Q8</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>12K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:16500.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes GLS</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2022</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>22K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:17500.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Cayenne</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>9K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:19000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lexus LX 600</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>5K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:18500.00/Day</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Electric -->
+                <div class="fleet-section" id="electric" style="display: none;">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-1.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Tesla Model S</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>8K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:15000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-2.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Porsche Taycan</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>6K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:20000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-3.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Audi e-tron GT</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2022</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>15K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:18000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-4.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Mercedes EQS</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>10K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:19000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-5.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">Lucid Air</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>5K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:21000.00/Day</a>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                            <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                                style="border-radius: 15px; overflow: hidden; background: #ffffff; border: 2px solid #e0e0e0; position: relative;">
+                                <img class="img-fluid mb-4 w-100" src="/media/images/car-rent-6.png" alt=""
+                                    style="border-bottom: 3px solid #007bff; object-fit: cover; height: 220px;">
+                                <h4 class="text-uppercase mb-4 text-navy font-weight-bold px-3">BMW i7</h4>
+                                <div class="d-flex justify-content-center mb-4">
+                                    <div class="px-2"><i class="fa fa-car text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>2023</span></div>
+                                    <div class="px-2 border-left border-right"><i class="fa fa-cogs text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>AUTO</span></div>
+                                    <div class="px-2"><i class="fa fa-road text-primary mr-1"
+                                            style="color: #007bff !important;"></i><span>7K</span></div>
+                                </div>
+                                <a class="btn btn-primary px-4 blue-touch-effect"
+                                    style="border-radius: 20px; font-weight: bold; background: #007bff; border-color: #007bff;"
+                                    href="">Rs:19500.00/Day</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const filterBtns = document.querySelectorAll('.filter-btn');
+                    const sections = document.querySelectorAll('.fleet-section');
+
+                    filterBtns.forEach(btn => {
+                        btn.addEventListener('click', function (e) {
+                            e.preventDefault();
+
+                            // Remove active classes
+                            filterBtns.forEach(b => {
+                                b.classList.remove('active');
+                                b.style.backgroundColor = 'transparent';
+                                b.style.color = '#007bff';
+                            });
+
+                            // Add active class
+                            this.classList.add('active');
+                            this.style.backgroundColor = '#007bff';
+                            this.style.color = 'white';
+
+                            const target = this.getAttribute('data-filter');
+
+                            // Hide all sections
+                            sections.forEach(sec => {
+                                sec.style.display = 'none';
+                            });
+                            // Show target section
+                            const activeSec = document.getElementById(target);
+                            if (activeSec) {
+                                activeSec.style.display = 'block';
+                            }
+                        });
+                    });
+                });
+            </script>
+
+            <!-- More images row as requested for better approach for UI -->
+            <div class="row mt-5">
+                <div class="col-12 text-center mb-4">
+                    <h3 class="text-uppercase text-navy font-weight-bold wow fadeInDown">Premium Fleet Gallery</h3>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="glass-card hover-glow-blue-smooth"
+                        style="border-radius: 10px; overflow: hidden; border: 2px solid #007bff;">
+                        <img src="/media/images/gallery-1.jpg" alt="" class="img-fluid w-100"
+                            style="height: 150px; object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="glass-card hover-glow-blue-smooth"
+                        style="border-radius: 10px; overflow: hidden; border: 2px solid #007bff;">
+                        <img src="/media/images/gallery-2.jpg" alt="" class="img-fluid w-100"
+                            style="height: 150px; object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="glass-card hover-glow-blue-smooth"
+                        style="border-radius: 10px; overflow: hidden; border: 2px solid #007bff;">
+                        <img src="/media/images/gallery-3.jpg" alt="" class="img-fluid w-100"
+                            style="height: 150px; object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.4s">
+                    <div class="glass-card hover-glow-blue-smooth"
+                        style="border-radius: 10px; overflow: hidden; border: 2px solid #007bff;">
+                        <img src="/media/images/gallery-4.jpg" alt="" class="img-fluid w-100"
+                            style="height: 150px; object-fit: cover;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Rent A Car End -->
+
+
+    <!-- Banner Start -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row mx-0">
+                <div class="col-lg-6 px-0 mb-4 mb-lg-0 pr-lg-2 wow fadeInLeft" data-wow-delay="0.1s">
+                    <div class="px-5 glass-card hover-glow-gold-smooth d-flex align-items-center justify-content-between"
+                        style="height: 350px; background: linear-gradient(135deg, #000080, #001f3f); border-radius: 15px; overflow: hidden;">
+                        <img class="img-fluid flex-shrink-0 ml-n5 w-50 mr-4 hover-zoom"
+                            src="/media/images/banner-left.png" alt="">
+                        <div class="text-right">
+                            <h3 class="text-uppercase mb-3" style="color: #D4AF37 !important; font-weight: bold;">Want
+                                to be driver?</h3>
+                            <p class="mb-4 text-white">Join our platform as a driver and start earning by providing safe
+                                rides.</p>
+                            <a class="btn btn-primary py-2 px-4 hover-glow-classic gold-touch-effect"
+                                style="border-radius: 20px; font-weight: bold;" href="">Start Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 px-0 pl-lg-2 wow fadeInRight" data-wow-delay="0.1s">
+                    <div class="px-5 glass-card hover-glow-gold-smooth d-flex align-items-center justify-content-between"
+                        style="height: 350px; background: linear-gradient(135deg, #111, #333); border-radius: 15px; overflow: hidden;">
+                        <div class="text-left">
+                            <h3 class="text-uppercase mb-3" style="color: #D4AF37 !important; font-weight: bold;">
+                                Looking for a car?</h3>
+                            <p class="mb-4 text-white">Find and book the perfect car for your journey quickly and
+                                easily.</p>
+                            <a class="btn btn-primary py-2 px-4 hover-glow-classic gold-touch-effect"
+                                style="border-radius: 20px; font-weight: bold;" href="">Start Now</a>
+                        </div>
+                        <img class="img-fluid flex-shrink-0 mr-n5 w-50 ml-4 hover-zoom"
+                            src="/media/images/banner-right.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Banner End -->
+
+
+    <!-- Vendor Start -->
+    <div class="container-fluid py-5 position-relative"
+        style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); border-top: 3px solid #007bff; border-bottom: 3px solid #007bff;">
+        <div class="container py-5">
+            <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-uppercase" style="color: #00d2ff !important; letter-spacing: 3px; font-weight: 700;">Our
+                    Trusted Partners</h6>
+                <h1 class="display-4 text-uppercase text-white font-weight-bold"
+                    style="text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);">Global Network</h1>
+                <div style="width: 80px; height: 3px; background: #00d2ff; margin: 20px auto;"></div>
+            </div>
+            <div class="owl-carousel vendor-carousel wow fadeInUp" data-wow-delay="0.3s">
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-1.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-2.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-3.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-4.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-5.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-6.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-7.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-8.png" alt="" class="img-fluid vendor-img">
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .vendor-item-premium {
+            border-radius: 12px;
+            height: 130px;
+            border: 2px solid transparent;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .vendor-item-premium::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.5) 0%, rgba(0, 210, 255, 0) 70%);
+            border-radius: 50%;
+            transition: all 0.6s ease;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .vendor-item-premium:hover::before,
+        .owl-item.center .vendor-item-premium::before {
+            width: 250px;
+            height: 250px;
+            opacity: 1;
+        }
+
+        .vendor-item-premium:hover,
+        .owl-item.center .vendor-item-premium {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00d2ff;
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.4);
+            background: #ffffff;
+        }
+
+        .vendor-item-premium .vendor-img {
+            transition: all 0.5s ease;
+            filter: grayscale(100%) opacity(0.6);
+            z-index: 2;
+            position: relative;
+            max-height: 85px;
+        }
+
+        .vendor-item-premium:hover .vendor-img,
+        .owl-item.center .vendor-item-premium .vendor-img {
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.15);
+        }
+    </style>
+    <!-- Vendor End -->
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                    India</p>
+                <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+                <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+                <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+                <div class="d-flex justify-content-start">
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
+                        Registration</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                    <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+                <div class="row mx-n1">
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+                <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles
+                    and professional drivers ensure a safe and enjoyable experience.</p>
+                <form method="POST"> {% csrf_token %}
+                    <div class="w-100 mb-3">
+                        <div class="input-group">
+                            <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                                placeholder="Your Email" required>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                    Sign Up
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-dark  py-4 px-sm-3 px-md-5">
+        <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+        <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+    </div>
+    <!-- Required JS for Animations -->
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script>
+        if (typeof WOW !== 'undefined') {
+            new WOW().init();
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+            }
+
+            // Filter interaction
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.style.color = '#007bff';
+                    });
+                    this.classList.add('active');
+                    this.style.color = 'white';
+                });
+            });
+        });
+    </script>
+
+    <!-- Back to Top 
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fa fa-angle-double-up"></i></a>  -->
+
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleBtn = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const body = document.body;
+
+            // Check for saved user preference, if any, on load of the website
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+                updateIcon(savedTheme);
+            }
+
+            toggleBtn.addEventListener("click", () => {
+                const currentTheme = body.getAttribute("data-theme");
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+                body.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                updateIcon(newTheme);
+            });
+
+            function updateIcon(theme) {
+                if (theme === "dark") {
+                    themeIcon.classList.remove("fa-moon");
+                    themeIcon.classList.add("fa-sun");
+                } else {
+                    themeIcon.classList.remove("fa-sun");
+                    themeIcon.classList.add("fa-moon");
+                }
+            }
+        });
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Premium Dynamic Showroom Interactive Controller Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Outgoing Details Link Query Parameter Propagator
+            function updateShowroomDetailsLinks(pickupVal, dropoffVal, dateVal, timeVal) {
+                const rentItems = document.querySelectorAll(".rent-item");
+                rentItems.forEach(item => {
+                    const titleEl = item.querySelector("h4");
+                    const imgEl = item.querySelector("img");
+                    const priceEl = item.querySelector("a.btn");
+                    const spanEls = item.querySelectorAll("span");
+
+                    if (titleEl && priceEl) {
+                        const name = titleEl.textContent.trim();
+                        const priceText = priceEl.textContent.trim();
+                        const priceVal = priceText.replace(/[^\d.]/g, '');
+
+                        const imagePath = imgEl ? imgEl.getAttribute("src") : "";
+                        const imageName = imagePath.substring(imagePath.lastIndexOf('/') + 1);
+
+                        let year = "2023";
+                        let trans = "AUTO";
+                        let mileage = "5K";
+
+                        if (spanEls.length >= 3) {
+                            year = spanEls[0].textContent.trim();
+                            trans = spanEls[1].textContent.trim();
+                            mileage = spanEls[2].textContent.trim();
+                        }
+
+                        let detailUrl = `/detail/?name=${encodeURIComponent(name)}&price=${encodeURIComponent(priceVal)}&image=${encodeURIComponent(imageName)}&year=${encodeURIComponent(year)}&trans=${encodeURIComponent(trans)}&mileage=${encodeURIComponent(mileage)}`;
+
+                        if (pickupVal) detailUrl += `&pickup_location=${encodeURIComponent(pickupVal)}`;
+                        if (dropoffVal) detailUrl += `&drop_location=${encodeURIComponent(dropoffVal)}`;
+                        if (dateVal) detailUrl += `&pickup_date=${encodeURIComponent(dateVal)}`;
+                        if (timeVal) detailUrl += `&pickup_time=${encodeURIComponent(timeVal)}`;
+
+                        priceEl.setAttribute("href", detailUrl);
+                    }
+                });
+            }
+
+            // 2. Parse incoming URL query parameters (if page was loaded with pre-defined search parameters)
+            const urlParams = new URLSearchParams(window.location.search);
+            const pickupParam = urlParams.get('pickup_location');
+            const dropoffParam = urlParams.get('drop_location');
+            const dateParam = urlParams.get('pickup_date');
+            const timeParam = urlParams.get('pickup_time');
+            const typeParam = urlParams.get('car_type');
+
+            if (pickupParam) document.getElementById('pickupLocationInput').value = pickupParam;
+            if (dropoffParam) document.getElementById('dropLocationInput').value = dropoffParam;
+            if (dateParam) document.getElementById('pickupDateSearch').value = dateParam;
+            if (timeParam) document.getElementById('pickupTimeSearch').value = timeParam;
+            if (typeParam) {
+                const selectEl = document.getElementById('carTypeSearch');
+                selectEl.value = typeParam;
+            }
+
+            // Update links initially based on url parameters
+            updateShowroomDetailsLinks(pickupParam, dropoffParam, dateParam, timeParam);
+
+            // 3. Setup Autocomplete suggestions using Nominatim OpenStreetMap API + local landmarks fallback
+            const locationsList = [
+                "Madhapur Showroom, Hyderabad",
+                "Begumpet Airport, Hyderabad",
+                "Secunderabad Railway Station, Hyderabad",
+                "Gachibowli Showroom, Hyderabad",
+                "Jubilee Hills Checkpost, Hyderabad",
+                "Banjara Hills Road No 12, Hyderabad",
+                "Hitec City Cyber Towers, Hyderabad",
+                "Rajiv Gandhi International Airport, Shamshabad",
+                "Charminar Landmark, Hyderabad",
+                "Inorbit Mall, Madhapur, Hyderabad",
+                "DLF Cyber City, Gachibowli, Hyderabad",
+                "Kondapur Main Road, Hyderabad",
+                "Kukatpally Housing Board (KPHB), Hyderabad",
+                "Miyapur Metro Station, Hyderabad",
+                "Nampally Exhibition Grounds, Hyderabad",
+                "Ameerpet Crossroads, Hyderabad",
+                "Tarnaka metro station, Hyderabad",
+                "Uppal Ring Road, Hyderabad",
+                "LB Nagar Ring Road, Hyderabad",
+                "Gachibowli Stadium, Hyderabad",
+                "IKEA Store, Hyderabad",
+                "Forum Sujana Mall, Kukatpally, Hyderabad",
+                "Mehdipatnam Bus Depot, Hyderabad",
+                "Begumpet Metro Station, Hyderabad"
+            ];
+
+            function setupLocationAutocomplete(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                let apiTimeout = null;
+
+                if (!input || !dropdown) return;
+
+                input.addEventListener('input', () => {
+                    clearTimeout(apiTimeout);
+                    const query = input.value.trim().toLowerCase();
+                    dropdown.innerHTML = '';
+
+                    if (query.length < 2) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+
+                    // A. Search local Hyderabad landmark matches
+                    const matches = locationsList.filter(loc => loc.toLowerCase().includes(query));
+                    if (matches.length > 0) {
+                        renderSuggestions(matches, input, dropdown);
+                    }
+
+                    // B. Query Nominatim OpenStreetMap API with 350ms debounce
+                    apiTimeout = setTimeout(async () => {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
+                        try {
+                            const res = await fetch(url);
+                            const data = await res.json();
+                            if (data && data.length > 0) {
+                                const apiMatches = data.map(item => item.display_name);
+                                const combinedMatches = [...new Set([...matches, ...apiMatches])].slice(0, 7);
+                                renderSuggestions(combinedMatches, input, dropdown);
+                            }
+                        } catch (e) {
+                            console.error("Real-time places search error: ", e);
+                        }
+                    }, 350);
+                });
+
+                // Close suggestions dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target !== input && e.target !== dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            function renderSuggestions(list, input, dropdown) {
+                dropdown.innerHTML = '';
+                list.forEach(placeName => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>${placeName}</span>`;
+                    div.addEventListener('click', () => {
+                        input.value = placeName;
+                        dropdown.style.display = 'none';
+                    });
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            }
+
+            setupLocationAutocomplete('pickupLocationInput', 'pickupLocationSuggestions');
+            setupLocationAutocomplete('dropLocationInput', 'dropLocationSuggestions');
+
+            // 4. Handle Showroom search trigger and animated availability check
+            const searchBtn = document.getElementById("showroomSearchBtn");
+            const loaderOverlay = document.getElementById("showroomSearchLoader");
+            const loaderMessage = document.getElementById("loaderMessage");
+            const loaderProgressBar = document.getElementById("loaderProgressBar");
+
+            if (searchBtn && loaderOverlay) {
+                searchBtn.addEventListener("click", () => {
+                    const pickupVal = document.getElementById("pickupLocationInput").value.trim();
+                    const dropoffVal = document.getElementById("dropLocationInput").value.trim();
+                    const dateVal = document.getElementById("pickupDateSearch").value.trim();
+                    const timeVal = document.getElementById("pickupTimeSearch").value.trim();
+                    const carTypeVal = document.getElementById("carTypeSearch").value;
+
+                    // Trigger animated overlay search
+                    loaderOverlay.style.display = "flex";
+                    loaderProgressBar.style.width = "0%";
+
+                    const progressSteps = [
+                        { pct: 15, text: "Connecting to real-time inventory engine..." },
+                        { pct: 45, text: `Locating available showroom hubs near "${pickupVal || 'Hyderabad'}"...` },
+                        { pct: 75, text: `Scanning vehicle schedule databases for ${carTypeVal ? carTypeVal.replace('-', ' ') : 'premium cars'}...` },
+                        { pct: 95, text: "Finalizing live showroom pricing..." },
+                        { pct: 100, text: "Done!" }
+                    ];
+
+                    let currentStep = 0;
+                    const interval = setInterval(() => {
+                        if (currentStep < progressSteps.length) {
+                            const step = progressSteps[currentStep];
+                            loaderProgressBar.style.width = `${step.pct}%`;
+                            loaderMessage.textContent = step.text;
+                            currentStep++;
+                        } else {
+                            clearInterval(interval);
+
+                            // Hide loader overlay
+                            loaderOverlay.style.display = "none";
+
+                            // Propagate these inputs to all showroom detail buttons
+                            updateShowroomDetailsLinks(pickupVal, dropoffVal, dateVal, timeVal);
+
+                            // Smooth scroll directly to the fleet container
+                            const fleetSection = document.getElementById("fleet-containers");
+                            if (fleetSection) {
+                                fleetSection.scrollIntoView({ behavior: "smooth" });
+                            }
+
+                            // Programmatically click the matching category filter tab
+                            if (carTypeVal) {
+                                const filterBtn = document.querySelector(`.filter-btn[data-filter="${carTypeVal}"]`);
+                                if (filterBtn) {
+                                    filterBtn.click();
+                                }
+                            } else {
+                                const allBtn = document.querySelector(`.filter-btn[data-filter="all-vehicles"]`);
+                                if (allBtn) {
+                                    allBtn.click();
+                                }
+                            }
+                        }
+                    }, 300);
+                });
+            }
+
+            // Auto-trigger search on load if page has query parameters
+            if (pickupParam || dropoffParam || dateParam || timeParam || typeParam) {
+                setTimeout(() => {
+                    const sBtn = document.getElementById("showroomSearchBtn");
+                    if (sBtn) sBtn.click();
+                }, 300);
+            }
+        });
+    </script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main-1.js' %}"></script>
+</body>
+
+</html>

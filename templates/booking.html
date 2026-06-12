@@ -1,0 +1,1604 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Car Booking</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/cars.css'%}">
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Professional Navbar CSS overrides to match showroom page */
+        .premium-navbar {
+            background-color: #65a7e9 !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border-color: #0666af !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        body {
+            padding-top: 60px !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem !important;
+            margin-right: 8px !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* High-end sliding underline and capsule hover effect */
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            border-radius: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+            position: relative !important;
+            overflow: hidden;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+
+        .premium-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37 !important; /* Gold highlight accent for premium touch */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .premium-navbar .nav-link:hover::after,
+        .premium-navbar .nav-item.active .nav-link::after,
+        .premium-navbar .nav-item.show .nav-link::after {
+            width: 80%; /* Expands smoothly from center */
+        }
+
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-item.show .nav-link {
+            background-color: rgba(255, 255, 255, 0.12) !important; /* Semi-transparent white capsule highlight */
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-navbar .nav-item.active .nav-link {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        .premium-navbar .nav-link i {
+            font-size: 14px !important;
+            margin-right: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Sophisticated Dropdown Styling */
+        .premium-dropdown {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0px !important;
+            padding: 6px 0 !important;
+            overflow: visible !important;
+            animation: fadeInDropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dropdown::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -15px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 15px !important;
+            background: transparent !important;
+            z-index: -1 !important;
+        }
+
+        @keyframes fadeInDropdown {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .premium-dropdown .dropdown-item {
+            color: #2c3e50 !important;
+            padding: 8px 18px !important;
+            margin: 2px 6px !important;
+            width: calc(100% - 12px) !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            transition: all 0.25s ease !important;
+            border: none !important;
+            font-family: 'Rubik', sans-serif !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #65a7e9;
+            transition: color 0.25s ease;
+        }
+
+        .premium-dropdown .dropdown-item:hover {
+            background-color: #65a7e9 !important;
+            color: #ffffff !important;
+        }
+
+        .premium-dropdown .dropdown-item:hover i {
+            color: #ffffff !important;
+        }
+
+        /* Explicit Outline Removal on Hover & Active States */
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-link:focus,
+        .premium-navbar .nav-link:active,
+        .premium-navbar .dropdown-toggle:hover,
+        .premium-navbar .dropdown-toggle:focus,
+        .premium-navbar .dropdown-toggle:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+
+        .premium-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            margin: 10px 0 !important;
+            height: 40px !important;
+        }
+
+        .premium-navbar .navbar-toggler .fa-bars {
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991px) {
+            .premium-navbar .navbar-collapse {
+                background-color: #01579b !important;
+                position: absolute !important;
+                top: 60px !important;
+                left: 0 !important;
+                width: 100% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .premium-navbar .container-fluid {
+                height: auto !important;
+                min-height: 60px !important;
+            }
+
+            .navbar-nav {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .premium-navbar .nav-link {
+                height: 50px !important;
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+
+            .premium-navbar .nav-item {
+                width: 100% !important;
+            }
+
+            .premium-dropdown {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+        }
+
+        /* Suggestions Autocomplete Styling */
+        .position-relative {
+            position: relative;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 5px;
+            display: none;
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 6px;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #333;
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            color: #007bff;
+            padding-left: 20px;
+        }
+
+        .suggestion-item i {
+            color: #007bff;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start 
+    <div class="container-fluid bg-dark py-3 px-lg-5 d-none d-lg-block">
+        <div class="row">
+            <div class="col-md-6 text-center text-lg-left mb-2 mb-lg-0">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-body pr-3" href=""><i class="fa fa-phone-alt mr-2"></i>+919912459754</a>
+                    <span class="text-body">|</span>
+                    <a class="text-body px-3" href=""><i class="fa fa-envelope mr-2"></i>srikanthpatel@gmail.com</a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-body px-3" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-body pl-3" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+     Topbar End -->
+
+
+    <!-- Professional Navbar Start -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid">
+            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
+                <i class="fas fa-car-side mr-2"></i>RideShare
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-bars"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
+                            Showroom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
+                            Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>
+                            Drive with Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
+                                class="fas fa-shield-alt mr-1"></i>
+                            Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
+                            Reports</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
+                            <a class="dropdown-item" href="{% url 'login' %}"><i
+                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
+                            <a class="dropdown-item" href="{% url 'register' %}"><i
+                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Professional Navbar End -->
+
+
+    <!-- Live Showroom Search Loader Overlay -->
+    <div id="showroomSearchLoader"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 31, 63, 0.95); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+        <div class="loader-box text-center p-5 rounded-lg shadow-2xl"
+            style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); max-width: 450px; width: 90%; border-radius: 15px;">
+            <div class="mb-4" style="position: relative; display: inline-block;">
+                <div class="spinner-border text-primary" role="status"
+                    style="width: 4rem; height: 4rem; border-width: 0.35em;">
+                    <span class="sr-only">Scanning...</span>
+                </div>
+                <i class="fas fa-search-location text-white"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem;"></i>
+            </div>
+            <h4 class="text-white text-uppercase font-weight-bold mb-3" style="letter-spacing: 2px;">Checking Fleet
+                Availability</h4>
+            <p id="loaderMessage" class="text-muted mb-0" style="font-size: 0.95rem; min-height: 48px;">Connecting to
+                fleet database...</p>
+            <div class="progress mt-4"
+                style="height: 6px; background-color: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
+                    style="width: 0%;" id="loaderProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-Width Premium Search Start -->
+    <div class="container-fluid p-0 m-0"
+        style="background: linear-gradient(135deg, #001f3f, #000080); border-bottom: 2px solid #D4AF37; position: relative; z-index: 1020;">
+        <div class="glass-card shadow-sm w-100"
+            style="border-radius: 0; padding: 25px 50px; background: rgba(255, 255, 255, 0.05); border: none; backdrop-filter: blur(10px);">
+            <div class="row g-2 align-items-end justify-content-center">
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-marker-alt mr-2" style="color: #D4AF37;"></i>Pickup Location</label>
+                    <input type="text" id="pickupLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="pickupLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-pin mr-2" style="color: #D4AF37;"></i>Drop-off Place</label>
+                    <input type="text" id="dropLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="dropLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-calendar-alt mr-2" style="color: #D4AF37;"></i>Pickup Date</label>
+                    <div class="date" id="dateSearch" data-target-input="nearest">
+                        <input type="text" id="pickupDateSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Date"
+                            data-target="#dateSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-clock mr-2"
+                            style="color: #D4AF37;"></i>Pickup Time</label>
+                    <div class="time" id="timeSearch" data-target-input="nearest">
+                        <input type="text" id="pickupTimeSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Time"
+                            data-target="#timeSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-car mr-2"
+                            style="color: #D4AF37;"></i>Car Type</label>
+                    <select id="carTypeSearch" class="custom-select px-4 shadow-sm"
+                        style="height: 45px; border-radius: 8px; border: none;">
+                        <option value="" selected>Select A Car</option>
+                        <option value="luxury-sedan">Luxury Sedan</option>
+                        <option value="premium-suv">Premium SUV</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <button id="showroomSearchBtn"
+                        class="btn btn-primary btn-block hover-glow-classic gold-touch-effect" type="button"
+                        style="height: 45px; border-radius: 8px; font-weight: bold; font-size: 1.05rem;">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full-Width Premium Search End -->
+
+
+    <!-- Premium Page Header Start -->
+    <div class="container-fluid page-header position-relative"
+        style="background: linear-gradient(rgba(0, 31, 63, 0.85), rgba(0, 123, 255, 0.4)), url('/media/images/gallery-3.jpg') center center no-repeat; background-size: cover; padding: 120px 0; border-bottom: 4px solid #007bff; box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);">
+        <div class="container text-center">
+            <h1 class="display-3 text-uppercase text-white mb-3 wow fadeInDown" data-wow-delay="0.1s"
+                style="text-shadow: 0 0 25px rgba(0, 123, 255, 0.8); font-weight: 700;">Car Booking</h1>
+            <div class="d-inline-flex text-white wow fadeInUp" data-wow-delay="0.3s">
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue" href="http://127.0.0.1:8000/"><i
+                            class="fas fa-home mr-2"></i>Home</a></h6>
+                <h6 class="text-body m-0 px-3" style="color: #007bff !important; font-weight: bold;">/</h6>
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue"
+                        href="http://127.0.0.1:8000/booking/">Car Booking</a></h6>
+            </div>
+        </div>
+    </div>
+    <!-- Premium Page Header End -->
+
+
+    <!-- Detail Start -->
+    <div class="container-fluid pt-5">
+        <div class="container pt-5 pb-3">
+            <h1 class="display-4 text-uppercase mb-4 text-navy font-weight-bold">Confirm Your Selection</h1>
+            <div class="glass-card p-4 hover-glow-blue-smooth mb-5 wow fadeInUp" data-wow-delay="0.1s"
+                style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <div class="row align-items-center">
+                    <div class="col-lg-5 mb-4 mb-lg-0 text-center">
+                        <img class="img-fluid rounded hover-zoom shadow" src="/media/images/{{ car_image }}"
+                            alt="{{ car_name }}" style="max-height: 250px; object-fit: contain;">
+                    </div>
+                    <div class="col-lg-7">
+                        <h2 class="text-navy font-weight-bold mb-2">{{ car_name }}</h2>
+                        <h4 class="text-primary font-weight-bold mb-3">Base Rate: Rs. <span id="baseRateDisplay">{{
+                                car_price }}</span>/Day</h4>
+                        <div class="d-flex mb-3 align-items-center">
+                            <h6 class="mr-2 mb-0">Rating:</h6>
+                            <div class="d-flex align-items-center mb-0" style="color: #FFD700;">
+                                <small class="fa fa-star mr-1"></small>
+                                <small class="fa fa-star mr-1"></small>
+                                <small class="fa fa-star mr-1"></small>
+                                <small class="fa fa-star mr-1"></small>
+                                <small class="fa fa-star-half-alt mr-1"></small>
+                                <span class="text-muted ml-2" style="font-size: 0.9rem;">(4.9/5 based on 250+
+                                    reviews)</span>
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0" style="line-height: 1.6;">You have selected this vehicle for rent.
+                            Standard rates include comprehensive rental insurance, clean upholstery, fully active dual
+                            AC, and 24/7 client support assistance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail End -->
+
+    <!-- Car Booking Start -->
+    <div class="container-fluid pb-5">
+        <div class="container">
+            <form action="{% url 'booking' %}" method="POST" id="bookingForm">
+                {% csrf_token %}
+                <!-- Hidden inputs to carry car context -->
+                <input type="hidden" name="car_name" value="{{ car_name }}">
+                <input type="hidden" name="car_price" value="{{ car_price }}">
+                <input type="hidden" name="car_image" value="{{ car_image }}">
+
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="glass-card p-5 mb-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.2s"
+                            style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                            <h2 class="mb-4 text-navy font-weight-bold"><i
+                                    class="fas fa-user mr-2 text-primary"></i>Personal Detail</h2>
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <input type="text" name="first_name"
+                                        class="form-control p-4 shadow-sm border-0 rounded-lg" placeholder="First Name"
+                                        required="required">
+                                </div>
+                                <div class="col-6 form-group">
+                                    <input type="text" name="last_name"
+                                        class="form-control p-4 shadow-sm border-0 rounded-lg" placeholder="Last Name"
+                                        required="required">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <input type="email" name="email"
+                                        class="form-control p-4 shadow-sm border-0 rounded-lg" placeholder="Your Email"
+                                        required="required">
+                                </div>
+                                <div class="col-6 form-group">
+                                    <input type="text" name="mobile_number"
+                                        class="form-control p-4 shadow-sm border-0 rounded-lg"
+                                        placeholder="Mobile Number" required="required">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5 mb-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.3s"
+                            style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                            <h2 class="mb-4 text-navy font-weight-bold"><i
+                                    class="fas fa-calendar-check mr-2 text-primary"></i>Booking Detail</h2>
+                            <div class="row">
+                                <div class="col-6 form-group position-relative">
+                                    <input type="text" id="checkoutPickupLocationInput" name="pickup_location"
+                                        class="form-control px-4 shadow-sm border-0 rounded-lg" style="height: 50px;"
+                                        placeholder="Type pickup location..." autocomplete="off" required>
+                                    <div id="checkoutPickupLocationSuggestions" class="suggestions-dropdown"></div>
+                                </div>
+                                <div class="col-6 form-group position-relative">
+                                    <input type="text" id="checkoutDropLocationInput" name="drop_location"
+                                        class="form-control px-4 shadow-sm border-0 rounded-lg" style="height: 50px;"
+                                        placeholder="Type destination location..." autocomplete="off" required>
+                                    <div id="checkoutDropLocationSuggestions" class="suggestions-dropdown"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Pickup
+                                        Date</label>
+                                    <input type="date" name="pickup_date" id="pickup_date"
+                                        class="form-control px-4 shadow-sm border-0 rounded-lg" required
+                                        style="height: 50px;">
+                                </div>
+                                <div class="col-6 form-group">
+                                    <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Drop-off
+                                        Date</label>
+                                    <input type="date" name="drop_date" id="drop_date"
+                                        class="form-control px-4 shadow-sm border-0 rounded-lg" required
+                                        style="height: 50px;">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Pickup
+                                        Time</label>
+                                    <input type="time" name="pickup_time"
+                                        class="form-control px-4 shadow-sm border-0 rounded-lg" required
+                                        style="height: 50px;">
+                                </div>
+                                <div class="col-6 form-group">
+                                    <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Select
+                                        Adults</label>
+                                    <select class="custom-select px-4 shadow-sm border-0 rounded-lg" name="adults"
+                                        style="height: 50px;">
+                                        <option value="1" selected>1 Adult</option>
+                                        <option value="2">2 Adults</option>
+                                        <option value="3">3 Adults</option>
+                                        <option value="4">4 Adults</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 form-group">
+                                    <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Select
+                                        Children</label>
+                                    <select class="custom-select px-4 shadow-sm border-0 rounded-lg" name="children"
+                                        style="height: 50px;">
+                                        <option value="0" selected>0 Children</option>
+                                        <option value="1">1 Child</option>
+                                        <option value="2">2 Children</option>
+                                        <option value="3">3 Children</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="special_request"
+                                    class="form-control py-3 px-4 shadow-sm border-0 rounded-lg" rows="3"
+                                    placeholder="Special Request"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <!-- Extra Add-ons Section -->
+                        <div class="glass-card p-5 mb-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.4s"
+                            style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                            <h2 class="text-navy font-weight-bold mb-4"><i
+                                    class="fas fa-plus-circle text-primary mr-2"></i>Extra Add-ons</h2>
+                            <div class="form-group mb-3">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" name="addon_child_seat" class="custom-control-input"
+                                        id="addon1">
+                                    <label class="custom-control-label font-weight-bold text-muted" for="addon1">Child
+                                        Seat (+Rs. 1,500/day)</label>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" name="addon_additional_driver" class="custom-control-input"
+                                        id="addon2">
+                                    <label class="custom-control-label font-weight-bold text-muted"
+                                        for="addon2">Additional Driver (+Rs. 2,500/day)</label>
+                                </div>
+                            </div>
+                            <div class="form-group mb-3">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" name="addon_premium_insurance" class="custom-control-input"
+                                        id="addon3">
+                                    <label class="custom-control-label font-weight-bold text-muted" for="addon3">Premium
+                                        Insurance (+Rs. 5,000/day)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Checkout Summary Card -->
+                        <div class="glass-card p-5 mb-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.45s"
+                            style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                            <h2 class="text-navy font-weight-bold mb-4"><i
+                                    class="fas fa-calculator text-primary mr-2"></i>Fare Summary</h2>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted font-weight-bold">Daily Rental:</span>
+                                <span class="font-weight-bold text-navy">Rs. <span id="summaryDailyBase">{{ car_price
+                                        }}</span></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted font-weight-bold">Rental Duration:</span>
+                                <span class="font-weight-bold text-navy"><span id="summaryDays">1</span> Day(s)</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted font-weight-bold">Add-ons Cost:</span>
+                                <span class="font-weight-bold text-navy">Rs. <span
+                                        id="summaryAddons">0</span>/Day</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h4 class="text-navy font-weight-bold mb-0">Total Estimated:</h4>
+                                <h3 class="text-primary font-weight-bold mb-0">Rs. <span id="summaryTotal">{{ car_price
+                                        }}</span></h3>
+                            </div>
+                        </div>
+
+                        <!-- Payment & Reservation -->
+                        <div class="glass-card p-5 mb-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.5s"
+                            style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                            <h2 class="text-navy font-weight-bold mb-4"><i
+                                    class="fas fa-credit-card text-primary mr-2"></i>Payment</h2>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="creditcard"
+                                        value="creditcard" checked>
+                                    <label class="custom-control-label font-weight-bold" for="creditcard"><i
+                                            class="fas fa-credit-card mr-2 text-primary"></i>Credit/Debit Card</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="paypal"
+                                        value="paypal">
+                                    <label class="custom-control-label font-weight-bold" for="paypal"><i
+                                            class="fab fa-paypal mr-2 text-primary"></i>PayPal</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="banktransfer"
+                                        value="banktransfer">
+                                    <label class="custom-control-label font-weight-bold" for="banktransfer"><i
+                                            class="fas fa-university mr-2 text-primary"></i>Bank Transfer</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="pay_after_ride"
+                                        value="pay_after_ride">
+                                    <label class="custom-control-label font-weight-bold" for="pay_after_ride"><i
+                                            class="fas fa-flag-checkered mr-2 text-success"></i>Pay on Completion of
+                                        Ride</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment"
+                                        id="pay_showroom_cash" value="pay_showroom_cash">
+                                    <label class="custom-control-label font-weight-bold" for="pay_showroom_cash"><i
+                                            class="fas fa-money-bill-wave mr-2 text-success"></i>Pay at Showroom
+                                        (Cash/UPI)</label>
+                                </div>
+                            </div>
+                            <div class="form-group mb-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="netbanking_upi"
+                                        value="netbanking_upi">
+                                    <label class="custom-control-label font-weight-bold" for="netbanking_upi"><i
+                                            class="fas fa-mobile-alt mr-2 text-primary"></i>Net Banking / UPI
+                                        Transfer</label>
+                                </div>
+                            </div>
+
+                            <!-- Credit Card Details Form Overlay -->
+                            <div id="creditCardForm" class="p-3 mb-4 rounded shadow-sm"
+                                style="background: linear-gradient(135deg, #1e3c72, #2a5298); border: 1px solid rgba(255,255,255,0.15); display: block;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="text-white font-weight-bold" style="font-size: 0.9rem;"><i
+                                            class="fas fa-sim-card mr-2 text-warning"></i>Secured Card Payment</span>
+                                    <div class="text-white" style="font-size: 1.2rem;">
+                                        <i class="fab fa-cc-visa mr-1"></i>
+                                        <i class="fab fa-cc-mastercard"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="text-white-50 font-weight-bold mb-1" style="font-size: 0.75rem;">CARD
+                                        NUMBER</label>
+                                    <input type="text" name="card_number" id="cardNumInput"
+                                        class="form-control bg-transparent text-white border-bottom shadow-none rounded-0 py-1"
+                                        style="border: none !important; border-bottom: 2px solid rgba(255,255,255,0.3) !important; color: white !important; font-size: 0.95rem; letter-spacing: 2px;"
+                                        placeholder="•••• •••• •••• ••••" maxlength="19">
+                                </div>
+                                <div class="row">
+                                    <div class="col-6 form-group mb-0">
+                                        <label class="text-white-50 font-weight-bold mb-1"
+                                            style="font-size: 0.75rem;">EXPIRY DATE</label>
+                                        <input type="text" name="card_expiry" id="cardExpiryInput"
+                                            class="form-control bg-transparent text-white border-bottom shadow-none rounded-0 py-1"
+                                            style="border: none !important; border-bottom: 2px solid rgba(255,255,255,0.3) !important; color: white !important; font-size: 0.95rem;"
+                                            placeholder="MM/YY" maxlength="5">
+                                    </div>
+                                    <div class="col-6 form-group mb-0">
+                                        <label class="text-white-50 font-weight-bold mb-1"
+                                            style="font-size: 0.75rem;">CVV</label>
+                                        <input type="password" name="card_cvv" id="cardCvvInput"
+                                            class="form-control bg-transparent text-white border-bottom shadow-none rounded-0 py-1"
+                                            style="border: none !important; border-bottom: 2px solid rgba(255,255,255,0.3) !important; color: white !important; font-size: 0.95rem; letter-spacing: 2px;"
+                                            placeholder="•••" maxlength="3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit"
+                                class="btn btn-block btn-primary py-3 rounded-lg hover-glow-classic gold-touch-effect font-weight-bold">Reserve
+                                Now</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Vendor Start -->
+    <div class="container-fluid py-5 position-relative"
+        style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); border-top: 3px solid #007bff; border-bottom: 3px solid #007bff;">
+        <div class="container py-5">
+            <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-uppercase" style="color: #00d2ff !important; letter-spacing: 3px; font-weight: 700;">Our
+                    Trusted Partners
+                </h6>
+                <h1 class="display-4 text-uppercase text-white font-weight-bold"
+                    style="text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);">Global Network</h1>
+                <div style="width: 80px; height: 3px; background: #00d2ff; margin: 20px auto;"></div>
+            </div>
+            <div class="owl-carousel vendor-carousel wow fadeInUp" data-wow-delay="0.3s">
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-1.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-2.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-3.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-4.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-5.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-6.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-7.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-8.png" alt="" class="img-fluid vendor-img">
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <style>
+        .vendor-item-premium {
+            border-radius: 12px;
+            height: 130px;
+            border: 2px solid transparent;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .vendor-item-premium::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.5) 0%, rgba(0, 210, 255, 0) 70%);
+            border-radius: 50%;
+            transition: all 0.6s ease;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .vendor-item-premium:hover::before,
+        .owl-item.center .vendor-item-premium::before {
+            width: 250px;
+            height: 250px;
+            opacity: 1;
+        }
+
+        .vendor-item-premium:hover,
+        .owl-item.center .vendor-item-premium {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00d2ff;
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.4);
+            background: #ffffff;
+        }
+
+        .vendor-item-premium .vendor-img {
+            transition: all 0.5s ease;
+            filter: grayscale(100%) opacity(0.6);
+            z-index: 2;
+            position: relative;
+            max-height: 85px;
+        }
+
+        .vendor-item-premium:hover .vendor-img,
+        .owl-item.center .vendor-item-premium .vendor-img {
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.15);
+        }
+
+        /* Animated form inputs for Booking Section */
+        .form-control,
+        .custom-select {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent !important;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus,
+        .custom-select:focus {
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3) !important;
+            border-color: #007bff !important;
+            transform: translateY(-3px);
+            background-color: #ffffff;
+        }
+
+        .form-control:hover,
+        .custom-select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Checkbox & Radio styling improvements */
+        .custom-control-label::before {
+            transition: all 0.3s ease;
+        }
+
+        .custom-control:hover .custom-control-label::before {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+    </style>
+    <!-- Vendor End -->
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad,
+                    Telangana,
+                    India</p>
+                <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+                <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+                <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+                <div class="d-flex justify-content-start">
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term &
+                        Conditions</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
+                        Registration</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate
+                        Programme</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return &
+                        Refund</a>
+                    <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+                <div class="row mx-n1">
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+                <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained
+                    vehicles
+                    and professional drivers ensure a safe and enjoyable experience.</p>
+                <form method="POST"> {% csrf_token %}
+                    <div class="w-100 mb-3">
+                        <div class="input-group">
+                            <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                                placeholder="Your Email" required>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                    Sign Up
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="container-fluid bg-dark  py-4 px-sm-3 px-md-5">
+        <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+        <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+    </div>
+    <!-- Required JS for Animations -->
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script>
+        if (typeof WOW !== 'undefined') {
+            new WOW().init();
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+            }
+        });
+    </script>
+
+    <!-- Back to Top 
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fa fa-angle-double-up"></i></a>
+  
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleBtn = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const body = document.body;
+
+            // Check for saved user preference, if any, on load of the website
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+                updateIcon(savedTheme);
+            }
+
+            toggleBtn.addEventListener("click", () => {
+                const currentTheme = body.getAttribute("data-theme");
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+                body.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                updateIcon(newTheme);
+            });
+
+            function updateIcon(theme) {
+                if (theme === "dark") {
+                    themeIcon.classList.remove("fa-moon");
+                    themeIcon.classList.add("fa-sun");
+                } else {
+                    themeIcon.classList.remove("fa-sun");
+                    themeIcon.classList.add("fa-moon");
+                }
+            }
+        });
+    </script>
+
+    <!-- Calculations and Payment Form Toggles -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const pickupDateInput = document.getElementById("pickup_date");
+            const dropDateInput = document.getElementById("drop_date");
+            const addon1 = document.getElementById("addon1");
+            const addon2 = document.getElementById("addon2");
+            const addon3 = document.getElementById("addon3");
+
+            const summaryDailyBase = document.getElementById("summaryDailyBase");
+            const summaryDays = document.getElementById("summaryDays");
+            const summaryAddons = document.getElementById("summaryAddons");
+            const summaryTotal = document.getElementById("summaryTotal");
+
+            const payCreditCard = document.getElementById("creditcard");
+            const creditCardForm = document.getElementById("creditCardForm");
+
+            const cardNumInput = document.getElementById("cardNumInput");
+            const cardExpiryInput = document.getElementById("cardExpiryInput");
+            const cardCvvInput = document.getElementById("cardCvvInput");
+
+            // Base rate from context
+            const baseRate = parseFloat("{{ car_price }}") || 15000.0;
+
+            // Pre-fill fields from URL query parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const pickupLocationParam = urlParams.get('pickup_location');
+            const dropLocationParam = urlParams.get('drop_location');
+            const pickupDateParam = urlParams.get('pickup_date');
+            const pickupTimeParam = urlParams.get('pickup_time');
+
+            if (pickupLocationParam) {
+                const pickupInput = document.getElementById('checkoutPickupLocationInput');
+                if (pickupInput) {
+                    pickupInput.value = pickupLocationParam;
+                }
+            }
+            if (dropLocationParam) {
+                const dropInput = document.getElementById('checkoutDropLocationInput');
+                if (dropInput) {
+                    dropInput.value = dropLocationParam;
+                }
+            }
+            if (pickupDateParam && pickupDateInput) {
+                pickupDateInput.value = pickupDateParam;
+                if (dropDateInput) {
+                    dropDateInput.min = pickupDateParam;
+                }
+            }
+            if (pickupTimeParam) {
+                const pickupTimeInput = document.querySelector('input[name="pickup_time"]');
+                if (pickupTimeInput) {
+                    pickupTimeInput.value = pickupTimeParam;
+                }
+            }
+
+            function calculateTotals() {
+                let days = 1;
+                const pDateVal = pickupDateInput.value;
+                const dDateVal = dropDateInput.value;
+
+                if (pDateVal && dDateVal) {
+                    const pDate = new Date(pDateVal);
+                    const dDate = new Date(dDateVal);
+                    const timeDiff = dDate.getTime() - pDate.getTime();
+                    if (timeDiff > 0) {
+                        days = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                    }
+                }
+
+                let addonRate = 0;
+                if (addon1 && addon1.checked) addonRate += 1500;
+                if (addon2 && addon2.checked) addonRate += 2500;
+                if (addon3 && addon3.checked) addonRate += 5000;
+
+                const dailyTotal = baseRate + addonRate;
+                const totalEstimated = days * dailyTotal;
+
+                if (summaryDays) summaryDays.textContent = days;
+                if (summaryAddons) summaryAddons.textContent = addonRate.toLocaleString('en-IN');
+                if (summaryTotal) summaryTotal.textContent = totalEstimated.toLocaleString('en-IN');
+            }
+
+            // Set today as minimum pickup date
+            const today = new Date().toISOString().split("T")[0];
+            if (pickupDateInput) {
+                pickupDateInput.min = today;
+                pickupDateInput.addEventListener("change", () => {
+                    if (dropDateInput) {
+                        dropDateInput.min = pickupDateInput.value;
+                    }
+                    calculateTotals();
+                });
+            }
+
+            if (dropDateInput) {
+                dropDateInput.addEventListener("change", calculateTotals);
+            }
+
+            [addon1, addon2, addon3].forEach(addon => {
+                if (addon) addon.addEventListener("change", calculateTotals);
+            });
+
+            // Payment toggles
+            function togglePaymentForm() {
+                if (payCreditCard && payCreditCard.checked) {
+                    creditCardForm.style.display = "block";
+                    cardNumInput.required = true;
+                    cardExpiryInput.required = true;
+                    cardCvvInput.required = true;
+                } else {
+                    creditCardForm.style.display = "none";
+                    cardNumInput.required = false;
+                    cardExpiryInput.required = false;
+                    cardCvvInput.required = false;
+                }
+            }
+
+            document.querySelectorAll('input[name="payment"]').forEach(radio => {
+                radio.addEventListener("change", togglePaymentForm);
+            });
+
+            // Credit Card auto-formatting
+            if (cardNumInput) {
+                cardNumInput.addEventListener("input", (e) => {
+                    let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                    let matches = value.match(/\d{4,16}/g);
+                    let match = matches && matches[0] || '';
+                    let parts = [];
+
+                    for (let i = 0, len = match.length; i < len; i += 4) {
+                        parts.push(match.substring(i, i + 4));
+                    }
+
+                    if (parts.length > 0) {
+                        e.target.value = parts.join(' ');
+                    } else {
+                        e.target.value = value;
+                    }
+                });
+            }
+
+            if (cardExpiryInput) {
+                cardExpiryInput.addEventListener("input", (e) => {
+                    let value = e.target.value.replace(/[^0-9]/g, '');
+                    if (value.length >= 2) {
+                        e.target.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                    } else {
+                        e.target.value = value;
+                    }
+                });
+            }
+
+            if (cardCvvInput) {
+                cardCvvInput.addEventListener("input", (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                });
+            }
+
+            // Form Submit validation to make sure dates are valid
+            const bookingForm = document.getElementById("bookingForm");
+            if (bookingForm) {
+                bookingForm.addEventListener("submit", (e) => {
+                    const pDateVal = pickupDateInput.value;
+                    const dDateVal = dropDateInput.value;
+                    if (pDateVal && dDateVal) {
+                        const pDate = new Date(pDateVal);
+                        const dDate = new Date(dDateVal);
+                        if (dDate < pDate) {
+                            alert("Drop-off date cannot be earlier than pickup date.");
+                            e.preventDefault();
+                        }
+                    }
+                });
+            }
+
+            // Run initial calculations
+            calculateTotals();
+            togglePaymentForm();
+
+            // Setup Autocomplete suggestions (with rich local list + Nominatim API fallback)
+            const locationsList = [
+                "Madhapur Showroom, Hyderabad",
+                "Begumpet Airport, Hyderabad",
+                "Secunderabad Railway Station, Hyderabad",
+                "Gachibowli Showroom, Hyderabad",
+                "Jubilee Hills Checkpost, Hyderabad",
+                "Banjara Hills Road No 12, Hyderabad",
+                "Hitec City Cyber Towers, Hyderabad",
+                "Rajiv Gandhi International Airport, Shamshabad",
+                "Charminar Landmark, Hyderabad",
+                "Inorbit Mall, Madhapur, Hyderabad",
+                "DLF Cyber City, Gachibowli, Hyderabad",
+                "Kondapur Main Road, Hyderabad",
+                "Kukatpally Housing Board (KPHB), Hyderabad",
+                "Miyapur Metro Station, Hyderabad",
+                "Nampally Exhibition Grounds, Hyderabad",
+                "Ameerpet Crossroads, Hyderabad",
+                "Tarnaka metro station, Hyderabad",
+                "Uppal Ring Road, Hyderabad",
+                "LB Nagar Ring Road, Hyderabad",
+                "Gachibowli Stadium, Hyderabad",
+                "IKEA Store, Hyderabad",
+                "Forum Sujana Mall, Kukatpally, Hyderabad",
+                "Mehdipatnam Bus Depot, Hyderabad",
+                "Begumpet Metro Station, Hyderabad"
+            ];
+
+            function setupLocationAutocomplete(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                let apiTimeout = null;
+
+                if (!input || !dropdown) return;
+
+                input.addEventListener('input', () => {
+                    clearTimeout(apiTimeout);
+                    const query = input.value.trim().toLowerCase();
+                    dropdown.innerHTML = '';
+
+                    if (query.length < 2) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+
+                    // 1. First, search local high-quality landmarks list
+                    const matches = locationsList.filter(loc => loc.toLowerCase().includes(query));
+                    if (matches.length > 0) {
+                        renderSuggestions(matches, input, dropdown);
+                    }
+
+                    // 2. Second, query Nominatim OpenStreetMap API after 350ms debouncing (for real-time suggestions like Google Places)
+                    apiTimeout = setTimeout(async () => {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
+                        try {
+                            const res = await fetch(url);
+                            const data = await res.json();
+                            if (data && data.length > 0) {
+                                // Extract unique display names from geocoded items
+                                const apiMatches = data.map(item => item.display_name);
+                                // Combine local and API matches, remove duplicates
+                                const combinedMatches = [...new Set([...matches, ...apiMatches])].slice(0, 7);
+                                renderSuggestions(combinedMatches, input, dropdown);
+                            }
+                        } catch (e) {
+                            console.error("Real-time places search error: ", e);
+                        }
+                    }, 350);
+                });
+
+                // Close suggestions dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target !== input && e.target !== dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            function renderSuggestions(list, input, dropdown) {
+                dropdown.innerHTML = '';
+                list.forEach(placeName => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>${placeName}</span>`;
+                    div.addEventListener('click', () => {
+                        input.value = placeName;
+                        dropdown.style.display = 'none';
+                    });
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            }
+
+            setupLocationAutocomplete('checkoutPickupLocationInput', 'checkoutPickupLocationSuggestions');
+            setupLocationAutocomplete('checkoutDropLocationInput', 'checkoutDropLocationSuggestions');
+        });
+    </script>
+
+    <!-- Premium Navbar Search Controller Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const locationsList = [
+                "Madhapur Showroom, Hyderabad",
+                "Begumpet Airport, Hyderabad",
+                "Secunderabad Railway Station, Hyderabad",
+                "Gachibowli Showroom, Hyderabad",
+                "Jubilee Hills Checkpost, Hyderabad",
+                "Banjara Hills Road No 12, Hyderabad",
+                "Hitec City Cyber Towers, Hyderabad",
+                "Rajiv Gandhi International Airport, Shamshabad",
+                "Charminar Landmark, Hyderabad",
+                "Inorbit Mall, Madhapur, Hyderabad",
+                "DLF Cyber City, Gachibowli, Hyderabad",
+                "Kondapur Main Road, Hyderabad",
+                "Kukatpally Housing Board (KPHB), Hyderabad",
+                "Miyapur Metro Station, Hyderabad",
+                "Nampally Exhibition Grounds, Hyderabad",
+                "Ameerpet Crossroads, Hyderabad",
+                "Tarnaka metro station, Hyderabad",
+                "Uppal Ring Road, Hyderabad",
+                "LB Nagar Ring Road, Hyderabad",
+                "Gachibowli Stadium, Hyderabad",
+                "IKEA Store, Hyderabad",
+                "Forum Sujana Mall, Kukatpally, Hyderabad",
+                "Mehdipatnam Bus Depot, Hyderabad",
+                "Begumpet Metro Station, Hyderabad"
+            ];
+
+            function setupLocationAutocomplete(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                let apiTimeout = null;
+
+                if (!input || !dropdown) return;
+
+                input.addEventListener('input', () => {
+                    clearTimeout(apiTimeout);
+                    const query = input.value.trim().toLowerCase();
+                    dropdown.innerHTML = '';
+
+                    if (query.length < 2) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+
+                    // A. Search local Hyderabad landmark matches
+                    const matches = locationsList.filter(loc => loc.toLowerCase().includes(query));
+                    if (matches.length > 0) {
+                        renderSuggestions(matches, input, dropdown);
+                    }
+
+                    // B. Query Nominatim OpenStreetMap API with 350ms debounce
+                    apiTimeout = setTimeout(async () => {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
+                        try {
+                            const res = await fetch(url);
+                            const data = await res.json();
+                            if (data && data.length > 0) {
+                                const apiMatches = data.map(item => item.display_name);
+                                const combinedMatches = [...new Set([...matches, ...apiMatches])].slice(0, 7);
+                                renderSuggestions(combinedMatches, input, dropdown);
+                            }
+                        } catch (e) {
+                            console.error("Real-time places search error: ", e);
+                        }
+                    }, 350);
+                });
+
+                // Close suggestions dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target !== input && e.target !== dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            function renderSuggestions(list, input, dropdown) {
+                dropdown.innerHTML = '';
+                list.forEach(placeName => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>${placeName}</span>`;
+                    div.addEventListener('click', () => {
+                        input.value = placeName;
+                        dropdown.style.display = 'none';
+                    });
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            }
+
+            setupLocationAutocomplete('pickupLocationInput', 'pickupLocationSuggestions');
+            setupLocationAutocomplete('dropLocationInput', 'dropLocationSuggestions');
+
+            // Handle Showroom search trigger and animated availability check
+            const searchBtn = document.getElementById("showroomSearchBtn");
+            const loaderOverlay = document.getElementById("showroomSearchLoader");
+            const loaderMessage = document.getElementById("loaderMessage");
+            const loaderProgressBar = document.getElementById("loaderProgressBar");
+
+            if (searchBtn && loaderOverlay) {
+                searchBtn.addEventListener("click", () => {
+                    const pickupVal = document.getElementById("pickupLocationInput").value.trim();
+                    const dropoffVal = document.getElementById("dropLocationInput").value.trim();
+                    const dateVal = document.getElementById("pickupDateSearch").value.trim();
+                    const timeVal = document.getElementById("pickupTimeSearch").value.trim();
+                    const carTypeVal = document.getElementById("carTypeSearch").value;
+
+                    // Trigger animated overlay search
+                    loaderOverlay.style.display = "flex";
+                    loaderProgressBar.style.width = "0%";
+
+                    const progressSteps = [
+                        { pct: 15, text: "Connecting to real-time inventory engine..." },
+                        { pct: 45, text: `Locating available showroom hubs near "${pickupVal || 'Hyderabad'}"...` },
+                        { pct: 75, text: `Scanning vehicle schedule databases for ${carTypeVal ? carTypeVal.replace('-', ' ') : 'premium cars'}...` },
+                        { pct: 95, text: "Finalizing live showroom pricing..." },
+                        { pct: 100, text: "Done!" }
+                    ];
+
+                    let currentStep = 0;
+                    const interval = setInterval(() => {
+                        if (currentStep < progressSteps.length) {
+                            const step = progressSteps[currentStep];
+                            loaderProgressBar.style.width = `${step.pct}%`;
+                            loaderMessage.textContent = step.text;
+                            currentStep++;
+                        } else {
+                            clearInterval(interval);
+
+                            // Hide loader overlay
+                            loaderOverlay.style.display = "none";
+
+                            // Redirect back to showroom page with the search parameters
+                            let redirectUrl = `/car/`;
+                            const params = [];
+                            if (pickupVal) params.push(`pickup_location=${encodeURIComponent(pickupVal)}`);
+                            if (dropoffVal) params.push(`drop_location=${encodeURIComponent(dropoffVal)}`);
+                            if (dateVal) params.push(`pickup_date=${encodeURIComponent(dateVal)}`);
+                            if (timeVal) params.push(`pickup_time=${encodeURIComponent(timeVal)}`);
+                            if (carTypeVal) params.push(`car_type=${encodeURIComponent(carTypeVal)}`);
+
+                            if (params.length > 0) {
+                                redirectUrl += `?` + params.join('&');
+                            }
+
+                            window.location.href = redirectUrl;
+                        }
+                    }, 300);
+                });
+            }
+        });
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main-1.js' %}"></script>
+
+</body>
+
+</html>

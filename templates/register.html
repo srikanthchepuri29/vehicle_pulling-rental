@@ -1,0 +1,341 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<!-- Premium Styles -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .auth-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 60px 20px;
+    }
+
+    .auth-card {
+        max-width: 450px;
+        width: 100%;
+    }
+
+    /* Dynamic Input Styles */
+    .auth-card .input-group {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.6);
+        display: flex;
+    }
+
+    [data-theme="dark"] .auth-card .input-group {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-card .input-group:hover {
+        transform: translateY(-3px) scale(1.02);
+    }
+
+    /* Distinct Colors for Inputs */
+    .input-username {
+        border-left: 4px solid #0d6efd !important;
+        background: rgba(13, 110, 253, 0.08) !important;
+    }
+
+    .input-email {
+        border-left: 4px solid #198754 !important;
+        background: rgba(25, 135, 84, 0.08) !important;
+    }
+
+    .input-password {
+        border-left: 4px solid #dc3545 !important;
+        background: rgba(220, 53, 69, 0.08) !important;
+    }
+
+    .input-confirm {
+        border-left: 4px solid #fd7e14 !important;
+        background: rgba(253, 126, 20, 0.08) !important;
+    }
+
+    [data-theme="dark"] .input-username {
+        background: rgba(13, 110, 253, 0.15) !important;
+    }
+
+    [data-theme="dark"] .input-email {
+        background: rgba(25, 135, 84, 0.15) !important;
+    }
+
+    [data-theme="dark"] .input-password {
+        background: rgba(220, 53, 69, 0.15) !important;
+    }
+
+    [data-theme="dark"] .input-confirm {
+        background: rgba(253, 126, 20, 0.15) !important;
+    }
+
+    .input-username:hover,
+    .input-username:focus-within {
+        border-color: #0d6efd !important;
+        background: rgba(13, 110, 253, 0.15) !important;
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+    }
+
+    .input-email:hover,
+    .input-email:focus-within {
+        border-color: #198754 !important;
+        background: rgba(25, 135, 84, 0.15) !important;
+        box-shadow: 0 5px 15px rgba(25, 135, 84, 0.3);
+    }
+
+    .input-password:hover,
+    .input-password:focus-within {
+        border-color: #dc3545 !important;
+        background: rgba(220, 53, 69, 0.15) !important;
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .input-confirm:hover,
+    .input-confirm:focus-within {
+        border-color: #fd7e14 !important;
+        background: rgba(253, 126, 20, 0.15) !important;
+        box-shadow: 0 5px 15px rgba(253, 126, 20, 0.3);
+    }
+
+    .auth-card .form-control {
+        background: transparent !important;
+        border: none;
+        height: auto;
+        padding: 12px 15px;
+        color: var(--text-color);
+    }
+
+    .auth-card .input-group-text {
+        background: transparent !important;
+        border: none;
+        padding: 12px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-card .form-control:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .input-group-text i {
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-username:focus-within i {
+        color: #0d6efd !important;
+        transform: scale(1.2);
+    }
+
+    .input-email:focus-within i {
+        color: #198754 !important;
+        transform: scale(1.2);
+    }
+
+    .input-password:focus-within i {
+        color: #dc3545 !important;
+        transform: scale(1.2);
+    }
+
+    .input-confirm:focus-within i {
+        color: #fd7e14 !important;
+        transform: scale(1.2);
+    }
+</style>
+
+<!-- Hero Background for Registration -->
+<img src="{% static '../media/images/premium_hero.png' %}" alt="Background" class="hero-bg">
+
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" id="themeToggle" title="Toggle Dark Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<div class="auth-container">
+    <div class="glass-card auth-card text-center hover-lift" style="margin-top: 50px;">
+        <div class="feature-icon mx-auto mb-4">
+            <i class="fas fa-user-plus"></i>
+        </div>
+        <h2 class="font-weight-bold mb-4">Create Account</h2>
+
+        {% if error %}
+        <div class="alert alert-danger" style="background: rgba(220,53,69,0.1); border: 1px solid red; color: red;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="text-left">
+            {% csrf_token %}
+            <div class="mb-3 text-left">
+                <label class="font-weight-bold">Username</label>
+                <div class="input-group input-username">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
+                    </div>
+                    <input type="text" name="username" class="form-control" placeholder="Choose a username" required>
+                </div>
+            </div>
+
+            <div class="mb-3 text-left">
+                <label class="font-weight-bold">Email Address</label>
+                <div class="input-group input-email">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-envelope text-muted"></i></span>
+                    </div>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                </div>
+            </div>
+
+            <div class="mb-3 text-left">
+                <label class="font-weight-bold">Password</label>
+                <div class="input-group input-password">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
+                    </div>
+                    <input type="password" name="password" class="form-control" placeholder="Create a password"
+                        required>
+                </div>
+            </div>
+
+            <div class="mb-5 text-left">
+                <label class="font-weight-bold">Confirm Password</label>
+                <div class="input-group input-confirm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-check-circle text-muted"></i></span>
+                    </div>
+                    <input type="password" name="confirm_password" class="form-control"
+                        placeholder="Confirm your password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-premium w-100 hover-lift mb-3">Register Now</button>
+        </form>
+
+        <p class="text-muted mt-3">
+            Already have an account? <a href="{% url 'login' %}"
+                class="font-weight-bold text-primary text-decoration-none">Login here</a>
+        </p>
+    </div>
+</div>
+
+<!-- Footer Start -->
+<div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                India</p>
+            <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+            <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+            <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+            <div class="d-flex justify-content-start">
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member Registration</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+            <div class="row mx-n1">
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+            <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles and
+                professional drivers ensure a safe and enjoyable experience.</p>
+            <form method="POST"> {% csrf_token %}
+                <div class="w-100 mb-3">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                            placeholder="Your Email" required>
+
+                        <div class="input-group-append">
+                            <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-dark  py-4 px-sm-3 px-md-5">
+    <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+    <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+</div>
+<!-- Footer End -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("themeToggle");
+        const themeIcon = document.getElementById("themeIcon");
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.setAttribute("data-theme", savedTheme);
+            updateIcon(savedTheme);
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            body.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === "dark") {
+                themeIcon.classList.remove("fa-moon");
+                themeIcon.classList.add("fa-sun");
+            } else {
+                themeIcon.classList.remove("fa-sun");
+                themeIcon.classList.add("fa-moon");
+            }
+        }
+    });
+</script>
+{% endblock %}

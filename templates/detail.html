@@ -1,0 +1,1421 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Car Details</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+
+    <!-- Favicon -->
+
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+    <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+
+    <!-- Template Stylesheet -->
+    <link rel="stylesheet" href="{% static 'css/cars.css'%}">
+
+    <!-- Dark Mode Toggle Button -->
+    <button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .autocomplete-suggestion-item {
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #333;
+            font-weight: 500;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .autocomplete-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-suggestion-item:hover {
+            background-color: rgba(0, 123, 255, 0.08);
+            color: #007bff;
+            padding-left: 22px;
+        }
+
+        [data-theme="dark"] .autocomplete-suggestion-item {
+            color: #eee;
+            background-color: #1e1e1e;
+            border-bottom-color: #2d2d2d;
+        }
+
+        [data-theme="dark"] .autocomplete-suggestion-item:hover {
+            background-color: rgba(0, 210, 255, 0.12);
+            color: #00d2ff;
+        }
+
+        [data-theme="dark"] #startLocationSuggestions,
+        [data-theme="dark"] #destinationSuggestions {
+            background-color: #1e1e1e !important;
+            border: 1px solid #333 !important;
+        }
+
+        /* Professional Navbar CSS overrides to match showroom page */
+        .premium-navbar {
+            background-color: #65a7e9 !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border-color: #0666af !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        body {
+            padding-top: 60px !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem !important;
+            margin-right: 8px !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* High-end sliding underline and capsule hover effect */
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            border-radius: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+            position: relative !important;
+            overflow: hidden;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+
+        .premium-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37 !important; /* Gold highlight accent for premium touch */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .premium-navbar .nav-link:hover::after,
+        .premium-navbar .nav-item.active .nav-link::after,
+        .premium-navbar .nav-item.show .nav-link::after {
+            width: 80%; /* Expands smoothly from center */
+        }
+
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-item.show .nav-link {
+            background-color: rgba(255, 255, 255, 0.12) !important; /* Semi-transparent white capsule highlight */
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-navbar .nav-item.active .nav-link {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        .premium-navbar .nav-link i {
+            font-size: 14px !important;
+            margin-right: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Sophisticated Dropdown Styling */
+        .premium-dropdown {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0px !important;
+            padding: 6px 0 !important;
+            overflow: visible !important;
+            animation: fadeInDropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dropdown::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -15px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 15px !important;
+            background: transparent !important;
+            z-index: -1 !important;
+        }
+
+        @keyframes fadeInDropdown {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .premium-dropdown .dropdown-item {
+            color: #2c3e50 !important;
+            padding: 8px 18px !important;
+            margin: 2px 6px !important;
+            width: calc(100% - 12px) !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            transition: all 0.25s ease !important;
+            border: none !important;
+            font-family: 'Rubik', sans-serif !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #65a7e9;
+            transition: color 0.25s ease;
+        }
+
+        .premium-dropdown .dropdown-item:hover {
+            background-color: #65a7e9 !important;
+            color: #ffffff !important;
+        }
+
+        .premium-dropdown .dropdown-item:hover i {
+            color: #ffffff !important;
+        }
+
+        /* Explicit Outline Removal on Hover & Active States */
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-link:focus,
+        .premium-navbar .nav-link:active,
+        .premium-navbar .dropdown-toggle:hover,
+        .premium-navbar .dropdown-toggle:focus,
+        .premium-navbar .dropdown-toggle:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+
+        .premium-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            margin: 10px 0 !important;
+            height: 40px !important;
+        }
+
+        .premium-navbar .navbar-toggler .fa-bars {
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991px) {
+            .premium-navbar .navbar-collapse {
+                background-color: #01579b !important;
+                position: absolute !important;
+                top: 60px !important;
+                left: 0 !important;
+                width: 100% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .premium-navbar .container-fluid {
+                height: auto !important;
+                min-height: 60px !important;
+            }
+
+            .navbar-nav {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .premium-navbar .nav-link {
+                height: 50px !important;
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+
+            .premium-navbar .nav-item {
+                width: 100% !important;
+            }
+
+            .premium-dropdown {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+        }
+
+        /* Suggestions Autocomplete Styling */
+        .position-relative {
+            position: relative;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 123, 255, 0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1050;
+            /* Above search container elements */
+            margin-top: 5px;
+            display: none;
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        .suggestions-dropdown::-webkit-scrollbar-thumb {
+            background-color: #007bff;
+            border-radius: 6px;
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #333;
+            border-bottom: 1px solid #f1f1f1;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            text-align: left;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+            color: #007bff;
+            padding-left: 20px;
+        }
+
+        .suggestion-item i {
+            color: #007bff;
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Professional Navbar Start -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid">
+            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
+                <i class="fas fa-car-side mr-2"></i>RideShare
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-bars"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
+                            Showroom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
+                            Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>
+                            Drive with Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
+                                class="fas fa-shield-alt mr-1"></i> Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
+                            Reports</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
+                            <a class="dropdown-item" href="{% url 'login' %}"><i
+                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
+                            <a class="dropdown-item" href="{% url 'register' %}"><i
+                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Professional Navbar End -->
+
+
+    <!-- Live Showroom Search Loader Overlay -->
+    <div id="showroomSearchLoader"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 31, 63, 0.95); z-index: 9999; align-items: center; justify-content: center; flex-direction: column;">
+        <div class="loader-box text-center p-5 rounded-lg shadow-2xl"
+            style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); max-width: 450px; width: 90%; border-radius: 15px;">
+            <div class="mb-4" style="position: relative; display: inline-block;">
+                <div class="spinner-border text-primary" role="status"
+                    style="width: 4rem; height: 4rem; border-width: 0.35em;">
+                    <span class="sr-only">Scanning...</span>
+                </div>
+                <i class="fas fa-search-location text-white"
+                    style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.5rem;"></i>
+            </div>
+            <h4 class="text-white text-uppercase font-weight-bold mb-3" style="letter-spacing: 2px;">Checking Fleet
+                Availability</h4>
+            <p id="loaderMessage" class="text-muted mb-0" style="font-size: 0.95rem; min-height: 48px;">Connecting to
+                fleet database...</p>
+            <div class="progress mt-4"
+                style="height: 6px; background-color: rgba(255, 255, 255, 0.1); border-radius: 3px; overflow: hidden;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
+                    style="width: 0%;" id="loaderProgressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-Width Premium Search Start -->
+    <div class="container-fluid p-0 m-0"
+        style="background: linear-gradient(135deg, #001f3f, #000080); border-bottom: 2px solid #D4AF37; position: relative; z-index: 1020;">
+        <div class="glass-card shadow-sm w-100"
+            style="border-radius: 0; padding: 25px 50px; background: rgba(255, 255, 255, 0.05); border: none; backdrop-filter: blur(10px);">
+            <div class="row g-2 align-items-end justify-content-center">
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-marker-alt mr-2" style="color: #D4AF37;"></i>Pickup Location</label>
+                    <input type="text" id="pickupLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="pickupLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2 position-relative">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-map-pin mr-2" style="color: #D4AF37;"></i>Drop-off Place</label>
+                    <input type="text" id="dropLocationInput" class="form-control px-4 shadow-sm"
+                        placeholder="Type location..." autocomplete="off"
+                        style="height: 45px; border-radius: 8px; border: none; background-color: white;">
+                    <div id="dropLocationSuggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i
+                            class="fas fa-calendar-alt mr-2" style="color: #D4AF37;"></i>Pickup Date</label>
+                    <div class="date" id="dateSearch" data-target-input="nearest">
+                        <input type="text" id="pickupDateSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Date"
+                            data-target="#dateSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-clock mr-2"
+                            style="color: #D4AF37;"></i>Pickup Time</label>
+                    <div class="time" id="timeSearch" data-target-input="nearest">
+                        <input type="text" id="pickupTimeSearch"
+                            class="custom-select px-4 datetimepicker-input shadow-sm" placeholder="Select Time"
+                            data-target="#timeSearch" data-toggle="datetimepicker"
+                            style="height: 45px; border-radius: 8px; border: none; background-color: white;" />
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <label class="font-weight-bold text-white" style="font-size: 0.85rem;"><i class="fas fa-car mr-2"
+                            style="color: #D4AF37;"></i>Car Type</label>
+                    <select id="carTypeSearch" class="custom-select px-4 shadow-sm"
+                        style="height: 45px; border-radius: 8px; border: none;">
+                        <option value="" selected>Select A Car</option>
+                        <option value="luxury-sedan">Luxury Sedan</option>
+                        <option value="premium-suv">Premium SUV</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 mb-2">
+                    <button id="showroomSearchBtn"
+                        class="btn btn-primary btn-block hover-glow-classic gold-touch-effect" type="button"
+                        style="height: 45px; border-radius: 8px; font-weight: bold; font-size: 1.05rem;">
+                        <i class="fas fa-search mr-2"></i>Search
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Full-Width Premium Search End -->
+
+
+    <!-- Premium Page Header Start -->
+    <div class="container-fluid page-header position-relative"
+        style="background: linear-gradient(rgba(0, 31, 63, 0.85), rgba(0, 123, 255, 0.4)), url('/media/images/gallery-3.jpg') center center no-repeat; background-size: cover; padding: 120px 0; border-bottom: 4px solid #007bff; box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);">
+        <div class="container text-center">
+            <h1 class="display-3 text-uppercase text-white mb-3 wow fadeInDown" data-wow-delay="0.1s"
+                style="text-shadow: 0 0 25px rgba(0, 123, 255, 0.8); font-weight: 700;">Car Detail</h1>
+            <div class="d-inline-flex text-white wow fadeInUp" data-wow-delay="0.3s">
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue" href="http://127.0.0.1:8000/"><i
+                            class="fas fa-home mr-2"></i>Home</a></h6>
+                <h6 class="text-body m-0 px-3" style="color: #007bff !important; font-weight: bold;">/</h6>
+                <h6 class="text-uppercase m-0"><a class="text-white hover-text-blue"
+                        href="http://127.0.0.1:8000/detail/">Car Details</a></h6>
+            </div>
+        </div>
+    </div>
+    <!-- Premium Page Header End -->
+
+
+    <!-- Detail Start -->
+    <div class="container-fluid pt-5">
+        <div class="container pt-5">
+            <div class="row">
+                <div class="col-lg-8 mb-5">
+                    <div class="glass-card p-4 hover-glow-blue-smooth mb-4 wow fadeInUp" data-wow-delay="0.1s"
+                        style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <h1 class="display-4 text-navy font-weight-bold mb-4">{{ car_name }}</h1>
+                        <div class="text-center mb-4">
+                            <img class="img-fluid rounded hover-zoom shadow" src="/media/images/{{ car_image }}"
+                                alt="{{ car_name }}"
+                                style="max-height: 380px; object-fit: contain; width: 100%; background: #f8f9fa; border-radius: 12px; border: 1px solid #e2e8f0; padding: 15px;">
+                        </div>
+                        <div class="row mx-n2 mb-3">
+                            <div class="col-md-3 col-6 px-2 pb-2">
+                                <img class="img-fluid w-100 rounded hover-zoom" src="/media/images/gallery-1.jpg"
+                                    alt="">
+                            </div>
+                            <div class="col-md-3 col-6 px-2 pb-2">
+                                <img class="img-fluid w-100 rounded hover-zoom" src="/media/images/gallery-2.jpg"
+                                    alt="">
+                            </div>
+                            <div class="col-md-3 col-6 px-2 pb-2">
+                                <img class="img-fluid w-100 rounded hover-zoom" src="/media/images/gallery-3.jpg"
+                                    alt="">
+                            </div>
+                            <div class="col-md-3 col-6 px-2 pb-2">
+                                <img class="img-fluid w-100 rounded hover-zoom" src="/media/images/gallery-4.jpg"
+                                    alt="">
+                            </div>
+                        </div>
+                        <p class="text-muted mb-4" style="line-height: 1.8;">Experience top-tier quality and premium
+                            comfort with the {{ car_name }}. Designed for discerning travelers who value performance,
+                            reliability, and modern safety systems. Standard package includes fully dynamic navigation,
+                            active security, premium leather upholstery, and a polished suspension tuning for optimal
+                            handling during long and short distance travels.</p>
+                        <div class="bg-white p-4 rounded shadow-sm border mb-4">
+                            <h4 class="text-navy font-weight-bold mb-3 border-bottom pb-2">Vehicle Specifications</h4>
+                            <div class="row pt-2">
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-calendar text-primary mr-2"></i>
+                                    <strong>Year:</strong> <span>{{ car_year }}</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-cogs text-primary mr-2"></i>
+                                    <strong>Transmission:</strong> <span>{{ car_trans }}</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-road text-primary mr-2"></i>
+                                    <strong>Mileage:</strong> <span>{{ car_mileage }}</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-tag text-primary mr-2"></i>
+                                    <strong>Price:</strong> <span>Rs. {{ car_price }}/Day</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-gas-pump text-primary mr-2"></i>
+                                    <strong>Fuel:</strong> <span>Petrol/Hybrid</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-eye text-primary mr-2"></i>
+                                    <strong>GPS:</strong> <span>Active Navigation</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-snowflake text-primary mr-2"></i>
+                                    <strong>A/C:</strong> <span>Climate Control</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-user-friends text-primary mr-2"></i>
+                                    <strong>Seats:</strong> <span>5 Adults Premium</span>
+                                </div>
+                                <div class="col-md-4 col-6 mb-3">
+                                    <i class="fa fa-suitcase text-primary mr-2"></i>
+                                    <strong>Luggage:</strong> <span>3 Large Bags</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top flex-wrap">
+                            <a href="/car/" class="btn btn-outline-secondary px-4 py-3 hover-glow-classic mb-2"
+                                style="border-radius: 30px; font-weight: bold; font-size: 1rem; min-width: 180px; transition: all 0.3s ease;">
+                                <i class="fas fa-arrow-left mr-2"></i> Return to Showroom
+                            </a>
+                            <a href="/booking/?name={{ car_name|urlencode }}&price={{ car_price }}&image={{ car_image }}"
+                                class="btn btn-primary px-4 py-3 hover-glow-classic blue-touch-effect mb-2"
+                                style="border-radius: 30px; font-weight: bold; font-size: 1.1rem; min-width: 220px; background: linear-gradient(45deg, #007bff, #00d2ff); border: none; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4); color: white;">
+                                Rent This Car <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-5">
+                    <div class="glass-card p-5 hover-glow-blue-smooth wow fadeInUp" data-wow-delay="0.2s"
+                        style="border-radius: 15px; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                        <h3 class="text-navy font-weight-bold text-center mb-4"><i
+                                class="fas fa-calendar-check mr-2 text-primary"></i>Check Availability</h3>
+
+                        <div class="form-group position-relative">
+                            <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Start
+                                Location</label>
+                            <input type="text" id="startLocationInput"
+                                class="form-control px-4 rounded-lg shadow-sm border-0" style="height: 50px;"
+                                placeholder="Type pickup location..." autocomplete="off">
+                            <div id="startLocationSuggestions"
+                                class="position-absolute w-100 bg-white border rounded shadow-lg mt-1 p-0 overflow-auto"
+                                style="z-index: 1000; max-height: 200px; display: none;"></div>
+                        </div>
+
+                        <div class="form-group position-relative">
+                            <label class="font-weight-bold text-navy mb-1"
+                                style="font-size: 0.85rem;">Destination</label>
+                            <input type="text" id="destinationInput"
+                                class="form-control px-4 rounded-lg shadow-sm border-0" style="height: 50px;"
+                                placeholder="Type destination..." autocomplete="off">
+                            <div id="destinationSuggestions"
+                                class="position-absolute w-100 bg-white border rounded shadow-lg mt-1 p-0 overflow-auto"
+                                style="z-index: 1000; max-height: 200px; display: none;"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Pickup
+                                Date</label>
+                            <input type="date" id="availPickupDate"
+                                class="form-control px-4 rounded-lg shadow-sm border-0" style="height: 50px;">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Pickup
+                                Time</label>
+                            <input type="time" id="availPickupTime"
+                                class="form-control px-4 rounded-lg shadow-sm border-0" style="height: 50px;">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="font-weight-bold text-navy mb-1" style="font-size: 0.85rem;">Riders
+                                Count</label>
+                            <select id="availPassengers" class="custom-select px-4 rounded-lg shadow-sm border-0"
+                                style="height: 50px;">
+                                <option value="1">1 Person</option>
+                                <option value="2">2 Persons</option>
+                                <option value="3">3 Persons</option>
+                                <option value="4">4 Persons</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <button id="checkAvailabilityBtn"
+                                class="btn btn-primary btn-block rounded-lg hover-glow-classic gold-touch-effect font-weight-bold"
+                                style="height: 50px;">Check Now</button>
+                        </div>
+
+                        <!-- Real-Time Loader -->
+                        <div id="availability-loader" class="text-center py-4 mt-3 rounded border"
+                            style="display: none; background: rgba(0, 123, 255, 0.03); border-color: rgba(0, 123, 255, 0.15) !important;">
+                            <div class="spinner-border text-primary spinner-border-sm mb-2" role="status">
+                                <span class="sr-only">Checking...</span>
+                            </div>
+                            <h6 class="font-weight-bold text-navy mb-0" style="font-size: 0.85rem;">Checking live
+                                showroom availability...</h6>
+                        </div>
+
+                        <!-- Real-Time Result Box -->
+                        <div id="availability-result" class="mt-4 p-3 rounded shadow-sm border text-center"
+                            style="display: none; transition: all 0.3s ease;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Detail End -->
+
+
+    <!-- Related Car Start -->
+    <div class="container-fluid pb-5">
+        <div class="container pb-5">
+            <h2 class="mb-4 text-navy font-weight-bold">Related Cars</h2>
+            <div class="owl-carousel related-carousel position-relative" style="padding: 0 30px;">
+                <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                    style="border-radius: 15px; overflow: hidden; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin: 10px;">
+                    <img class="img-fluid mb-4 hover-zoom" src="/media/images/car-rent-1.png" alt=""
+                        style="border-bottom: 2px solid #D4AF37;">
+                    <h4 class="text-uppercase mb-4 text-navy font-weight-bold">Mercedes Benz R3</h4>
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="px-2">
+                            <i class="fa fa-car text-primary mr-1"></i>
+                            <span>2015</span>
+                        </div>
+                        <div class="px-2 border-left border-right">
+                            <i class="fa fa-cogs text-primary mr-1"></i>
+                            <span>AUTO</span>
+                        </div>
+                        <div class="px-2">
+                            <i class="fa fa-road text-primary mr-1"></i>
+                            <span>25K</span>
+                        </div>
+                    </div>
+                    <a class="btn btn-primary px-4 hover-glow-classic gold-touch-effect"
+                        style="border-radius: 20px; font-weight: bold;" href="">Rs:10000.00/Day</a>
+                </div>
+                <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                    style="border-radius: 15px; overflow: hidden; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin: 10px;">
+                    <img class="img-fluid mb-4 hover-zoom" src="/media/images/car-rent-2.png" alt=""
+                        style="border-bottom: 2px solid #D4AF37;">
+                    <h4 class="text-uppercase mb-4 text-navy font-weight-bold">Mercedes Benz R3</h4>
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="px-2">
+                            <i class="fa fa-car text-primary mr-1"></i>
+                            <span>2015</span>
+                        </div>
+                        <div class="px-2 border-left border-right">
+                            <i class="fa fa-cogs text-primary mr-1"></i>
+                            <span>AUTO</span>
+                        </div>
+                        <div class="px-2">
+                            <i class="fa fa-road text-primary mr-1"></i>
+                            <span>25K</span>
+                        </div>
+                    </div>
+                    <a class="btn btn-primary px-4 hover-glow-classic gold-touch-effect"
+                        style="border-radius: 20px; font-weight: bold;" href="">Rs:10000.00/Day</a>
+                </div>
+                <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                    style="border-radius: 15px; overflow: hidden; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin: 10px;">
+                    <img class="img-fluid mb-4 hover-zoom" src="/media/images/car-rent-3.png" alt=""
+                        style="border-bottom: 2px solid #D4AF37;">
+                    <h4 class="text-uppercase mb-4 text-navy font-weight-bold">Mercedes Benz R3</h4>
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="px-2">
+                            <i class="fa fa-car text-primary mr-1"></i>
+                            <span>2015</span>
+                        </div>
+                        <div class="px-2 border-left border-right">
+                            <i class="fa fa-cogs text-primary mr-1"></i>
+                            <span>AUTO</span>
+                        </div>
+                        <div class="px-2">
+                            <i class="fa fa-road text-primary mr-1"></i>
+                            <span>25K</span>
+                        </div>
+                    </div>
+                    <a class="btn btn-primary px-4 hover-glow-classic gold-touch-effect"
+                        style="border-radius: 20px; font-weight: bold;" href="">Rs:10000.00/Day</a>
+                </div>
+                <div class="rent-item glass-card hover-glow-blue-smooth pb-4"
+                    style="border-radius: 15px; overflow: hidden; background: white; border: 1px solid #007bff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin: 10px;">
+                    <img class="img-fluid mb-4 hover-zoom" src="/media/images/car-rent-4.png" alt=""
+                        style="border-bottom: 2px solid #D4AF37;">
+                    <h4 class="text-uppercase mb-4 text-navy font-weight-bold">Mercedes Benz R3</h4>
+                    <div class="d-flex justify-content-center mb-4">
+                        <div class="px-2">
+                            <i class="fa fa-car text-primary mr-1"></i>
+                            <span>2015</span>
+                        </div>
+                        <div class="px-2 border-left border-right">
+                            <i class="fa fa-cogs text-primary mr-1"></i>
+                            <span>AUTO</span>
+                        </div>
+                        <div class="px-2">
+                            <i class="fa fa-road text-primary mr-1"></i>
+                            <span>25K</span>
+                        </div>
+                    </div>
+                    <a class="btn btn-primary px-4 hover-glow-classic gold-touch-effect"
+                        style="border-radius: 20px; font-weight: bold;" href="">Rs:10000.00/Day</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Related Car End -->
+
+
+    <!-- Vendor Start -->
+    <div class="container-fluid py-5 position-relative"
+        style="background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); border-top: 3px solid #007bff; border-bottom: 3px solid #007bff;">
+        <div class="container py-5">
+            <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-uppercase" style="color: #00d2ff !important; letter-spacing: 3px; font-weight: 700;">Our
+                    Trusted Partners</h6>
+                <h1 class="display-4 text-uppercase text-white font-weight-bold"
+                    style="text-shadow: 0 0 15px rgba(0, 210, 255, 0.5);">Global Network</h1>
+                <div style="width: 80px; height: 3px; background: #00d2ff; margin: 20px auto;"></div>
+            </div>
+            <div class="owl-carousel vendor-carousel wow fadeInUp" data-wow-delay="0.3s">
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-1.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-2.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-3.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-4.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-5.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-6.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-7.png" alt="" class="img-fluid vendor-img">
+                </div>
+                <div class="vendor-item-premium bg-white p-4 d-flex align-items-center justify-content-center">
+                    <img src="/media/images/vendor-8.png" alt="" class="img-fluid vendor-img">
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        .vendor-item-premium {
+            border-radius: 12px;
+            height: 130px;
+            border: 2px solid transparent;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin: 10px;
+        }
+
+        .vendor-item-premium::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(0, 123, 255, 0.5) 0%, rgba(0, 210, 255, 0) 70%);
+            border-radius: 50%;
+            transition: all 0.6s ease;
+            z-index: 1;
+            opacity: 0;
+        }
+
+        .vendor-item-premium:hover::before,
+        .owl-item.center .vendor-item-premium::before {
+            width: 250px;
+            height: 250px;
+            opacity: 1;
+        }
+
+        .vendor-item-premium:hover,
+        .owl-item.center .vendor-item-premium {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00d2ff;
+            box-shadow: 0 15px 35px rgba(0, 210, 255, 0.4);
+            background: #ffffff;
+        }
+
+        .vendor-item-premium .vendor-img {
+            transition: all 0.5s ease;
+            filter: grayscale(100%) opacity(0.6);
+            z-index: 2;
+            position: relative;
+            max-height: 85px;
+        }
+
+        .vendor-item-premium:hover .vendor-img,
+        .owl-item.center .vendor-item-premium .vendor-img {
+            filter: grayscale(0%) opacity(1);
+            transform: scale(1.15);
+        }
+
+        /* Animated form inputs for Detail Section */
+        .form-control,
+        .custom-select {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent !important;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus,
+        .custom-select:focus {
+            box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3) !important;
+            border-color: #007bff !important;
+            transform: translateY(-3px);
+            background-color: #ffffff;
+        }
+
+        .form-control:hover,
+        .custom-select:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    <!-- Vendor End -->
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                    India</p>
+                <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+                <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+                <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+                <div class="d-flex justify-content-start">
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
+                        Registration</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                    <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+                <div class="row mx-n1">
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+                <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles
+                    and professional drivers ensure a safe and enjoyable experience.</p>
+                <form method="POST"> {% csrf_token %}
+                    <div class="w-100 mb-3">
+                        <div class="input-group">
+                            <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                                placeholder="Your Email" required>
+
+                            <div class="input-group-append">
+                                <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                    Sign Up
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-dark  py-4 px-sm-3 px-md-5">
+        <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+        <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+    </div>
+    <!-- Required JS for Animations -->
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script>
+        if (typeof WOW !== 'undefined') {
+            new WOW().init();
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+            }
+        });
+    </script>
+
+    '''<!-- Back to Top
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fa fa-angle-double-up"></i></a>  -->
+
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleBtn = document.getElementById("themeToggle");
+            const themeIcon = document.getElementById("themeIcon");
+            const body = document.body;
+
+            // Check for saved user preference, if any, on load of the website
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+                updateIcon(savedTheme);
+            }
+
+            toggleBtn.addEventListener("click", () => {
+                const currentTheme = body.getAttribute("data-theme");
+                const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+                body.setAttribute("data-theme", newTheme);
+                localStorage.setItem("theme", newTheme);
+                updateIcon(newTheme);
+            });
+
+            function updateIcon(theme) {
+                if (theme === "dark") {
+                    themeIcon.classList.remove("fa-moon");
+                    themeIcon.classList.add("fa-sun");
+                } else {
+                    themeIcon.classList.remove("fa-sun");
+                    themeIcon.classList.add("fa-moon");
+                }
+            }
+        });
+    </script>
+
+
+    <!-- Autocomplete and Availability Checker Scripts -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const startInput = document.getElementById("startLocationInput");
+            const startSuggestions = document.getElementById("startLocationSuggestions");
+            const destInput = document.getElementById("destinationInput");
+            const destSuggestions = document.getElementById("destinationSuggestions");
+
+            const availDate = document.getElementById("availPickupDate");
+            const availTime = document.getElementById("availPickupTime");
+
+            const checkBtn = document.getElementById("checkAvailabilityBtn");
+            const loader = document.getElementById("availability-loader");
+            const resultBox = document.getElementById("availability-result");
+
+            // Prefill availability fields from URL parameters if present
+            const urlParams = new URLSearchParams(window.location.search);
+            const paramPickup = urlParams.get('pickup_location');
+            const paramDrop = urlParams.get('drop_location');
+            const paramDate = urlParams.get('pickup_date');
+            const paramTime = urlParams.get('pickup_time');
+
+            if (paramPickup && startInput) startInput.value = paramPickup;
+            if (paramDrop && destInput) destInput.value = paramDrop;
+            if (paramDate && availDate) availDate.value = paramDate;
+            if (paramTime && availTime) availTime.value = paramTime;
+
+            const locationsList = [
+                "Madhapur, Hyderabad",
+                "Begumpet Airport, Hyderabad",
+                "Secunderabad Station, Secunderabad",
+                "Gachibowli Showroom, Hyderabad",
+                "Jubilee Hills, Hyderabad",
+                "Banjara Hills, Hyderabad",
+                "Hitec City, Hyderabad",
+                "Rajiv Gandhi International Airport, Shamshabad"
+            ];
+
+            // Set today's date as min
+            const todayStr = new Date().toISOString().split("T")[0];
+            if (availDate) {
+                availDate.min = todayStr;
+            }
+
+            function setupAutocomplete(input, suggestionsBox) {
+                input.addEventListener("input", () => {
+                    const query = input.value.toLowerCase().trim();
+                    suggestionsBox.innerHTML = "";
+                    if (!query) {
+                        suggestionsBox.style.display = "none";
+                        return;
+                    }
+
+                    const matches = locationsList.filter(loc => loc.toLowerCase().includes(query));
+                    if (matches.length === 0) {
+                        suggestionsBox.style.display = "none";
+                        return;
+                    }
+
+                    matches.forEach(match => {
+                        const item = document.createElement("div");
+                        item.className = "autocomplete-suggestion-item";
+                        item.textContent = match;
+                        item.addEventListener("click", () => {
+                            input.value = match;
+                            suggestionsBox.style.display = "none";
+                        });
+                        suggestionsBox.appendChild(item);
+                    });
+
+                    suggestionsBox.style.display = "block";
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener("click", (e) => {
+                    if (e.target !== input && e.target !== suggestionsBox) {
+                        suggestionsBox.style.display = "none";
+                    }
+                });
+            }
+
+            setupAutocomplete(startInput, startSuggestions);
+            setupAutocomplete(destInput, destSuggestions);
+
+            // Handle Availability Checking
+            if (checkBtn) {
+                checkBtn.addEventListener("click", () => {
+                    const startLoc = startInput.value.trim();
+                    const destLoc = destInput.value.trim();
+                    const dateVal = availDate.value;
+                    const timeVal = availTime.value;
+
+                    if (!startLoc || !destLoc || !dateVal || !timeVal) {
+                        resultBox.style.display = "block";
+                        resultBox.className = "mt-4 p-3 rounded border text-center font-weight-bold";
+                        resultBox.style.backgroundColor = "#fff5f5";
+                        resultBox.style.borderColor = "#feb2b2";
+                        resultBox.style.color = "#c53030";
+                        resultBox.innerHTML = "<i class='fas fa-exclamation-circle mr-2'></i>Please enter all details to check availability!";
+                        return;
+                    }
+
+                    // Hide old results, show loader
+                    resultBox.style.display = "none";
+                    loader.style.display = "block";
+
+                    setTimeout(() => {
+                        loader.style.display = "none";
+                        resultBox.style.display = "block";
+
+                        const selectedDate = new Date(dateVal);
+                        const selectedDay = selectedDate.getDate();
+
+                        const today = new Date();
+                        const isToday = selectedDate.toDateString() === today.toDateString();
+
+                        const carName = "{{ car_name|escapejs }}";
+                        const carPrice = "{{ car_price|escapejs }}";
+                        const carImage = "{{ car_image|escapejs }}";
+
+                        const redirectUrl = `/booking/?name=${encodeURIComponent(carName)}&price=${carPrice}&image=${carImage}&pickup_location=${encodeURIComponent(startLoc)}&drop_location=${encodeURIComponent(destLoc)}&pickup_date=${dateVal}&pickup_time=${timeVal}`;
+
+                        if (isToday) {
+                            // Amber High demand Notification
+                            resultBox.style.backgroundColor = "#fffbeb";
+                            resultBox.style.borderColor = "#fef08a";
+                            resultBox.style.color = "#a16207";
+                            resultBox.innerHTML = `
+                                <div class="mb-2"><i class="fas fa-exclamation-triangle mr-2 text-warning" style="font-size: 1.2rem;"></i><strong>High Attention Alert!</strong></div>
+                                <div style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px;">This ${carName} is in high demand today. 2 other customers are looking at this car right now. Proceed immediately to avoid losing it!</div>
+                                <a href="${redirectUrl}" class="btn btn-warning btn-block rounded-lg font-weight-bold text-dark hover-glow-classic gold-touch-effect" style="height: 45px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">Instant checkout →</a>
+                            `;
+                        } else if (selectedDay % 2 === 0) {
+                            // Red Booked Notification
+                            resultBox.style.backgroundColor = "#fef2f2";
+                            resultBox.style.borderColor = "#fecaca";
+                            resultBox.style.color = "#991b1b";
+                            resultBox.innerHTML = `
+                                <div class="mb-2"><i class="fas fa-times-circle mr-2 text-danger" style="font-size: 1.2rem;"></i><strong>Already Booked!</strong></div>
+                                <div style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 10px;">This ${carName} is leased out to another renter for the chosen dates. Please choose another date or explore other options.</div>
+                                <a href="/car/" class="btn btn-danger btn-block rounded-lg font-weight-bold hover-glow-classic" style="height: 45px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">View Showroom Cars</a>
+                            `;
+                        } else {
+                            // Green Available Notification
+                            resultBox.style.backgroundColor = "#f0fdf4";
+                            resultBox.style.borderColor = "#bbf7d0";
+                            resultBox.style.color = "#166534";
+                            resultBox.innerHTML = `
+                                <div class="mb-2"><i class="fas fa-check-circle mr-2 text-success" style="font-size: 1.2rem;"></i><strong>Fully Available!</strong></div>
+                                <div style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px;">Good news! This vehicle is clean, fueled, and parked at your selected Start Location showroom. Base Rate: Rs. ${parseFloat(carPrice).toLocaleString('en-IN')}/day.</div>
+                                <a href="${redirectUrl}" class="btn btn-success btn-block rounded-lg font-weight-bold hover-glow-classic" style="height: 45px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">Book This Car Now →</a>
+                            `;
+                        }
+                    }, 1200);
+                });
+            }
+        });
+    </script>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'lib/easing/easing.min.js' %}"></script>
+    <script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/moment-timezone.min.js' %}"></script>
+    <script src="{% static 'lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+    <!-- Premium Navbar Search Controller Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const locationsList = [
+                "Madhapur Showroom, Hyderabad",
+                "Begumpet Airport, Hyderabad",
+                "Secunderabad Railway Station, Hyderabad",
+                "Gachibowli Showroom, Hyderabad",
+                "Jubilee Hills Checkpost, Hyderabad",
+                "Banjara Hills Road No 12, Hyderabad",
+                "Hitec City Cyber Towers, Hyderabad",
+                "Rajiv Gandhi International Airport, Shamshabad",
+                "Charminar Landmark, Hyderabad",
+                "Inorbit Mall, Madhapur, Hyderabad",
+                "DLF Cyber City, Gachibowli, Hyderabad",
+                "Kondapur Main Road, Hyderabad",
+                "Kukatpally Housing Board (KPHB), Hyderabad",
+                "Miyapur Metro Station, Hyderabad",
+                "Nampally Exhibition Grounds, Hyderabad",
+                "Ameerpet Crossroads, Hyderabad",
+                "Tarnaka metro station, Hyderabad",
+                "Uppal Ring Road, Hyderabad",
+                "LB Nagar Ring Road, Hyderabad",
+                "Gachibowli Stadium, Hyderabad",
+                "IKEA Store, Hyderabad",
+                "Forum Sujana Mall, Kukatpally, Hyderabad",
+                "Mehdipatnam Bus Depot, Hyderabad",
+                "Begumpet Metro Station, Hyderabad"
+            ];
+
+            function setupLocationAutocomplete(inputId, dropdownId) {
+                const input = document.getElementById(inputId);
+                const dropdown = document.getElementById(dropdownId);
+                let apiTimeout = null;
+
+                if (!input || !dropdown) return;
+
+                input.addEventListener('input', () => {
+                    clearTimeout(apiTimeout);
+                    const query = input.value.trim().toLowerCase();
+                    dropdown.innerHTML = '';
+
+                    if (query.length < 2) {
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+
+                    // A. Search local Hyderabad landmark matches
+                    const matches = locationsList.filter(loc => loc.toLowerCase().includes(query));
+                    if (matches.length > 0) {
+                        renderSuggestions(matches, input, dropdown);
+                    }
+
+                    // B. Query Nominatim OpenStreetMap API with 350ms debounce
+                    apiTimeout = setTimeout(async () => {
+                        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
+                        try {
+                            const res = await fetch(url);
+                            const data = await res.json();
+                            if (data && data.length > 0) {
+                                const apiMatches = data.map(item => item.display_name);
+                                const combinedMatches = [...new Set([...matches, ...apiMatches])].slice(0, 7);
+                                renderSuggestions(combinedMatches, input, dropdown);
+                            }
+                        } catch (e) {
+                            console.error("Real-time places search error: ", e);
+                        }
+                    }, 350);
+                });
+
+                // Close suggestions dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (e.target !== input && e.target !== dropdown) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            }
+
+            function renderSuggestions(list, input, dropdown) {
+                dropdown.innerHTML = '';
+                list.forEach(placeName => {
+                    const div = document.createElement('div');
+                    div.className = 'suggestion-item';
+                    div.innerHTML = `<i class="fas fa-map-marker-alt"></i><span>${placeName}</span>`;
+                    div.addEventListener('click', () => {
+                        input.value = placeName;
+                        dropdown.style.display = 'none';
+                    });
+                    dropdown.appendChild(div);
+                });
+                dropdown.style.display = 'block';
+            }
+
+            setupLocationAutocomplete('pickupLocationInput', 'pickupLocationSuggestions');
+            setupLocationAutocomplete('dropLocationInput', 'dropLocationSuggestions');
+
+            // Handle Showroom search trigger and animated availability check
+            const searchBtn = document.getElementById("showroomSearchBtn");
+            const loaderOverlay = document.getElementById("showroomSearchLoader");
+            const loaderMessage = document.getElementById("loaderMessage");
+            const loaderProgressBar = document.getElementById("loaderProgressBar");
+
+            if (searchBtn && loaderOverlay) {
+                searchBtn.addEventListener("click", () => {
+                    const pickupVal = document.getElementById("pickupLocationInput").value.trim();
+                    const dropoffVal = document.getElementById("dropLocationInput").value.trim();
+                    const dateVal = document.getElementById("pickupDateSearch").value.trim();
+                    const timeVal = document.getElementById("pickupTimeSearch").value.trim();
+                    const carTypeVal = document.getElementById("carTypeSearch").value;
+
+                    // Trigger animated overlay search
+                    loaderOverlay.style.display = "flex";
+                    loaderProgressBar.style.width = "0%";
+
+                    const progressSteps = [
+                        { pct: 15, text: "Connecting to real-time inventory engine..." },
+                        { pct: 45, text: `Locating available showroom hubs near "${pickupVal || 'Hyderabad'}"...` },
+                        { pct: 75, text: `Scanning vehicle schedule databases for ${carTypeVal ? carTypeVal.replace('-', ' ') : 'premium cars'}...` },
+                        { pct: 95, text: "Finalizing live showroom pricing..." },
+                        { pct: 100, text: "Done!" }
+                    ];
+
+                    let currentStep = 0;
+                    const interval = setInterval(() => {
+                        if (currentStep < progressSteps.length) {
+                            const step = progressSteps[currentStep];
+                            loaderProgressBar.style.width = `${step.pct}%`;
+                            loaderMessage.textContent = step.text;
+                            currentStep++;
+                        } else {
+                            clearInterval(interval);
+
+                            // Hide loader overlay
+                            loaderOverlay.style.display = "none";
+
+                            // Redirect back to showroom page with the search parameters
+                            let redirectUrl = `/car/`;
+                            const params = [];
+                            if (pickupVal) params.push(`pickup_location=${encodeURIComponent(pickupVal)}`);
+                            if (dropoffVal) params.push(`drop_location=${encodeURIComponent(dropoffVal)}`);
+                            if (dateVal) params.push(`pickup_date=${encodeURIComponent(dateVal)}`);
+                            if (timeVal) params.push(`pickup_time=${encodeURIComponent(timeVal)}`);
+                            if (carTypeVal) params.push(`car_type=${encodeURIComponent(carTypeVal)}`);
+
+                            if (params.length > 0) {
+                                redirectUrl += `?` + params.join('&');
+                            }
+
+                            window.location.href = redirectUrl;
+                        }
+                    }, 300);
+                });
+            }
+        });
+    </script>
+
+    <!-- Template Javascript -->
+    <script src="{% static 'js/main-1.js' %}"></script>
+</body>
+
+</html>

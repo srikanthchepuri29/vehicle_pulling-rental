@@ -1,0 +1,120 @@
+/* MAIN FOOTER BACKGROUND (TOP) */
+.container-fluid.bg-secondary {
+    background-color: #2f3450 !important;  /* bluish dark */
+    color: #cfcfcf;
+}
+
+/* BOTTOM FOOTER */
+.container-fluid.bg-dark {
+    background-color: #161616 !important;
+}
+
+/* HEADINGS */
+.container-fluid h4 {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+/* PARAGRAPH */
+.container-fluid p {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+/* SMALL HEADING */
+.container-fluid h6 {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* LINKS */
+.container-fluid a.text-body {
+    color: #ffffff !important;
+    transition: 0.3s;
+}
+
+.container-fluid a.text-body:hover {
+    color: #ff7a00 !important;  /* orange hover */
+    padding-left: 5px;
+}
+
+/* ICONS */
+.container-fluid i {
+    color: #ffffff;
+}
+
+/* SOCIAL ICON BOX */
+.btn-dark {
+    background-color: #3b4060 !important;
+    border: none;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* SOCIAL HOVER */
+.btn-dark:hover {
+    background-color: #ff7a00 !important;
+    color: #fff;
+}
+
+/* GALLERY IMAGES */
+.col-4 img {
+    border-radius: 4px;
+    transition: 0.3s;
+}
+.Z1{
+    border-radius: 20px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.col-4 img:hover {
+    transform: scale(1.05);
+}
+
+/* INPUT BOX */
+.input-group input {
+    background-color: #ffffff !important;
+    border: none;
+    color: #000000 !important;
+    height: 50px;
+}
+
+.input-group input::placeholder {
+    color: #000000;
+}
+
+/* SIGN UP BUTTON */
+.btn-primary {
+    background-color: #ff7a00 !important;
+    border: none;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #e66a00 !important;
+}
+
+/* COPYRIGHT TEXT */
+.container-fluid.bg-dark p {
+    color: #ffffff;
+}
+
+/* LINK IN COPYRIGHT */
+.container-fluid.bg-dark a {
+    color: #ff7a00;
+}
+
+/* BACK TO TOP BUTTON (OPTIONAL) */
+.btn-lg-square {
+    border-radius: 4px;
+}
+
+.m{
+    color: #fff;
+}

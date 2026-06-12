@@ -1,0 +1,60 @@
+/* पूरे पेज का background */
+body {
+    background-color: #d4d7d8;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Blog container spacing */
+h1 {
+    color: #2c3e50;
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* Description styling */
+b {
+    color: #34495e;
+}
+
+br {
+    margin-bottom: 10px;
+}
+
+/* Card-like blog box */
+.blog-card {
+    background: #ffffff;
+    padding: 25px;
+    margin: 30px auto;
+    width: 75%;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+/* Hover effect */
+.blog-card:hover {
+    transform: scale(1.02);
+}
+
+/* Image styling */
+.blog-card img {
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+/* Author text */
+.blog-card i {
+    color: #16a085;
+}
+
+/* Date styling */
+.blog-card h4 {
+    color: #68c7ce;
+    font-size: 16px;
+}
+
+/* Navbar improvement */
+.navbar {
+    padding: 15px;
+    box-shadow: 0px 2px 10px rgba(0,0,0,0.1);
+}

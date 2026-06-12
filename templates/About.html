@@ -1,0 +1,481 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<!-- Premium Styles -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+<link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+
+<button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<script>
+    document.body.setAttribute('data-page-theme', 'classic');
+</script>
+
+<style>
+    .team-item {
+        background: #faf9f6;
+        /* Classic Background */
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+    }
+
+    [data-theme="dark"] .team-item {
+        background: rgba(30, 30, 30, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .testimonial-item {
+        background: #faf9f6;
+        border: 2px solid #e0e0e0;
+        border-radius: 15px;
+        padding: 30px;
+        margin: 15px;
+        transition: all 0.4s ease;
+    }
+
+    [data-theme="dark"] .testimonial-item {
+        background: rgba(30, 30, 30, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .team-text {
+        background: transparent !important;
+        padding: 20px !important;
+    }
+
+    .team-text h5 {
+        color: #000080;
+        /* Navy */
+        font-weight: bold;
+    }
+
+    [data-theme="dark"] .team-text h5 {
+        color: #D4AF37;
+        /* Gold */
+    }
+
+    .about-hero {
+        padding: 80px 0 40px 0;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .map-container {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid #e0e0e0;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] .map-container {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .text-navy {
+        color: #000080 !important;
+    }
+
+    [data-theme="dark"] .text-navy {
+        color: #D4AF37 !important;
+    }
+
+    /* Fix Team Image Alignment */
+    .team-item img {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        object-position: center top;
+        display: block;
+    }
+
+    .hover-glow-light-blue {
+        border: 2px solid transparent;
+        transition: all 0.4s ease;
+    }
+
+    .hover-glow-light-blue:hover {
+        border-color: #3bc9f5 !important;
+        box-shadow: 0 10px 25px rgba(59, 201, 245, 0.4) !important;
+    }
+
+    /* Platform Features Styles */
+    .feature-card {
+        padding: 20px 15px;
+        margin-bottom: 15px;
+        height: 100%;
+        text-align: center;
+        border-radius: 15px;
+        background: #faf9f6;
+        border: 2px solid #e0e0e0;
+        position: relative;
+        overflow: hidden;
+    }
+
+    [data-theme="dark"] .feature-card {
+        background: rgba(30, 30, 30, 0.85);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-icon-box {
+        width: 70px;
+        height: 70px;
+        background: rgba(212, 175, 55, 0.15);
+        color: #D4AF37;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        font-size: 1.8rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .feature-card:hover .feature-icon-box,
+    .feature-card:active .feature-icon-box {
+        background: #D4AF37;
+        color: #000080;
+        transform: rotate(10deg) scale(1.1);
+        border-color: #000080;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    }
+
+    [data-theme="dark"] .feature-icon-box {
+        background: rgba(212, 175, 55, 0.2);
+    }
+
+    .decorative-line {
+        width: 60px;
+        height: 3px;
+        background: #D4AF37;
+        margin: 0 auto 10px auto;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+
+    .feature-card:hover .decorative-line,
+    .feature-card:active .decorative-line {
+        width: 100px;
+        background: #000080;
+    }
+
+    [data-theme="dark"] .feature-card:hover .decorative-line,
+    [data-theme="dark"] .feature-card:active .decorative-line {
+        background: #D4AF37;
+    }
+
+    .classic-badge {
+        background: rgba(0, 0, 128, 0.05);
+        color: #000080;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: 1px solid rgba(0, 0, 128, 0.2);
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    [data-theme="dark"] .classic-badge {
+        background: rgba(212, 175, 55, 0.1);
+        color: #D4AF37;
+        border-color: rgba(212, 175, 55, 0.3);
+    }
+</style>
+
+<div class="container about-hero">
+    <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInDown text-navy">About RideShare</h1>
+    <p class="lead mb-5 animate__animated animate__fadeInUp">Meet the team behind the best local ride sharing platform
+        and see what our users have to say.</p>
+</div>
+<!-- Team Start -->
+<div class="container pb-5" id="team">
+    <div class="row g-5 mb-5 wow fadeInUp" data-wow-delay="0.1s">
+        <div class="col-lg-6">
+            <h2 class="display-5 mb-0 text-navy font-weight-bold">Team Members</h2>
+            <div class="decorative-line"
+                style="margin: 20px 0; width: 60px; height: 3px; background: #D4AF37; border-radius: 2px;"></div>
+        </div>
+        <div class="col-lg-6 text-lg-end d-flex align-items-center justify-content-lg-end">
+            <a class="btn btn-primary py-3 px-4 blue-touch-effect hover-glow-light-blue"
+                style="border-radius: 8px; font-weight: bold;" href="/Contact_us/">Contact Us</a>
+        </div>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="team-item position-relative hover-glow-light-blue blue-touch-effect">
+                <img class="img-fluid w-100" src="/media/images/sai.png" alt="">
+                <div class="team-text d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">Harsha Vardhan</h5>
+                        <span class="text-muted">Team Member</span>
+                    </div>
+                    <i class="fa fa-arrow-right fa-lg" style="color: #D4AF37;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+            <div class="team-item position-relative hover-glow-light-blue blue-touch-effect">
+                <img class="img-fluid w-100" src="/media/images/vamshi.png" alt="">
+                <div class="team-text d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">Vamshi</h5>
+                        <span class="text-muted">Team Member</span>
+                    </div>
+                    <i class="fa fa-arrow-right fa-lg" style="color: #D4AF37;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+            <div class="team-item position-relative hover-glow-light-blue blue-touch-effect">
+                <img class="img-fluid w-100" src="/media/images/harsha.png" alt="">
+                <div class="team-text d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-1">Sai Cheran</h5>
+                        <span class="text-muted">Team Member</span>
+                    </div>
+                    <i class="fa fa-arrow-right fa-lg" style="color: #D4AF37;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Team End -->
+
+
+<!-- Testimonial Start -->
+<!-- Platform Advantages Start -->
+<div class="container py-5 my-5" id="platform-features">
+    <h2 class="display-5 text-center mb-5 text-navy font-weight-bold wow fadeInUp" data-wow-delay="0.1s">Our Platform
+        Advantages</h2>
+    <div class="decorative-line mx-auto"
+        style="margin-bottom: 40px; width: 60px; height: 3px; background: #D4AF37; border-radius: 2px;"></div>
+
+    <div class="row justify-content-center g-4">
+        <!-- Advantage 1: Safety & Trust -->
+        <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp stagger-1">
+            <div class="glass-card feature-card hover-glow-light-blue blue-touch-effect">
+                <span class="classic-badge">Safety First</span>
+                <div class="feature-icon-box">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <h3 class="font-weight-bold mb-3 text-navy">Verified Drivers</h3>
+                <div class="decorative-line"></div>
+                <h6 class="text-navy mb-3"><i class="fas fa-check-circle mr-2"></i>100% Background Checked</h6>
+                <p class="text-muted">Every driver on our platform undergoes a rigorous background check and vehicle
+                    inspection. Your safety is our top priority, complete with an in-app SOS button for emergencies.</p>
+            </div>
+        </div>
+
+        <!-- Advantage 2: Cashless Payments -->
+        <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp stagger-2">
+            <div class="glass-card feature-card hover-glow-light-blue blue-touch-effect">
+                <span class="classic-badge">Seamless Pay</span>
+                <div class="feature-icon-box">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <h3 class="font-weight-bold mb-3 text-navy">Cashless Payments</h3>
+                <div class="decorative-line"></div>
+                <h6 class="text-navy mb-3"><i class="fas fa-mobile-alt mr-2"></i>UPI & Cards Integration</h6>
+                <p class="text-muted">Say goodbye to exact change. Our built-in digital wallet integrates seamlessly
+                    with UPI, credit, and debit cards for instant, hassle-free automatic payments at the end of every
+                    ride.</p>
+            </div>
+        </div>
+
+        <!-- Advantage 3: Sustainability / EVs -->
+        <div class="col-lg-4 col-md-6 mb-4 animate__animated animate__fadeInUp stagger-3">
+            <div class="glass-card feature-card hover-glow-light-blue blue-touch-effect">
+                <span class="classic-badge">Go Green</span>
+                <div class="feature-icon-box">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <h3 class="font-weight-bold mb-3 text-navy">Eco-Friendly Fleet</h3>
+                <div class="decorative-line"></div>
+                <h6 class="text-navy mb-3"><i class="fas fa-charging-station mr-2"></i>Zero Emission Rides</h6>
+                <p class="text-muted">We are committed to reducing urban carbon footprints. Choose our dedicated EV
+                    category for zero-emission, silent, and environmentally friendly transportation across the city.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Platform Advantages End -->
+
+
+
+
+
+<!-- Map Start -->
+<div class="container py-5 px-0 wow fadeInUp" data-wow-delay="0.1s">
+    <h2 class="display-5 text-center mb-5 text-navy font-weight-bold">Find Us</h2>
+    <div class="decorative-line mx-auto"
+        style="margin-bottom: 40px; width: 60px; height: 3px; background: #D4AF37; border-radius: 2px;"></div>
+
+    <div class="map-container hover-glow-light-blue blue-touch-effect">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1051940.8830622872!2d77.94307991859269!3d17.52882775121545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sin!4v1775019900255!5m2!1sen!2sin"
+            frameborder="0" style="width: 100%; height: 450px; border:0; display: block;" allowfullscreen=""
+            aria-hidden="false" tabindex="0"></iframe>
+    </div>
+</div>
+<!-- Map End -->
+
+<!-- Footer Start -->
+<div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                India</p>
+            <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+            <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+            <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+            <div class="d-flex justify-content-start">
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
+                    Registration</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+            <div class="row mx-n1">
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+            <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles
+                and professional drivers ensure a safe and enjoyable experience.</p>
+            <form method="POST"> {% csrf_token %}
+                <div class="w-100 mb-3">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                            placeholder="Your Email" required>
+
+                        <div class="input-group-append">
+                            <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-dark py-4 px-sm-3 px-md-5">
+    <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+    <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+</div>
+<!-- Footer End -->
+
+<!-- Dark Mode Toggle Script -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("themeToggle");
+        const themeIcon = document.getElementById("themeIcon");
+        const body = document.body;
+
+        // Check for saved user preference, if any, on load of the website
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.setAttribute("data-theme", savedTheme);
+            updateIcon(savedTheme);
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            body.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === "dark") {
+                themeIcon.classList.remove("fa-moon");
+                themeIcon.classList.add("fa-sun");
+            } else {
+                themeIcon.classList.remove("fa-sun");
+                themeIcon.classList.add("fa-moon");
+            }
+        }
+    });
+</script>
+
+<!-- Copyright Start 
+    <div class="container-fluid D2 bg-dark text-white py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom text-secondary" href="#">My Website</a>, All Right Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                         
+                        Designed By <a class="border-bottom text-secondary" href="https://htmlcodex.com">Srikanth Chepuri</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     Copyright End -->
+
+
+<!-- Back to Top 
+<a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top blue-touch-effect hover-glow-light-blue"><i
+        class="bi bi-arrow-up"></i></a>  -->
+
+<!-- JavaScript Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'lib/wow/wow.min.js' %}"></script>
+<script src="{% static 'lib/easing/easing.min.js' %}"></script>
+<script src="{% static 'lib/waypoints/waypoints.min.js' %}"></script>
+<script src="{% static 'lib/owlcarousel/owl.carousel.min.js' %}"></script>
+
+<!-- Template Javascript -->
+<script src="{% static 'js/main.js' %}"></script>
+
+
+
+{% endblock %}

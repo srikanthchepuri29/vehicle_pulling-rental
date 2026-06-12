@@ -1,0 +1,365 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<!-- Premium Styles -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+
+<style>
+    .contact-hero {
+        padding: 80px 0 40px 0;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .contact-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-info-pane {
+        background: rgba(79, 70, 229, 0.85);
+        /* Indigo */
+        color: white;
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    [data-theme="dark"] .contact-info-pane {
+        background: rgba(79, 70, 229, 0.3);
+    }
+
+    .contact-form-pane {
+        padding: 50px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .info-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover .info-icon {
+        background: white;
+        color: #4f46e5;
+        transform: scale(1.1);
+    }
+
+    /* Dynamic Contact Inputs - Modern Look */
+    .contact-input-group {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid #cbd5e1;
+        background: #f8fafc; /* Light slate/blue-grey */
+        transition: all 0.3s ease;
+        border-left: 4px solid #4f46e5;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    [data-theme="dark"] .contact-input-group {
+        background: rgba(30, 30, 30, 0.8);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-left: 4px solid #4f46e5;
+    }
+
+    .contact-input-group:hover {
+        background: #ffffff;
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.2);
+        border-color: rgba(79, 70, 229, 0.5);
+        transform: translateY(-2px);
+    }
+
+    [data-theme="dark"] .contact-input-group:hover {
+        background: rgba(50, 50, 50, 0.9);
+        border-color: rgba(79, 70, 229, 0.8);
+    }
+
+    .contact-input-group:focus-within {
+        background: #ffffff;
+        box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
+        transform: translateY(-2px);
+        border-color: #4f46e5;
+    }
+
+    .contact-form-control {
+        background: transparent !important;
+        border: none;
+        padding: 15px;
+        color: var(--text-color);
+        width: 100%;
+    }
+
+    .contact-form-control:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .btn-indigo {
+        background: #4f46e5;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-indigo:hover {
+        background: #4338ca;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    }
+</style>
+
+<script>
+    document.body.setAttribute('data-page-theme', 'indigo');
+</script>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" id="themeToggle" title="Toggle Dark Mode">
+    <i class="fas fa-moon" id="themeIcon"></i>
+</button>
+
+<div class="container contact-hero">
+    <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInDown">Contact Support</h1>
+    <p class="lead mb-5 animate__animated animate__fadeInUp">Facing any issue? Reach out to us and our team will resolve
+        it quickly.</p>
+</div>
+
+<div class="container mb-5 pb-5 animate__animated animate__zoomIn">
+    <div class="glass-card contact-wrapper p-0 shadow-lg" style="border-left: none;">
+        <div class="row w-100 m-0">
+            <!-- Left Side: Info -->
+            <div class="col-lg-5 contact-info-pane">
+                <h2 class="font-weight-bold mb-5 text-white">Let's Ride Together</h2>
+
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div>
+                        <h5 class="text-white mb-1">Address</h5>
+                        <p class="mb-0 text-white-50">3rd floor, Plot No. 97, Ayyappa Society Main Rd, Madhapur,
+                            Hyderabad</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div>
+                        <h5 class="text-white mb-1">Phone</h5>
+                        <p class="mb-0 text-white-50">+91 9912459754</p>
+                    </div>
+                </div>
+
+                <div class="info-item mb-5">
+                    <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                    <div>
+                        <h5 class="text-white mb-1">Email</h5>
+                        <p class="mb-0 text-white-50">Srikanthchepuri29@gmail.com</p>
+                    </div>
+                </div>
+
+                <h5 class="text-white mb-3">Follow Us</h5>
+                <div class="d-flex">
+                    <a class="btn btn-lg-square mr-2 hover-zoom"
+                        style="background: rgba(255,255,255,0.2); color: white;" href="#"><i
+                            class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg-square mr-2 hover-zoom"
+                        style="background: rgba(255,255,255,0.2); color: white;" href="#"><i
+                            class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg-square mr-2 hover-zoom"
+                        style="background: rgba(255,255,255,0.2); color: white;" href="#"><i
+                            class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg-square hover-zoom" style="background: rgba(255,255,255,0.2); color: white;"
+                        href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Right Side: Form -->
+            <div class="col-lg-7 contact-form-pane bg-transparent">
+                <h3 class="font-weight-bold mb-4">Send us a message</h3>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="font-weight-bold mb-2">Your Name</label>
+                            <div class="contact-input-group">
+                                <input type="text" name="name" class="contact-form-control" placeholder="John Doe"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label class="font-weight-bold mb-2">Your Email</label>
+                            <div class="contact-input-group">
+                                <input type="email" name="email" class="contact-form-control"
+                                    placeholder="john@example.com" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-weight-bold mb-2">Subject</label>
+                        <div class="contact-input-group">
+                            <input type="text" name="subject" class="contact-form-control"
+                                placeholder="How can we help you?" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-weight-bold mb-2">Message</label>
+                        <div class="contact-input-group">
+                            <textarea name="message" class="contact-form-control" rows="5"
+                                placeholder="Describe your issue..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-weight-bold mb-2">Upload Issue Image (Optional)</label>
+                        <div class="contact-input-group p-2">
+                            <input type="file" name="image" class="contact-form-control" style="padding: 5px;">
+                        </div>
+                    </div>
+
+                    <button type="submit"
+                        class="btn btn-indigo pulse-glow w-100 py-3 mt-2 text-uppercase letter-spacing-1">
+                        <i class="fas fa-paper-plane mr-2"></i> Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer Start -->
+<div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+    <div class="row pt-5">
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+            <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                India</p>
+            <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+            <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+            <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+            <div class="d-flex justify-content-start">
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+            <div class="d-flex flex-column justify-content-start">
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member Registration</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+            <div class="row mx-n1">
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                </div>
+                <div class="col-4 px-1 mb-2">
+                    <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-5">
+            <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+            <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles and
+                professional drivers ensure a safe and enjoyable experience.</p>
+            <form method="POST"> {% csrf_token %}
+                <div class="w-100 mb-3">
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                            placeholder="Your Email" required>
+
+                        <div class="input-group-append">
+                            <button class="btn btn-primary text-uppercase px-3" type="submit">
+                                Sign Up
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+<div class="container-fluid bg-dark py-4 px-sm-3 px-md-5">
+    <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+    <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+</div>
+<!-- Footer End -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("themeToggle");
+        const themeIcon = document.getElementById("themeIcon");
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) {
+            body.setAttribute("data-theme", savedTheme);
+            updateIcon(savedTheme);
+        }
+
+        toggleBtn.addEventListener("click", () => {
+            const currentTheme = body.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+            body.setAttribute("data-theme", newTheme);
+            localStorage.setItem("theme", newTheme);
+            updateIcon(newTheme);
+        });
+
+        function updateIcon(theme) {
+            if (theme === "dark") {
+                themeIcon.classList.remove("fa-moon");
+                themeIcon.classList.add("fa-sun");
+            } else {
+                themeIcon.classList.remove("fa-sun");
+                themeIcon.classList.add("fa-moon");
+            }
+        }
+    });
+</script>
+{% endblock %}

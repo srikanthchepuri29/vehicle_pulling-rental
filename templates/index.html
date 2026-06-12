@@ -1,0 +1,579 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
+        rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.css'%}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-grid.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-reboot.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-reboot.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css'%}">
+    <link rel="stylesheet" href="{% static 'css/Blog.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Reports.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home-style.css' %}">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Core jQuery (Full version required for plugins like Owl Carousel) -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <title>Vehcile-Sharing</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+
+    <style>
+        /* Professional Navbar CSS overrides to match showroom page */
+        .premium-navbar {
+            background-color: #65a7e9 !important;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            border-color: #0666af !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        body {
+            padding-top: 60px !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .navbar-brand i {
+            font-size: 1.25rem !important;
+            margin-right: 8px !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* High-end sliding underline and capsule hover effect */
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            margin: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            border-radius: 0 !important;
+            font-family: 'Rubik', sans-serif !important;
+            position: relative !important;
+            overflow: hidden;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+
+        .premium-navbar .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background-color: #D4AF37 !important; /* Gold highlight accent for premium touch */
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .premium-navbar .nav-link:hover::after,
+        .premium-navbar .nav-item.active .nav-link::after,
+        .premium-navbar .nav-item.show .nav-link::after {
+            width: 80%; /* Expands smoothly from center */
+        }
+
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-item.show .nav-link {
+            background-color: rgba(255, 255, 255, 0.12) !important; /* Semi-transparent white capsule highlight */
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .premium-navbar .nav-item.active .nav-link {
+            background-color: rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+        }
+
+        .premium-navbar .nav-link i {
+            font-size: 14px !important;
+            margin-right: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        /* Sophisticated Dropdown Styling */
+        .premium-dropdown {
+            background-color: #ffffff !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+            margin-top: 0px !important;
+            padding: 6px 0 !important;
+            overflow: visible !important;
+            animation: fadeInDropdown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .premium-dropdown::before {
+            content: '' !important;
+            position: absolute !important;
+            top: -15px !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 15px !important;
+            background: transparent !important;
+            z-index: -1 !important;
+        }
+
+        @keyframes fadeInDropdown {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .premium-dropdown .dropdown-item {
+            color: #2c3e50 !important;
+            padding: 8px 18px !important;
+            margin: 2px 6px !important;
+            width: calc(100% - 12px) !important;
+            border-radius: 6px !important;
+            font-weight: 500 !important;
+            background-color: transparent !important;
+            transition: all 0.25s ease !important;
+            border: none !important;
+            font-family: 'Rubik', sans-serif !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .premium-dropdown .dropdown-item i {
+            width: 20px;
+            margin-right: 8px;
+            font-size: 14px;
+            color: #65a7e9;
+            transition: color 0.25s ease;
+        }
+
+        .premium-dropdown .dropdown-item:hover {
+            background-color: #65a7e9 !important;
+            color: #ffffff !important;
+        }
+
+        .premium-dropdown .dropdown-item:hover i {
+            color: #ffffff !important;
+        }
+
+        /* Explicit Outline Removal on Hover & Active States */
+        .premium-navbar .nav-link:hover,
+        .premium-navbar .nav-link:focus,
+        .premium-navbar .nav-link:active,
+        .premium-navbar .dropdown-toggle:hover,
+        .premium-navbar .dropdown-toggle:focus,
+        .premium-navbar .dropdown-toggle:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            text-decoration: none !important;
+        }
+
+        .premium-navbar .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            margin: 10px 0 !important;
+            height: 40px !important;
+        }
+
+        .premium-navbar .navbar-toggler .fa-bars {
+            color: #ffffff !important;
+        }
+
+        @media (max-width: 991px) {
+            .premium-navbar .navbar-collapse {
+                background-color: #01579b !important;
+                position: absolute !important;
+                top: 60px !important;
+                left: 0 !important;
+                width: 100% !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+
+            .premium-navbar .container-fluid {
+                height: auto !important;
+                min-height: 60px !important;
+            }
+
+            .navbar-nav {
+                flex-direction: column !important;
+                height: auto !important;
+            }
+
+            .premium-navbar .nav-link {
+                height: 50px !important;
+                width: 100% !important;
+                justify-content: flex-start !important;
+            }
+
+            .premium-navbar .nav-item {
+                width: 100% !important;
+            }
+
+            .premium-dropdown {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                border: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Professional Navbar Start -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid">
+            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
+                <i class="fas fa-car-side mr-2"></i>RideShare
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="fa fa-bars"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
+                            Showroom</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
+                            Bookings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>Drive
+                            with Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
+                                class="fas fa-shield-alt mr-1"></i>Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
+                            Reports</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
+                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-circle mr-1"></i> Account
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
+                            <a class="dropdown-item" href="{% url 'login' %}"><i
+                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
+                            <a class="dropdown-item" href="{% url 'register' %}"><i
+                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Professional Navbar End -->
+
+
+    {% load static %}
+    {% block content %}
+    <!-- Premium Styles -->
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'lib/animate/animate.min.css' %}" rel="stylesheet">
+
+    <script>
+        document.body.setAttribute('data-page-theme', 'classic');
+    </script>
+
+    <style>
+        .issue-card {
+            padding: 20px 15px;
+            height: 100%;
+            border-radius: 15px;
+            background: #faf9f6;
+            border: 2px solid #e0e0e0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        [data-theme="dark"] .issue-card {
+            background: rgba(30, 30, 30, 0.85);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .text-navy {
+            color: #000080 !important;
+        }
+
+        [data-theme="dark"] .text-navy {
+            color: #D4AF37 !important;
+        }
+
+        .hover-glow-gold-smooth {
+            transition: all 0.4s ease !important;
+        }
+
+        .hover-glow-gold-smooth:hover {
+            border-color: #D4AF37 !important;
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.4) !important;
+            /* Only border and shadow to prevent jittering */
+        }
+
+        .issue-badge {
+            background: rgba(212, 175, 55, 0.15);
+            color: #000080;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 1px solid #D4AF37;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        [data-theme="dark"] .issue-badge {
+            color: #D4AF37;
+        }
+
+        .issue-img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 2px solid #D4AF37;
+        }
+
+        .reports-hero {
+            padding: 80px 0 40px 0;
+            text-align: center;
+        }
+    </style>
+
+    <div class="container reports-hero">
+        <h1 class="display-4 font-weight-bold mb-4 animate__animated animate__fadeInDown text-navy">Submitted Issues
+        </h1>
+        <div class="decorative-line mx-auto"
+            style="margin-bottom: 40px; width: 60px; height: 3px; background: #D4AF37; border-radius: 2px;"></div>
+        <p class="lead mb-5 animate__animated animate__fadeInUp">Review the latest feedback and issues submitted by our
+            users.</p>
+    </div>
+
+    <div class="container pb-5">
+        <div class="row g-4">
+            {% for i in post %}
+            <div class="col-md-6 mb-4 wow fadeInUp" data-wow-delay="0.1s">
+                <div class="glass-card issue-card hover-glow-gold-smooth">
+                    <span class="issue-badge"><i class="fas fa-ticket-alt mr-2"></i>Issue Ticket</span>
+
+                    <h4 class="text-navy font-weight-bold mb-2"><i class="fas fa-user-circle mr-2"
+                            style="color: #D4AF37;"></i>{{ i.name }}</h4>
+                    <div class="decorative-line"
+                        style="margin-bottom: 10px; width: 40px; height: 2px; background: #D4AF37; border-radius: 2px;">
+                    </div>
+
+                    <p class="mb-1" style="word-break: break-word;"><strong class="text-navy">Email:</strong> <span
+                            class="text-muted">{{ i.email }}</span></p>
+                    <p class="mb-2" style="word-break: break-word;"><strong class="text-navy">Subject:</strong> <span
+                            class="text-muted">{{ i.subject }}</span></p>
+
+                    <div class="p-2 mb-2"
+                        style="background: rgba(0,0,128,0.05); border-left: 3px solid #D4AF37; border-radius: 5px; word-break: break-word;">
+                        <strong class="text-navy d-block mb-1"><i class="fas fa-comment-dots mr-2"></i>Message:</strong>
+                        <p class="text-muted mb-0" style="font-style: italic; white-space: pre-wrap;">"{{ i.message }}"
+                        </p>
+                    </div>
+
+                    {% if i.image %}
+                    <div class="text-center mt-3">
+                        <img src="{{ i.image.url }}" class="issue-img hover-zoom hover-glow-gold-smooth"
+                            alt="Issue Attachment">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
+        <div class="row pt-5">
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
+                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
+                    India</p>
+                <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
+                <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
+                <h6 class="text-uppercase text-white py-2">Follow Us</h6>
+                <div class="d-flex justify-content-start">
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
+                <div class="d-flex flex-column justify-content-start">
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
+                        Registration</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
+                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
+                    <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
+                <div class="row mx-n1">
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
+                    </div>
+                    <div class="col-4 px-1 mb-2">
+                        <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-5">
+                <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
+                <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles
+                    and professional drivers ensure a safe and enjoyable experience.</p>
+                <form method="POST"> {% csrf_token %}
+                    <div class="w-100 mb-3">
+                        <div class="input-group">
+                            <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
+                                placeholder="Your Email" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-primary text-uppercase px-3" type="submit">Sign Up</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid bg-dark py-4 px-sm-3 px-md-5">
+        <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
+        <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Required JS for Animations -->
+    <script src="{% static 'lib/wow/wow.min.js' %}"></script>
+    <script>
+        if (typeof WOW !== 'undefined') {
+            new WOW().init();
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const body = document.body;
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                body.setAttribute("data-theme", savedTheme);
+            }
+        });
+    </script>
+
+    {% endblock %}
+
+
+
+
+
+</body>
+<script src="{% static 'js/bootstrap.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+
+
+</html>

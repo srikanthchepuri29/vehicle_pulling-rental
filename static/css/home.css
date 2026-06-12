@@ -1,0 +1,14 @@
+body {
+    background-color: #d6d6d6 !important;
+    margin: 20px !important;
+    padding: 20px !important;
+    
+}
+
+/* Center text inside main container */
+.container, #main, #sidebar, #bottom, #top {
+    
+    margin: 10px auto !important;
+    padding: 10px !important;
+}
+

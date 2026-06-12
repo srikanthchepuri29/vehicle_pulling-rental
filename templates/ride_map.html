@@ -1,0 +1,1503 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ride Booking & Live Tracking</title>
+    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --primary: #000080;
+            --primary-light: rgba(0, 0, 128, 0.1);
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f1c40f;
+            --bg-light: #f8f9fa;
+            --border-color: #e0e0e0;
+            --text-dark: #1a1a1a;
+            --text-muted: #666;
+            --shadow-premium: 0 15px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Leaflet Map Styling */
+        #map {
+            height: 100vh;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Floating Nav Header */
+        .top-nav {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 60px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--primary);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            cursor: pointer;
+            pointer-events: auto;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* Floating Side Control Panel */
+        .ride-panel {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+            width: 400px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow-premium);
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            scrollbar-width: thin;
+        }
+
+        .ride-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ride-panel::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+        /* Panel Headers */
+        .panel-header {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-header i {
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 12px;
+            margin-top: 15px;
+        }
+
+        /* Premium Form Controls */
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 16px;
+            z-index: 5;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 16px 15px 46px;
+            border-radius: 14px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            font-size: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 0, 128, 0.08);
+        }
+
+        /* Suggestions Dropdown for Nominatim Autocomplete */
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 999;
+            max-height: 220px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 4px;
+        }
+
+        .suggestion-item {
+            padding: 14px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.2s ease;
+            font-weight: 500;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .suggestion-item:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .flex-row .input-group {
+            flex: 1;
+        }
+
+        /* Premium Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn.black {
+            background: #111;
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn.black:hover {
+            background: #222;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+        }
+
+        .btn.primary-blue {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(0, 0, 128, 0.25);
+        }
+
+        .btn.primary-blue:hover {
+            background: #000066;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0, 0, 128, 0.35);
+        }
+
+        .btn.success-btn {
+            background: var(--success);
+            color: #fff;
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.25);
+        }
+
+        .btn.success-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(46, 204, 113, 0.35);
+        }
+
+        /* Vehicle Selector Grid */
+        .vehicle-selector {
+            display: flex;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .vehicle-card {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 18px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            background: #fff;
+        }
+
+        .vehicle-card.active {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 128, 0.08);
+        }
+
+        .vehicle-card .emoji {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .vehicle-card span {
+            display: block;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        /* Ride Option Card (Uber/Rapido style) */
+        .ride-option {
+            display: none;
+            margin-top: 20px;
+            border: 2px dashed var(--primary);
+            border-radius: 18px;
+            padding: 20px;
+            background: #fff;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .ride-option.active {
+            display: block;
+        }
+
+        .ride-option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ride-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .car-icon-wrapper {
+            width: 55px;
+            height: 55px;
+            background: #f1f5f9;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .ride-details h4 {
+            margin: 0;
+            font-size: 17px;
+            color: var(--text-dark);
+            font-weight: 700;
+        }
+
+        .ride-details p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .price-tag {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        .divider {
+            height: 1.5px;
+            background: var(--border-color);
+            margin: 28px 0;
+        }
+
+        /* ========================================= */
+        /* LIVE TRACKING SYSTEM UI (Sleek and Clean) */
+        /* ========================================= */
+        #tracking-ui {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Status header with Pulse indicator */
+        .status-header-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            background: rgba(46, 204, 113, 0.08);
+            padding: 14px 20px;
+            border-radius: 14px;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            color: var(--success);
+            font-size: 15px;
+        }
+
+        .status-pulse {
+            width: 10px;
+            height: 10px;
+            background: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        .tracking-stage-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 5px 0;
+            color: var(--primary);
+        }
+
+        .tracking-stage-subtitle {
+            color: var(--text-muted);
+            margin: 0 0 20px 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Premium Booking Summary Card in Tracking View */
+        .booking-summary-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+
+        .summary-location-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .summary-location-item .loc-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-top: 4px;
+            flex-shrink: 0;
+        }
+
+        .summary-location-item.pickup-loc .loc-dot {
+            background: var(--success);
+            border: 3px solid #e8f5e9;
+        }
+
+        .summary-location-item.drop-loc .loc-dot {
+            background: var(--danger);
+            border: 3px solid #ffebee;
+        }
+
+        .summary-location-item .loc-info {
+            flex: 1;
+        }
+
+        .summary-location-item label {
+            display: block;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-location-item span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.4;
+            display: block;
+        }
+
+        .summary-connector {
+            width: 2px;
+            height: 24px;
+            background: var(--border-color);
+            margin-left: 6px;
+            border-radius: 2px;
+        }
+
+        .summary-fare-badge {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-light);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 0, 128, 0.05);
+        }
+
+        .summary-fare-badge span {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .summary-fare-badge .val {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Live Speed, ETA & Dist Stats Bar */
+        .live-stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: #111;
+            color: #fff;
+            padding: 18px 12px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            gap: 8px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .stat-item i {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .stat-item label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-weight: 800;
+            font-size: 17px;
+            color: #fff;
+        }
+
+        /* Turn-By-Turn UI Card */
+        .turn-by-turn {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            background: #ebf5ff;
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 6px 15px rgba(0,123,255,0.06);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .turn-icon-box {
+            font-size: 26px;
+            color: var(--primary);
+            width: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .turn-details {
+            flex: 1;
+        }
+
+        .turn-distance {
+            font-weight: 800;
+            font-size: 17px;
+            color: var(--primary);
+        }
+
+        .turn-instruction {
+            color: #444;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Driver Tracking Profile */
+        .driver-tracking-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px 0;
+            border-top: 1.5px solid var(--border-color);
+            border-bottom: 1.5px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .driver-tracking-profile img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 3px solid var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            object-fit: cover;
+        }
+
+        .driver-name-box {
+            flex: 1;
+        }
+
+        .driver-name-box h4 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .driver-meta-text {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .driver-meta-text i {
+            color: var(--warning);
+        }
+
+        .driver-vehicle-plate {
+            background: #f1f5f9;
+            color: var(--text-dark);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid #cbd5e1;
+            letter-spacing: 0.5px;
+        }
+
+        /* OTP Security Code Card */
+        .otp-display {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .otp-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .otp-code {
+            font-size: 26px;
+            letter-spacing: 8px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        /* Slide animations */
+        @keyframes slideUp {
+            from { transform: translateY(15px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive Mobile Layout */
+        @media (max-width: 600px) {
+            .top-nav {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+            }
+
+            .ride-panel {
+                bottom: 0;
+                top: auto;
+                left: 0;
+                width: 100%;
+                border-radius: 28px 28px 0 0;
+                box-sizing: border-box;
+                padding: 24px;
+                max-height: 80vh;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Top Bar -->
+    <div class="top-nav">
+        <a href="{% url 'home' %}" class="nav-btn">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <a href="{% url 'feature' %}" class="nav-btn">
+            <i class="fas fa-arrow-left"></i> Features Page
+        </a>
+    </div>
+
+    <!-- Leaflet Interactive Map -->
+    <div id="map"></div>
+
+    <!-- Left Float Panel -->
+    <div class="ride-panel">
+
+        <!-- Booking Mode Panel -->
+        <div id="booking-ui">
+            <div class="panel-header">
+                <i class="fas fa-paper-plane"></i> Quick Book Ride
+            </div>
+            
+            <div class="section-title">Your Route</div>
+
+            <!-- Pickup Address Input -->
+            <div class="input-group">
+                <i class="fas fa-dot-circle text-primary" style="color: #007bff;"></i>
+                <input id="pickup" placeholder="Enter Pickup Location" autocomplete="off">
+                <div id="pickup-suggestions" class="suggestions-dropdown"></div>
+            </div>
+
+            <!-- Drop Address Input -->
+            <div class="input-group">
+                <i class="fas fa-map-marker-alt text-danger" style="color: #dc3545;"></i>
+                <input id="drop" placeholder="Enter Destination Location" autocomplete="off">
+                <div id="drop-suggestions" class="suggestions-dropdown"></div>
+            </div>
+
+            <button class="btn black" onclick="calculateRouteBtn()">
+                <i class="fas fa-route"></i> Check Route & Prices
+            </button>
+
+            <!-- Vehicle Selection grid -->
+            <div class="vehicle-selector" id="vehicle-selector" style="display: none;">
+                <div class="vehicle-card active" id="v-car" onclick="selectVehicle('car')">
+                    <div class="emoji">🚘</div>
+                    <span>Premium Car</span>
+                </div>
+                <div class="vehicle-card" id="v-bike" onclick="selectVehicle('bike')">
+                    <div class="emoji">🏍️</div>
+                    <span>Express Bike</span>
+                </div>
+            </div>
+
+            <!-- Premium Dynamic Pricing Card -->
+            <div class="ride-option" id="ride-option-card">
+                <div class="ride-option-header">
+                    <div class="ride-info">
+                        <div class="car-icon-wrapper" id="opt-icon">🚘</div>
+                        <div class="ride-details">
+                            <h4 id="opt-title">Premium Sedan</h4>
+                            <p id="distance-time">-- km • -- min</p>
+                        </div>
+                    </div>
+                    <div class="price-tag" id="price-display">₹--</div>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <!-- Hidden fields to pass state -->
+                    <input type="hidden" name="pickup" id="pickup_hidden">
+                    <input type="hidden" name="drop" id="drop_hidden">
+                    <input type="hidden" name="distance" id="distance_hidden">
+                    <input type="hidden" name="vehicle" id="vehicle_hidden" value="car">
+                    
+                    <button type="button" class="btn primary-blue" onclick="confirmAndTrack()">
+                        <i class="fas fa-check-circle"></i> Confirm Booking
+                    </button>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="panel-header">
+                <i class="fas fa-share-alt"></i> Publish a Ride
+            </div>
+            
+            <div class="section-title">Offer empty seats</div>
+
+            <form method="POST" action="/add-ride/">
+                {% csrf_token %}
+                <div class="input-group">
+                    <i class="fas fa-dot-circle" style="color: #007bff;"></i>
+                    <input id="publish-start" name="start" placeholder="Leaving from" required autocomplete="off">
+                    <div id="publish-start-suggestions" class="suggestions-dropdown"></div>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt" style="color: #dc3545;"></i>
+                    <input id="publish-dest" name="destination" placeholder="Going to" required autocomplete="off">
+                    <div id="publish-dest-suggestions" class="suggestions-dropdown"></div>
+                </div>
+                
+                <div class="flex-row">
+                    <div class="input-group">
+                        <i class="far fa-calendar-alt" style="left:16px;"></i>
+                        <input type="date" name="date" required style="padding-left: 44px;">
+                    </div>
+                    <div class="input-group">
+                        <i class="far fa-clock" style="left:16px;"></i>
+                        <input type="time" name="time" required style="padding-left: 44px;">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-user-friends"></i>
+                    <input type="number" name="seats" placeholder="Seats available" min="1" max="8" required>
+                </div>
+                <button type="submit" class="btn primary-blue">
+                    <i class="fas fa-bullhorn"></i> Publish Ride
+                </button>
+            </form>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- LIVE TRACKING UI (Visible during tracker) -->
+        <!-- ========================================= -->
+        <div id="tracking-ui">
+            <!-- Stage Header Status -->
+            <div class="status-header-box">
+                <div class="status-left">
+                    <div class="status-pulse"></div>
+                    <span id="tracking-status-badge">LIVE TRACKING ACTIVE</span>
+                </div>
+                <span style="font-weight: 700; font-size: 13px; color: var(--primary);">Secure Mode</span>
+            </div>
+            
+            <h3 class="tracking-stage-title" id="tracking-status-title">Driver is Arriving</h3>
+            <p class="tracking-stage-subtitle" id="tracking-status-subtitle">The vehicle is heading to your pickup location.</p>
+            
+            <!-- Dynamic Booking Summary Card -->
+            <div class="booking-summary-card">
+                <div class="summary-location-item pickup-loc">
+                    <div class="loc-dot"></div>
+                    <div class="loc-info">
+                        <label>Pickup Location</label>
+                        <span id="lbl-pickup">Madhapur Metro Station</span>
+                    </div>
+                </div>
+                <div class="summary-connector"></div>
+                <div class="summary-location-item drop-loc">
+                    <div class="loc-dot"></div>
+                    <div class="loc-info">
+                        <label>Drop-Off Location</label>
+                        <span id="lbl-drop">Jubilee Hills Checkpost</span>
+                    </div>
+                </div>
+                <div class="summary-fare-badge">
+                    <span>GUARANTEED FARE</span>
+                    <span class="val" id="lbl-price">₹145</span>
+                </div>
+            </div>
+
+            <!-- Live Stats Indicator Bar -->
+            <div class="live-stats-bar" id="live-stats-bar">
+                <div class="stat-item">
+                    <i class="fas fa-tachometer-alt" style="color: #3498db;"></i>
+                    <label>Current Speed</label>
+                    <span class="stat-value" id="live-speed">0 km/h</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-clock" style="color: #f1c40f;"></i>
+                    <label>ETA</label>
+                    <span class="stat-value" id="live-eta">-- min</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-route" style="color: #e74c3c;"></i>
+                    <label>Distance</label>
+                    <span class="stat-value" id="live-dist">-- km</span>
+                </div>
+            </div>
+
+            <!-- Turn-by-Turn Dynamic Navigation Card -->
+            <div class="turn-by-turn" id="turn-ui">
+                <div class="turn-icon-box" id="turn-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="turn-details">
+                    <div class="turn-distance" id="turn-dist">In 150 m</div>
+                    <div class="turn-instruction" id="turn-text">Turn right onto Madhapur Road</div>
+                </div>
+            </div>
+
+            <!-- Driver Information Block -->
+            <div class="driver-tracking-profile">
+                <img id="tracking-driver-img" src="/media/images/harsha.png" alt="Driver" onerror="this.src='/media/images/team-1.jpg'">
+                <div class="driver-name-box">
+                    <h4 id="tracking-rider-name">Rahul Sharma</h4>
+                    <div class="driver-meta-text">
+                        <i class="fas fa-star"></i>
+                        <span id="tracking-rating">4.8</span>
+                        <span>• 89 Rides Completed</span>
+                    </div>
+                </div>
+                <div class="driver-vehicle-plate" id="tracking-plate">
+                    TS 09 EU 1234
+                </div>
+            </div>
+
+            <!-- OTP PIN Code for Rider Validation -->
+            <div class="otp-display" id="otp-container">
+                <div class="otp-title">Share this secure pin to start ride</div>
+                <span class="otp-code" id="tracking-otp">7492</span>
+            </div>
+            
+            <!-- Manual Start Button (Shown when driver is arrived) -->
+            <button class="btn success-btn w-100" id="btn-start-ride" style="display: none; font-size: 16px; margin-bottom: 20px;">
+                <i class="fas fa-key"></i> Share PIN & Start Ride
+            </button>
+
+            <!-- Active Ride Call/Cancel Controls -->
+            <div class="flex-row" id="tracking-actions">
+                <button class="btn" style="background: #fee2e2; color: var(--danger); flex: 1;" onclick="window.location.href='/feature/'">
+                    Cancel Ride
+                </button>
+                <button class="btn black" style="flex: 2;" onclick="alert('Calling driver via encrypted line...')">
+                    <i class="fas fa-phone-alt"></i> Call Driver
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Leaflet & Pure JS Autocomplete / Routing Logic -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, pickupMarker, dropMarker, routePolyline, vehicleMarker;
+        
+        // Saved coordinate state for booking
+        let bookingCoords = {
+            pickup: null,
+            drop: null
+        };
+
+        // Simulated state storage for vehicle plate, driver rating, name etc.
+        const driversList = {
+            car: {
+                name: "Rahul Sharma",
+                rating: "4.8",
+                plate: "TS 09 EU 1234",
+                img: "/media/images/harsha.png",
+                emoji: "🚘",
+                title: "Premium Sedan"
+            },
+            bike: {
+                name: "Priya Singh",
+                rating: "4.9",
+                plate: "TS 12 AB 5678",
+                img: "/media/images/team-2.jpg",
+                emoji: "🏍️",
+                title: "Express Bike"
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. Initialize beautiful Light-themed Voyager Map via Leaflet
+            map = L.map('map', {
+                zoomControl: false
+            }).setView([17.4486, 78.3908], 13); // Centered on Madhapur, Hyderabad
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            // Add Zoom control at bottom right for clean layout
+            L.control.zoom({
+                position: 'bottomright'
+            }).addTo(map);
+
+            // 2. Setup Address Autocomplete Dropdowns (Nominatim Geocoding API)
+            setupAutocomplete('pickup', 'pickup-suggestions');
+            setupAutocomplete('drop', 'drop-suggestions');
+            setupAutocomplete('publish-start', 'publish-start-suggestions');
+            setupAutocomplete('publish-dest', 'publish-dest-suggestions');
+
+            // 3. Detect if page is in Live Tracking mode (from URL query string)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('tracking') === 'true') {
+                // HIDE the raw input form completely
+                document.getElementById('booking-ui').style.display = 'none'; 
+                // SHOW the beautiful tracker panel clearly
+                document.getElementById('tracking-ui').style.display = 'block';
+                
+                // Initialize the Live Vehicle Simulation with the URL parameter states
+                initLiveTrackingFromUrl();
+            }
+        });
+
+        // Nominatim Geocoding Autocomplete Search Input Setup
+        function setupAutocomplete(inputId, dropdownId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            let timeout = null;
+
+            input.addEventListener('input', () => {
+                clearTimeout(timeout);
+                const query = input.value.trim();
+
+                if (query.length < 3) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+
+                // Debounce address suggestions to 350ms
+                timeout = setTimeout(async () => {
+                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&countrycodes=in`;
+                    try {
+                        const res = await fetch(url);
+                        const data = await res.json();
+                        dropdown.innerHTML = '';
+
+                        if (data && data.length > 0) {
+                            data.forEach(item => {
+                                const div = document.createElement('div');
+                                div.className = 'suggestion-item';
+                                div.innerText = item.display_name;
+                                div.addEventListener('click', () => {
+                                    input.value = item.display_name;
+                                    dropdown.style.display = 'none';
+                                    
+                                    // Save geocoded coordinates in state
+                                    const role = inputId.includes('pickup') ? 'pickup' : (inputId.includes('drop') ? 'drop' : null);
+                                    if (role) {
+                                        bookingCoords[role] = {
+                                            lat: parseFloat(item.lat),
+                                            lng: parseFloat(item.lon),
+                                            name: item.display_name
+                                        };
+                                    }
+                                });
+                                dropdown.appendChild(div);
+                            });
+                            dropdown.style.display = 'block';
+                        } else {
+                            dropdown.style.display = 'none';
+                        }
+                    } catch (e) {
+                        console.error("Geocoding failed", e);
+                    }
+                }, 350);
+            });
+
+            // Close suggestion lists if user clicks elsewhere
+            document.addEventListener('click', (e) => {
+                if (e.target !== input && e.target !== dropdown) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        }
+
+        // Action when pressing "Check Route & Prices"
+        async function calculateRouteBtn() {
+            let pickupVal = document.getElementById("pickup").value;
+            let dropVal = document.getElementById("drop").value;
+
+            if (!pickupVal || !dropVal) {
+                alert("Please enter both pickup and destination locations.");
+                return;
+            }
+
+            // Fallback: Geocode on the fly if suggestion dropdown wasn't clicked
+            if (!bookingCoords.pickup) {
+                const geo = await geocodeText(pickupVal);
+                if (geo) bookingCoords.pickup = geo;
+            }
+            if (!bookingCoords.drop) {
+                const geo = await geocodeText(dropVal);
+                if (geo) bookingCoords.drop = geo;
+            }
+
+            if (!bookingCoords.pickup || !bookingCoords.drop) {
+                alert("Could not geocode addresses. Please type specific locations.");
+                return;
+            }
+
+            // Compute OSRM Driving Route
+            const route = await getDrivingRoute(bookingCoords.pickup, bookingCoords.drop);
+            if (route) {
+                drawRouteOnMap(route);
+                
+                const dist = route.distance / 1000; // in km
+                const durationMins = Math.round(route.duration / 60);
+
+                // Update hidden elements
+                document.getElementById('pickup_hidden').value = bookingCoords.pickup.name;
+                document.getElementById('drop_hidden').value = bookingCoords.drop.name;
+                document.getElementById('distance_hidden').value = dist;
+
+                // Update pricing and details card
+                document.getElementById('distance-time').innerText = `${dist.toFixed(1)} km • ${durationMins} min`;
+                
+                // Show grid selector & details options card
+                document.getElementById('vehicle-selector').style.display = 'flex';
+                document.getElementById('ride-option-card').classList.add('active');
+                
+                updateVehicleUI();
+            } else {
+                alert("Unable to fetch driving route. drawing direct path...");
+                // fallback direct polyline drawing
+                drawDirectPath(bookingCoords.pickup, bookingCoords.drop);
+            }
+        }
+
+        async function geocodeText(text) {
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=1&countrycodes=in`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    return {
+                        lat: parseFloat(data[0].lat),
+                        lng: parseFloat(data[0].lon),
+                        name: data[0].display_name
+                    };
+                }
+            } catch(e) {
+                console.error(e);
+            }
+            return null;
+        }
+
+        async function getDrivingRoute(origin, dest) {
+            const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${dest.lng},${dest.lat}?geometries=geojson&steps=true&overview=full`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.code === 'Ok') return data.routes[0];
+            } catch(e) { console.error("OSRM failed", e); }
+            return null;
+        }
+
+        function drawRouteOnMap(route) {
+            // Clear existing elements
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (dropMarker) map.removeLayer(dropMarker);
+            if (routePolyline) map.removeLayer(routePolyline);
+
+            // Leaflet standard coordinates array is [lat, lng]
+            const coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+
+            const pickupIcon = L.divIcon({
+                html: '<div style="background:#2ecc71; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+            const dropIcon = L.divIcon({
+                html: '<div style="background:#e74c3c; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+
+            const pickLatLng = [bookingCoords.pickup.lat, bookingCoords.pickup.lng];
+            const dropLatLng = [bookingCoords.drop.lat, bookingCoords.drop.lng];
+
+            pickupMarker = L.marker(pickLatLng, { icon: pickupIcon }).addTo(map).bindPopup('Pickup Location');
+            dropMarker = L.marker(dropLatLng, { icon: dropIcon }).addTo(map).bindPopup('Destination Location');
+
+            routePolyline = L.polyline(coords, { color: '#000080', weight: 5, opacity: 0.8 }).addTo(map);
+            map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+        }
+
+        function drawDirectPath(origin, dest) {
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (dropMarker) map.removeLayer(dropMarker);
+            if (routePolyline) map.removeLayer(routePolyline);
+
+            const pickupIcon = L.divIcon({
+                html: '<div style="background:#2ecc71; width:16px; height:16px; border-radius:50%; border:2.5px solid white;"></div>',
+                className: ''
+            });
+            const dropIcon = L.divIcon({
+                html: '<div style="background:#e74c3c; width:16px; height:16px; border-radius:50%; border:2.5px solid white;"></div>',
+                className: ''
+            });
+
+            pickupMarker = L.marker([origin.lat, origin.lng], { icon: pickupIcon }).addTo(map);
+            dropMarker = L.marker([dest.lat, dest.lng], { icon: dropIcon }).addTo(map);
+
+            routePolyline = L.polyline([[origin.lat, origin.lng], [dest.lat, dest.lng]], { color: '#000080', weight: 4, dashArray: '8, 8' }).addTo(map);
+            map.fitBounds(routePolyline.getBounds(), { padding: [50, 50] });
+        }
+
+        function selectVehicle(type) {
+            document.getElementById("v-car").classList.remove("active");
+            document.getElementById("v-bike").classList.remove("active");
+            document.getElementById("v-" + type).classList.add("active");
+            document.getElementById("vehicle_hidden").value = type;
+            updateVehicleUI();
+        }
+
+        function updateVehicleUI() {
+            const type = document.getElementById("vehicle_hidden").value;
+            const dist = parseFloat(document.getElementById("distance_hidden").value) || 0;
+            
+            const driver = driversList[type];
+            document.getElementById("opt-icon").innerText = driver.emoji;
+            document.getElementById("opt-title").innerText = driver.title;
+            
+            const multiplier = type === 'bike' ? 5 : 10;
+            const finalPrice = Math.round(dist * multiplier);
+            document.getElementById("price-display").innerText = "₹" + finalPrice;
+        }
+
+        // Actions when clicking "Confirm Booking"
+        function confirmAndTrack() {
+            const pName = document.getElementById('pickup_hidden').value;
+            const dName = document.getElementById('drop_hidden').value;
+            const price = document.getElementById('price-display').innerText;
+            const vehicle = document.getElementById('vehicle_hidden').value;
+
+            // Direct simulation load
+            document.getElementById('booking-ui').style.display = 'none'; 
+            document.getElementById('tracking-ui').style.display = 'block';
+
+            // Clean existing map details
+            if (routePolyline) map.removeLayer(routePolyline);
+
+            startLiveTrackingSimulation(
+                bookingCoords.pickup.lat, bookingCoords.pickup.lng,
+                bookingCoords.drop.lat, bookingCoords.drop.lng,
+                pName, dName, price, vehicle
+            );
+        }
+
+        // =========================================
+        // LIVE SIMULATION & TRACKING CODE (Leaflet)
+        // =========================================
+        function initLiveTrackingFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const pickLat = parseFloat(urlParams.get('pickLat')) || 17.4486;
+            const pickLng = parseFloat(urlParams.get('pickLng')) || 78.3908;
+            const dropLat = parseFloat(urlParams.get('dropLat')) || 17.4300;
+            const dropLng = parseFloat(urlParams.get('dropLng')) || 78.4080;
+            
+            const pName = decodeURIComponent(urlParams.get('pName') || "Madhapur Metro Station");
+            const dName = decodeURIComponent(urlParams.get('dName') || "Jubilee Hills Checkpost");
+            const rName = decodeURIComponent(urlParams.get('rName') || "Rahul Sharma");
+            const price = decodeURIComponent(urlParams.get('price') || "₹145");
+            const vehicle = urlParams.get('vehicle') || "car";
+
+            startLiveTrackingSimulation(pickLat, pickLng, dropLat, dropLng, pName, dName, price, vehicle);
+        }
+
+        // Haversine Distance helper
+        function getDistanceMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth Radius in meters
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+
+            const a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+            return R * c;
+        }
+
+        async function startLiveTrackingSimulation(pickLat, pickLng, dropLat, dropLng, pName, dName, price, vehicleType) {
+            // Update active booking details inside tracker cards
+            document.getElementById('lbl-pickup').innerText = pName;
+            document.getElementById('lbl-drop').innerText = dName;
+            document.getElementById('lbl-price').innerText = price;
+
+            // Load driver metadata
+            const driver = driversList[vehicleType] || driversList.car;
+            document.getElementById('tracking-rider-name').innerText = driver.name;
+            document.getElementById('tracking-rating').innerText = driver.rating;
+            document.getElementById('tracking-plate').innerText = driver.plate;
+            document.getElementById('tracking-driver-img').src = driver.img;
+
+            // Setup customized high fidelity vector vehicle icon
+            const carSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000080" width="36" height="36"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>');
+            const bikeSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232ecc71" width="36" height="36"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.4l1.8-1.9zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>');
+            
+            const vehicleIcon = L.icon({
+                iconUrl: vehicleType === 'bike' ? bikeSvg : carSvg,
+                iconSize: [38, 38],
+                iconAnchor: [19, 19]
+            });
+
+            // Set up driver starting coordinate (Simulated Offset away from pickup)
+            const driverStartLat = pickLat - 0.007;
+            const driverStartLng = pickLng - 0.008;
+
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (dropMarker) map.removeLayer(dropMarker);
+
+            const pickupIcon = L.divIcon({
+                html: '<div style="background:#2ecc71; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+            const dropIcon = L.divIcon({
+                html: '<div style="background:#e74c3c; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+
+            pickupMarker = L.marker([pickLat, pickLng], { icon: pickupIcon }).addTo(map).bindPopup('Pickup Location');
+            dropMarker = L.marker([dropLat, dropLng], { icon: dropIcon }).addTo(map).bindPopup('Dropoff Location');
+
+            if(vehicleMarker) map.removeLayer(vehicleMarker);
+            vehicleMarker = L.marker([driverStartLat, driverStartLng], { icon: vehicleIcon }).addTo(map);
+
+            // Phase 1: Driver travelling from simulated spawn to Pickup Location
+            let route1 = await getDrivingRoute({ lat: driverStartLat, lng: driverStartLng }, { lat: pickLat, lng: pickLng });
+            let path1 = route1 ? route1.geometry.coordinates.map(c => [c[1], c[0]]) : [[driverStartLat, driverStartLng], [pickLat, pickLng]];
+            let steps1 = route1 ? route1.legs[0].steps : [];
+
+            map.setView([driverStartLat, driverStartLng], 15);
+
+            animateRoute(path1, steps1, "Driver is Arriving", () => {
+                // Driver Arrived
+                document.getElementById('tracking-status-title').innerText = "Driver Arrived!";
+                document.getElementById('tracking-status-subtitle').innerText = "Please share the PIN with the driver to begin the ride.";
+                document.getElementById('otp-container').style.borderColor = "var(--success)";
+                document.getElementById('otp-container').style.background = "#e8f5e9";
+                document.getElementById('turn-ui').style.display = 'none';
+
+                // Display Start Button
+                const btnStart = document.getElementById('btn-start-ride');
+                btnStart.style.display = 'block';
+                btnStart.onclick = async () => {
+                    btnStart.style.display = 'none';
+
+                    // Start Phase 2: Heading from Pickup to Drop destination
+                    document.getElementById('tracking-status-title').innerText = "On Trip";
+                    document.getElementById('tracking-status-subtitle').innerText = `Heading to ${dName}`;
+                    document.getElementById('otp-container').style.display = 'none';
+
+                    let route2 = await getDrivingRoute({ lat: pickLat, lng: pickLng }, { lat: dropLat, lng: dropLng });
+                    let path2 = route2 ? route2.geometry.coordinates.map(c => [c[1], c[0]]) : [[pickLat, pickLng], [dropLat, dropLng]];
+                    let steps2 = route2 ? route2.legs[0].steps : [];
+
+                    animateRoute(path2, steps2, "On Trip", () => {
+                        // Trip Finished
+                        document.getElementById('tracking-status-title').innerText = "Trip Completed";
+                        document.getElementById('tracking-status-subtitle').innerText = "You have safely arrived at your destination.";
+                        document.getElementById('turn-ui').style.display = 'none';
+                        document.getElementById('tracking-actions').innerHTML = `
+                            <button class="btn success-btn w-100" onclick="window.location.href='/feature/'">
+                                <i class="fas fa-star"></i> Rate Ride & Return
+                            </button>
+                        `;
+                    });
+                };
+            });
+        }
+
+        // Smooth vehicle route animation logic
+        function animateRoute(points, steps, stageName, onComplete) {
+            // Draw visual blue path overlay
+            if (routePolyline) map.removeLayer(routePolyline);
+            routePolyline = L.polyline(points, { color: '#007bff', weight: 6, dashArray: '10, 12', opacity: 0.85 }).addTo(map);
+
+            let stepIndex = 0;
+            let currentPos = points[0];
+
+            let speed = 42; // km/h base
+            const intervalTime = 50; // ms
+
+            // Expand points to create high density smooth transitions
+            const smoothRoute = [];
+            const segments = 15;
+            for(let i=0; i<points.length - 1; i++){
+                const start = points[i];
+                const end = points[i+1];
+                for(let j=0; j<segments; j++) {
+                    const frac = j/segments;
+                    const lat = start[0] + (end[0] - start[0]) * frac;
+                    const lng = start[1] + (end[1] - start[1]) * frac;
+                    smoothRoute.push([lat, lng]);
+                }
+            }
+            smoothRoute.push(points[points.length - 1]);
+
+            let stepCount = 0;
+            let totalSteps = smoothRoute.length;
+
+            if(window.animInterval) clearInterval(window.animInterval);
+
+            // Compute turn step index tracker
+            let currentStepIndex = 0;
+            let distanceAccrued = 0;
+
+            window.animInterval = setInterval(() => {
+                if (stepCount >= totalSteps) {
+                    clearInterval(window.animInterval);
+                    document.getElementById('live-speed').innerText = "0 km/h";
+                    if (onComplete) onComplete();
+                    return;
+                }
+
+                const prevPos = currentPos;
+                currentPos = smoothRoute[stepCount];
+                
+                // Move vehicle marker
+                vehicleMarker.setLatLng(currentPos);
+                map.panTo(currentPos);
+
+                // Add small randomness to speed
+                speed = 38 + Math.floor(Math.random() * 18);
+                if (Math.random() < 0.15) {
+                    speed = 12; // simulated traffic halt
+                }
+
+                // Compute distance segment
+                const segmentDist = getDistanceMeters(prevPos[0], prevPos[1], currentPos[0], currentPos[1]);
+                distanceAccrued += segmentDist;
+
+                // Handle Turn-by-turn alerts
+                if (steps && steps.length > 0) {
+                    let currentStep = steps[currentStepIndex];
+                    
+                    // Cycle next step
+                    while (currentStep && distanceAccrued >= currentStep.distance && currentStepIndex < steps.length - 1) {
+                        distanceAccrued -= currentStep.distance;
+                        currentStepIndex++;
+                        currentStep = steps[currentStepIndex];
+                    }
+
+                    if (currentStep && currentStepIndex < steps.length) {
+                        document.getElementById('turn-ui').style.display = 'flex';
+                        const distRemaining = Math.max(0, currentStep.distance - distanceAccrued);
+                        document.getElementById('turn-dist').innerText = `In ${Math.round(distRemaining)} m`;
+
+                        const maneuver = currentStep.maneuver || {};
+                        const type = maneuver.type || "straight";
+                        const modifier = maneuver.modifier || "straight";
+                        const road = currentStep.name || "the road";
+
+                        let instruction = `Proceed straight on ${road}`;
+                        let iconHtml = '<i class="fas fa-arrow-up"></i>';
+
+                        if (type.includes('turn')) {
+                            instruction = `Turn ${modifier} onto ${road}`;
+                            iconHtml = modifier.includes('left') ? '<i class="fas fa-arrow-left"></i>' : '<i class="fas fa-arrow-right"></i>';
+                        } else if (type === 'arrive') {
+                            instruction = 'Arriving at location';
+                            iconHtml = '<i class="fas fa-flag-checkered"></i>';
+                        }
+                        
+                        document.getElementById('turn-text').innerText = instruction;
+                        document.getElementById('turn-icon').innerHTML = iconHtml;
+                    }
+                }
+
+                // Calculate total remaining path distance
+                let remainingDist = getDistanceMeters(currentPos[0], currentPos[1], points[points.length - 1][0], points[points.length - 1][1]);
+                const remainingDistKm = remainingDist / 1000;
+                const etaMins = Math.max(1, Math.round((remainingDistKm / (speed || 20)) * 60));
+
+                // UI indicators
+                if (speed < 15) {
+                    document.getElementById('tracking-status-subtitle').innerText = "Vehicle slowed down in traffic.";
+                } else if (stageName === "On Trip") {
+                    document.getElementById('tracking-status-subtitle').innerText = "Your ride is in progress.";
+                } else {
+                    document.getElementById('tracking-status-subtitle').innerText = "Driver is approaching your pickup location.";
+                }
+
+                document.getElementById('live-speed').innerText = `${Math.round(speed)} km/h`;
+                document.getElementById('live-dist').innerText = `${remainingDistKm.toFixed(2)} km`;
+                document.getElementById('live-eta').innerText = `${etaMins} min`;
+
+                stepCount++;
+            }, intervalTime);
+        }
+    </script>
+</body>
+</html>
