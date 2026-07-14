@@ -1,46 +1,16 @@
+{% extends 'index.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <title>Car Details</title>
-    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
-
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
-
-    <!-- Favicon -->
-
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap"
-        rel="stylesheet">
-
-    <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Libraries Stylesheet -->
+{% block extra_head %}
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
     <link href="{% static 'lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
     <link href="{% static 'lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cars.css' %}">
+{% endblock %}
 
-    <!-- Customized Bootstrap Stylesheet -->
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
-
-    <!-- Template Stylesheet -->
-    <link rel="stylesheet" href="{% static 'css/cars.css'%}">
-
-    <!-- Dark Mode Toggle Button -->
-    <button class="dark-mode-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
-        <i class="fas fa-moon" id="themeIcon"></i>
-    </button>
-
-    <!-- Premium Styles -->
-    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <style>
+{% block content %}
+<style>
         .autocomplete-suggestion-item {
             padding: 12px 18px;
             cursor: pointer;
@@ -379,81 +349,10 @@
             font-size: 1.1rem;
         }
     </style>
-</head>
+    <!-- Navbar End -->
 
-<body>
-    <!-- Professional Navbar Start -->
-    <nav class="navbar navbar-expand-lg premium-navbar p-0">
-        <div class="container-fluid">
-            <a class="navbar-brand font-weight-bold" href="http://127.0.0.1:8000/">
-                <i class="fas fa-car-side mr-2"></i>RideShare
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="fa fa-bars"></span>
-            </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:8000/"><i class="fas fa-home mr-1"></i> Home</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="http://127.0.0.1:8000/car/"><i class="fas fa-car mr-1"></i>
-                            Showroom</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'my_bookings' %}"><i class="fas fa-receipt mr-1"></i> My
-                            Bookings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:8000/feature/"><i class="fas fa-road mr-1"></i>
-                            Drive with Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="http://127.0.0.1:8000/Contact_us/"><i
-                                class="fas fa-shield-alt mr-1"></i> Contact Us</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'About' %}"><i class="fas fa-info-circle mr-1"></i> About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'Reports' %}"><i class="fas fa-chart-line mr-1"></i>
-                            Reports</a>
-                    </li>
-                </ul>
 
-                <ul class="navbar-nav ml-auto">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user-circle mr-1"></i> {{ user.username }}
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="userDropdown">
-                            <a class="dropdown-item text-danger" href="{% url 'logout' %}"><i
-                                    class="fas fa-sign-out-alt mr-2"></i> Logout</a>
-                        </div>
-                    </li>
-                    {% else %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="authDropdown" role="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-user-circle mr-1"></i> Account
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right premium-dropdown" aria-labelledby="authDropdown">
-                            <a class="dropdown-item" href="{% url 'login' %}"><i
-                                    class="fas fa-sign-in-alt mr-2"></i> Login</a>
-                            <a class="dropdown-item" href="{% url 'register' %}"><i
-                                    class="fas fa-user-plus mr-2"></i> Sign Up</a>
-                        </div>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <!-- Professional Navbar End -->
 
 
     <!-- Live Showroom Search Loader Overlay -->
@@ -956,84 +855,7 @@
     <!-- Vendor End -->
 
 
-    <!-- Footer Start -->
-    <div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
-        <div class="row pt-5">
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
-                    India</p>
-                <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
-                <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
-                <h6 class="text-uppercase text-white py-2">Follow Us</h6>
-                <div class="d-flex justify-content-start">
-                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                    <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-uppercase text-light mb-4">Usefull Links</h4>
-                <div class="d-flex flex-column justify-content-start">
-                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Private Policy</a>
-                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Term & Conditions</a>
-                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member
-                        Registration</a>
-                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
-                    <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
-                    <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FQAs</a>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
-                <div class="row mx-n1">
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
-                    </div>
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
-                    </div>
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
-                    </div>
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
-                    </div>
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
-                    </div>
-                    <div class="col-4 px-1 mb-2">
-                        <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 mb-5">
-                <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
-                <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles
-                    and professional drivers ensure a safe and enjoyable experience.</p>
-                <form method="POST"> {% csrf_token %}
-                    <div class="w-100 mb-3">
-                        <div class="input-group">
-                            <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
-                                placeholder="Your Email" required>
-
-                            <div class="input-group-append">
-                                <button class="btn btn-primary text-uppercase px-3" type="submit">
-                                    Sign Up
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-    <div class="container-fluid bg-dark  py-4 px-sm-3 px-md-5">
-        <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
-        <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
-    </div>
+{% include 'footer.html' %}
     <!-- Required JS for Animations -->
     <script src="{% static 'lib/wow/wow.min.js' %}"></script>
     <script>
@@ -1415,7 +1237,5 @@
     </script>
 
     <!-- Template Javascript -->
-    <script src="{% static 'js/main-1.js' %}"></script>
-</body>
-
-</html>
+    <script src="{% static 'js/main-1.js' %}?v=1.2"></script>
+{% endblock %}

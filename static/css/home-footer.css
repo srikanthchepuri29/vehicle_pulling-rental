@@ -36,7 +36,7 @@
 }
 
 .container-fluid a.text-body:hover {
-    color: #ff7a00 !important;  /* orange hover */
+    color: #007bff !important;  /* blue hover */
     padding-left: 5px;
 }
 
@@ -58,7 +58,7 @@
 
 /* SOCIAL HOVER */
 .btn-dark:hover {
-    background-color: #ff7a00 !important;
+    background-color: #007bff !important;
     color: #fff;
 }
 
@@ -91,13 +91,13 @@
 
 /* SIGN UP BUTTON */
 .btn-primary {
-    background-color: #ff7a00 !important;
+    background-color: #007bff !important;
     border: none;
     font-weight: 600;
 }
 
 .btn-primary:hover {
-    background-color: #e66a00 !important;
+    background-color: #0056b3 !important;
 }
 
 /* COPYRIGHT TEXT */
@@ -107,7 +107,7 @@
 
 /* LINK IN COPYRIGHT */
 .container-fluid.bg-dark a {
-    color: #ff7a00;
+    color: #007bff;
 }
 
 /* BACK TO TOP BUTTON (OPTIONAL) */

@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Pooling Host - Itineraries</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <style>
+        .premium-navbar {
+            background-color: #ec4899 !important; /* Pink tone for carpool admin */
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .premium-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body {
+            padding-top: 80px !important;
+            background-color: var(--body-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .plan-card {
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(236, 72, 153, 0.15) !important;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .plan-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(236, 72, 153, 0.08);
+        }
+        .accent-pink {
+            color: #ec4899 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Carpool Header Navbar -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid d-flex align-items-center">
+            <!-- Dropdown Menu Icon (Hamburger) -->
+            <div class="dropdown mr-2 d-flex align-items-center" style="align-self: center;">
+                <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
+                    <i class="fas fa-bars"></i>
+                </a>
+                <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="min-width: 310px !important; transform-origin: top left !important;">
+                    <!-- Menu Header -->
+                    <div class="dropdown-user-header d-flex align-items-center" style="background: linear-gradient(135deg, #ec4899 0%, #9d174d 100%) !important;">
+                        <i class="fas fa-users" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
+                        <div>
+                            <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Pooling Settings Console</h6>
+                            <small class="text-white-50" style="font-size: 0.75rem;">Interactive Controls & Settings</small>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Real-Time Controls</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-sync-alt"></i><span>Auto-Match Commuters</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-automatch" checked onclick="showToast('Auto-Match Preferences updated')">
+                                        <label class="custom-control-label" for="switch-pool-automatch"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item" href="#" onclick="showToast('Calculating dynamic fuel share splits...')">
+                                    <i class="fas fa-calculator"></i><span>Fuel Split Calculator</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="{% url 'portal_carpool_bookings' %}">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-bell"></i><span>Match Notifications</span>
+                                    </div>
+                                    <span class="menu-badge badge-orange">4 Pending</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Console Settings</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-female"></i><span>Girls-Only Pooling</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-womenonly" onclick="showToast('Girls-Only matching mode toggled')">
+                                        <label class="custom-control-label" for="switch-pool-womenonly"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-paw"></i><span>Co-Traveler Pets</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-pets" onclick="showToast('Pet allowance preferences updated')">
+                                        <label class="custom-control-label" for="switch-pool-pets"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Maximum luggage limit set')">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-suitcase"></i><span>Luggage Allowance</span>
+                                    </div>
+                                    <span class="menu-badge badge-neutral">Max 20kg</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <ul class="dropdown-list-container">
+                            <li>
+                                <a class="premium-dropdown-item" href="{% url 'home' %}">
+                                    <i class="fas fa-home"></i><span>Exit to User Portal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
+                                    <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <a class="navbar-brand font-weight-bold" href="{% url 'portal_carpool' %}" style="margin-bottom: 0; align-self: center;">
+                <i class="fas fa-users mr-2"></i>Pooling Console
+            </a>
+            <div class="collapse navbar-collapse" id="adminNavbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool' %}"><i class="fas fa-network-wired mr-1"></i> Pooling Portal Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool_publish' %}"><i class="fas fa-plus-circle mr-1"></i> Publish Carpool Offer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" style="background: rgba(0,0,0,0.06);" href="{% url 'portal_carpool_itineraries' %}"><i class="fas fa-map-marked-alt mr-1"></i> Itineraries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool_bookings' %}"><i class="fas fa-calendar-check mr-1"></i> Carpool Seat Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-navy" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit to User Portal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'portal_logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Container -->
+    <div class="container py-4">
+        <!-- Welcome Message -->
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-2 text-left">
+            <div>
+                <h1 class="font-weight-bold outfit-font mb-1 text-title">Active Travel Itineraries</h1>
+                <p class="text-subtitle mb-0">Review details of published commutes, vehicle licenses, and passenger groups.</p>
+            </div>
+            <a href="{% url 'portal_carpool_publish' %}" class="btn btn-sm btn-danger font-weight-bold px-4 py-2 rounded-lg" style="background: #ec4899; border:none; box-shadow:0 4px 12px rgba(236,72,153,0.3);"><i class="fas fa-plus mr-1"></i>Publish New Plan</a>
+        </div>
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-lg" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- Itineraries Catalog -->
+        <div class="row text-left">
+            {% for offer in offers %}
+            <div class="col-md-6 mb-4">
+                <div class="glass-card plan-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge text-pink font-weight-bold px-3 py-1" style="background: rgba(236,72,153,0.08); color: #ec4899; border: 1px solid rgba(236,72,153,0.2);">
+                            PLAN Reference: Offer-{{ offer.id }}
+                        </span>
+                        <small class="text-subtitle font-weight-bold">{{ offer.date }} | {{ offer.time }}</small>
+                    </div>
+                    <div class="font-weight-bold text-title mb-2" style="font-size: 1.25rem;">
+                        {{ offer.start_location }} <i class="fas fa-arrow-right mx-2 text-muted" style="font-size: 0.85rem;"></i> {{ offer.destination }}
+                    </div>
+                    <p class="text-subtitle mb-3">
+                        {% if offer.vehicle_type == 'bike' %}
+                        <i class="fas fa-motorcycle mr-2" style="color: #eab308;"></i>
+                        {% else %}
+                        <i class="fas fa-car mr-2" style="color: #ec4899;"></i>
+                        {% endif %}
+                        {{ offer.vehicle_name }} (Plate: {{ offer.vehicle_number }})
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center border-top border-bottom py-2 mb-3">
+                        <span class="text-muted" style="font-size: 0.85rem;">Commute Seat Status</span>
+                        <strong class="text-pink accent-pink" style="font-size: 1.25rem;">{{ offer.available_seats }} / {{ offer.total_seats }} Vacant</strong>
+                    </div>
+                    <div>
+                        <h6 class="font-weight-bold text-title mb-2" style="font-size: 0.8rem; text-transform: uppercase;">Booked Passengers Group</h6>
+                        <ul class="list-unstyled mb-0">
+                            {% for booking in offer.seat_bookings.all %}
+                            <li class="d-flex justify-content-between align-items-center py-1 border-bottom-0">
+                                <span class="text-title font-weight-bold" style="font-size: 0.85rem;">
+                                    <i class="fas fa-user-circle mr-2 text-muted"></i>{{ booking.user.username }}
+                                </span>
+                                <small class="text-muted">Reserved: {{ booking.booked_at|date:"M d, H:i" }}</small>
+                            </li>
+                            {% empty %}
+                            <li class="text-muted" style="font-size: 0.8rem; font-style: italic;">
+                                No passengers registered on this pool. Available for free booking in User Portal.
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="glass-card text-center py-5 text-subtitle">
+                    <i class="fas fa-route mb-3 d-block" style="font-size: 3rem; opacity: 0.3;"></i>
+                    You haven't listed any commutes. Click "Publish New Plan" to list a travel plan.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+</body>
+</html>

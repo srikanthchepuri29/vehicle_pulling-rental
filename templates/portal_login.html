@@ -1,0 +1,211 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<!-- Premium Styles -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .auth-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 60px 20px;
+    }
+
+    .auth-card {
+        max-width: 460px;
+        width: 100%;
+    }
+
+    /* Dynamic Border Accent based on portal type */
+    .portal-user { border-top: 5px solid #0d6efd !important; }
+    .portal-rental { border-top: 5px solid #10b981 !important; }
+    .portal-rider { border-top: 5px solid #eab308 !important; }
+    .portal-carpool { border-top: 5px solid #ec4899 !important; }
+
+    /* Dynamic Icon Colors */
+    .icon-user { color: #0d6efd !important; }
+    .icon-rental { color: #10b981 !important; }
+    .icon-rider { color: #eab308 !important; }
+    .icon-carpool { color: #ec4899 !important; }
+
+    /* Dynamic Inputs Styles */
+    .auth-card .input-group {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.6);
+        display: flex;
+    }
+
+    [data-theme="dark"] .auth-card .input-group {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-card .input-group:hover {
+        transform: translateY(-3px) scale(1.02);
+    }
+
+    .input-username {
+        border-left: 4px solid var(--primary-accent) !important;
+        background: rgba(var(--accent-rgb), 0.08) !important;
+    }
+
+    .input-password {
+        border-left: 4px solid #dc3545 !important;
+        background: rgba(220, 53, 69, 0.08) !important;
+    }
+
+    .input-username:hover,
+    .input-username:focus-within {
+        border-color: var(--primary-accent) !important;
+        box-shadow: 0 5px 15px rgba(var(--accent-rgb), 0.3);
+    }
+
+    .input-password:hover,
+    .input-password:focus-within {
+        border-color: #dc3545 !important;
+        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .auth-card .form-control {
+        background: transparent !important;
+        border: none;
+        height: auto;
+        padding: 12px 15px;
+        color: var(--text-color);
+    }
+
+    .auth-card .input-group-text {
+        background: transparent !important;
+        border: none;
+        padding: 12px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-card .form-control:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .input-group-text i {
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-username:focus-within i {
+        color: var(--primary-accent) !important;
+        transform: scale(1.2);
+    }
+
+    .input-password:focus-within i {
+        color: #dc3545 !important;
+        transform: scale(1.2);
+    }
+</style>
+
+<!-- Hero Background -->
+<img src="{% static '../media/images/premium_hero.png' %}" alt="Background" class="hero-bg" onerror="this.style.display='none'">
+
+<!-- Set CSS Variable Values dynamically depending on portal -->
+<script>
+    const portal = "{{ portal_type }}";
+    let accentColor = "#0d6efd";
+    let rgb = "13, 110, 253";
+    if (portal === "rental") {
+        accentColor = "#10b981";
+        rgb = "16, 185, 129";
+    } else if (portal === "rider") {
+        accentColor = "#eab308";
+        rgb = "234, 179, 8";
+    } else if (portal === "carpool") {
+        accentColor = "#ec4899";
+        rgb = "236, 72, 153";
+    }
+    document.documentElement.style.setProperty('--primary-accent', accentColor);
+    document.documentElement.style.setProperty('--accent-rgb', rgb);
+</script>
+
+<div class="auth-container">
+    <div class="glass-card auth-card text-center hover-lift portal-{{ portal_type }}">
+        <div class="feature-icon mx-auto mb-4 icon-{{ portal_type }}" style="background: rgba(var(--accent-rgb), 0.15); border: 1px solid rgba(var(--accent-rgb), 0.3);">
+            {% if portal_type == 'user' %}
+                <i class="fas fa-user-circle"></i>
+            {% elif portal_type == 'rental' %}
+                <i class="fas fa-car-side"></i>
+            {% elif portal_type == 'rider' %}
+                <i class="fas fa-motorcycle"></i>
+            {% elif portal_type == 'carpool' %}
+                <i class="fas fa-users"></i>
+            {% endif %}
+        </div>
+        
+        <h2 class="font-weight-bold mb-1">
+            {% if portal_type == 'user' %}
+                User Portal
+            {% elif portal_type == 'rental' %}
+                Rental Admin Portal
+            {% elif portal_type == 'rider' %}
+                Rider (Driver) Portal
+            {% elif portal_type == 'carpool' %}
+                Car Pooling Portal
+            {% endif %}
+        </h2>
+        <p class="text-muted mb-4">
+            {% if portal_type == 'user' %}
+                Log in to request rides, book showroom cars, or share a pool.
+            {% elif portal_type == 'rental' %}
+                Authenticate as a Fleet Admin to manage car bookings.
+            {% elif portal_type == 'rider' %}
+                Log in to receive real-time ride requests and start chauffeuring.
+            {% elif portal_type == 'carpool' %}
+                Log in to schedule traveling plans and share vehicle seats.
+            {% endif %}
+        </p>
+
+        {% if error %}
+        <div class="alert alert-danger" style="background: rgba(220,53,69,0.08); border: 1px solid red; color: red; border-radius: 8px;">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="text-left">
+            {% csrf_token %}
+            <div class="mb-4 text-left">
+                <label class="font-weight-bold" style="color: var(--text-color);">Username</label>
+                <div class="input-group input-username">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
+                    </div>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username" required>
+                </div>
+            </div>
+
+            <div class="mb-5 text-left">
+                <label class="font-weight-bold" style="color: var(--text-color);">Password</label>
+                <div class="input-group input-password">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
+                    </div>
+                    <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-premium w-100 hover-lift mb-3" style="background: var(--primary-accent); box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.3);">
+                Sign In to Portal
+            </button>
+        </form>
+
+        <p class="text-muted mt-3">
+            Don't have an account? <a href="{% url 'register' %}" class="font-weight-bold text-decoration-none" style="color: var(--primary-accent);">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

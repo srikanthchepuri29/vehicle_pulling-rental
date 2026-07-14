@@ -1,21 +1,12 @@
+{% extends 'index.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ride Booking & Live Tracking</title>
-    <link rel="icon" href="https://cdn-icons-png.freepik.com/512/13319/13319888.png">
-    
-    <!-- CSS Dependencies -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+{% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
         :root {
-            --primary: #000080;
-            --primary-light: rgba(0, 0, 128, 0.1);
+            --primary: #4f46e5;
+            --primary-light: rgba(79, 70, 229, 0.1);
             --success: #2ecc71;
             --danger: #e74c3c;
             --warning: #f1c40f;
@@ -38,10 +29,10 @@
 
         /* Leaflet Map Styling */
         #map {
-            height: 100vh;
+            height: calc(100vh - 60px);
             width: 100%;
             position: absolute;
-            top: 0;
+            top: 60px;
             left: 0;
             z-index: 1;
         }
@@ -89,10 +80,10 @@
         /* Floating Side Control Panel */
         .ride-panel {
             position: absolute;
-            top: 100px;
+            top: 80px;
             left: 20px;
             width: 400px;
-            max-height: calc(100vh - 140px);
+            max-height: calc(100vh - 100px);
             overflow-y: auto;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(15px);
@@ -256,13 +247,13 @@
         .btn.primary-blue {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 8px 20px rgba(0, 0, 128, 0.25);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
         }
 
         .btn.primary-blue:hover {
-            background: #000066;
+            background: #4338ca;
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(0, 0, 128, 0.35);
+            box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
         }
 
         .btn.success-btn {
@@ -716,20 +707,14 @@
                 border-right: none;
                 border-bottom: none;
             }
-        }
+        /* Payment Styles */
+        @keyframes popCheck {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
     </style>
-</head>
-<body>
-
-    <!-- Floating Top Bar -->
-    <div class="top-nav">
-        <a href="{% url 'home' %}" class="nav-btn">
-            <i class="fas fa-home"></i> Home
-        </a>
-        <a href="{% url 'feature' %}" class="nav-btn">
-            <i class="fas fa-arrow-left"></i> Features Page
-        </a>
-    </div>
+    <!-- Fake inputs to prevent browser credentials autofill on pickup/destination search text fields -->
+    <input type="text" style="display:none;" name="fake_username_prevent_autofill" />
+    <input type="password" style="display:none;" name="fake_password_prevent_autofill" />
 
     <!-- Leaflet Interactive Map -->
     <div id="map"></div>
@@ -739,108 +724,105 @@
 
         <!-- Booking Mode Panel -->
         <div id="booking-ui">
-            <div class="panel-header">
-                <i class="fas fa-paper-plane"></i> Quick Book Ride
-            </div>
-            
-            <div class="section-title">Your Route</div>
-
-            <!-- Pickup Address Input -->
-            <div class="input-group">
-                <i class="fas fa-dot-circle text-primary" style="color: #007bff;"></i>
-                <input id="pickup" placeholder="Enter Pickup Location" autocomplete="off">
-                <div id="pickup-suggestions" class="suggestions-dropdown"></div>
-            </div>
-
-            <!-- Drop Address Input -->
-            <div class="input-group">
-                <i class="fas fa-map-marker-alt text-danger" style="color: #dc3545;"></i>
-                <input id="drop" placeholder="Enter Destination Location" autocomplete="off">
-                <div id="drop-suggestions" class="suggestions-dropdown"></div>
-            </div>
-
-            <button class="btn black" onclick="calculateRouteBtn()">
-                <i class="fas fa-route"></i> Check Route & Prices
-            </button>
-
-            <!-- Vehicle Selection grid -->
-            <div class="vehicle-selector" id="vehicle-selector" style="display: none;">
-                <div class="vehicle-card active" id="v-car" onclick="selectVehicle('car')">
-                    <div class="emoji">🚘</div>
-                    <span>Premium Car</span>
-                </div>
-                <div class="vehicle-card" id="v-bike" onclick="selectVehicle('bike')">
-                    <div class="emoji">🏍️</div>
-                    <span>Express Bike</span>
-                </div>
-            </div>
-
-            <!-- Premium Dynamic Pricing Card -->
-            <div class="ride-option" id="ride-option-card">
-                <div class="ride-option-header">
-                    <div class="ride-info">
-                        <div class="car-icon-wrapper" id="opt-icon">🚘</div>
-                        <div class="ride-details">
-                            <h4 id="opt-title">Premium Sedan</h4>
-                            <p id="distance-time">-- km • -- min</p>
-                        </div>
-                    </div>
-                    <div class="price-tag" id="price-display">₹--</div>
-                </div>
-                
-                <div style="margin-top: 15px;">
-                    <!-- Hidden fields to pass state -->
-                    <input type="hidden" name="pickup" id="pickup_hidden">
-                    <input type="hidden" name="drop" id="drop_hidden">
-                    <input type="hidden" name="distance" id="distance_hidden">
-                    <input type="hidden" name="vehicle" id="vehicle_hidden" value="car">
-                    
-                    <button type="button" class="btn primary-blue" onclick="confirmAndTrack()">
-                        <i class="fas fa-check-circle"></i> Confirm Booking
-                    </button>
-                </div>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="panel-header">
-                <i class="fas fa-share-alt"></i> Publish a Ride
-            </div>
-            
-            <div class="section-title">Offer empty seats</div>
-
-            <form method="POST" action="/add-ride/">
-                {% csrf_token %}
-                <div class="input-group">
-                    <i class="fas fa-dot-circle" style="color: #007bff;"></i>
-                    <input id="publish-start" name="start" placeholder="Leaving from" required autocomplete="off">
-                    <div id="publish-start-suggestions" class="suggestions-dropdown"></div>
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-map-marker-alt" style="color: #dc3545;"></i>
-                    <input id="publish-dest" name="destination" placeholder="Going to" required autocomplete="off">
-                    <div id="publish-dest-suggestions" class="suggestions-dropdown"></div>
-                </div>
-                
-                <div class="flex-row">
-                    <div class="input-group">
-                        <i class="far fa-calendar-alt" style="left:16px;"></i>
-                        <input type="date" name="date" required style="padding-left: 44px;">
-                    </div>
-                    <div class="input-group">
-                        <i class="far fa-clock" style="left:16px;"></i>
-                        <input type="time" name="time" required style="padding-left: 44px;">
-                    </div>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fas fa-user-friends"></i>
-                    <input type="number" name="seats" placeholder="Seats available" min="1" max="8" required>
-                </div>
-                <button type="submit" class="btn primary-blue">
-                    <i class="fas fa-bullhorn"></i> Publish Ride
+            <!-- Tabs Header -->
+            <div class="d-flex mb-4" style="border-bottom: 2px solid #e2e8f0; gap: 10px;">
+                <button onclick="switchTab('taxi')" id="tab-btn-taxi" class="btn btn-sm flex-fill font-weight-bold pb-2 pt-0 text-primary border-0 rounded-0" style="border-bottom: 3px solid var(--primary) !important; background: transparent; box-shadow: none;">
+                    <i class="fas fa-taxi mr-1"></i> Ride Taxi
                 </button>
-            </form>
+                <button onclick="switchTab('carpool')" id="tab-btn-carpool" class="btn btn-sm flex-fill font-weight-bold pb-2 pt-0 text-muted border-0 rounded-0" style="background: transparent; box-shadow: none;">
+                    <i class="fas fa-users mr-1"></i> BlaBla Pool
+                </button>
+            </div>
+
+            <!-- TAB 1: Ride Taxi Booking -->
+            <div id="tab-content-taxi">
+                <div class="panel-header" style="font-size: 1.15rem; margin-bottom: 15px;">
+                    <i class="fas fa-paper-plane"></i> Quick Book Ride
+                </div>
+                
+                <div class="section-title">Your Route</div>
+
+                <!-- Pickup Address Input -->
+                <div class="input-group">
+                    <i class="fas fa-dot-circle text-primary" style="color: #007bff;"></i>
+                    <input id="pickup" placeholder="Enter Pickup Location" autocomplete="new-password">
+                    <div id="pickup-suggestions" class="suggestions-dropdown"></div>
+                </div>
+
+                <!-- Drop Address Input -->
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt text-danger" style="color: #dc3545;"></i>
+                    <input id="drop" placeholder="Enter Destination Location" autocomplete="new-password">
+                    <div id="drop-suggestions" class="suggestions-dropdown"></div>
+                </div>
+
+                <button class="btn black" onclick="calculateRouteBtn()">
+                    <i class="fas fa-route"></i> Check Route & Prices
+                </button>
+
+                <!-- Vehicle Selection grid -->
+                <div class="vehicle-selector" id="vehicle-selector" style="display: none;">
+                    <div class="vehicle-card active" id="v-car" onclick="selectVehicle('car')">
+                        <div class="emoji">🚘</div>
+                        <span>Premium Car</span>
+                    </div>
+                    <div class="vehicle-card" id="v-bike" onclick="selectVehicle('bike')">
+                        <div class="emoji">🏍️</div>
+                        <span>Express Bike</span>
+                    </div>
+                </div>
+
+                <!-- Premium Dynamic Pricing Card -->
+                <div class="ride-option" id="ride-option-card">
+                    <div class="ride-option-header">
+                        <div class="ride-info">
+                            <div class="car-icon-wrapper" id="opt-icon">🚘</div>
+                            <div class="ride-details">
+                                <h4 id="opt-title">Premium Sedan</h4>
+                                <p id="distance-time">-- km • -- min</p>
+                            </div>
+                        </div>
+                        <div class="price-tag" id="price-display">₹--</div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <!-- Hidden fields to pass state -->
+                        <input type="hidden" name="pickup" id="pickup_hidden">
+                        <input type="hidden" name="drop" id="drop_hidden">
+                        <input type="hidden" name="distance" id="distance_hidden">
+                        <input type="hidden" name="vehicle" id="vehicle_hidden" value="car">
+                        
+                        <button type="button" class="btn primary-blue" onclick="confirmAndTrack()">
+                            <i class="fas fa-check-circle"></i> Confirm Booking
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: BlaBla Carpooling Search -->
+            <div id="tab-content-carpool" style="display: none;">
+                <div class="panel-header" style="font-size: 1.15rem; margin-bottom: 15px;">
+                    <i class="fas fa-search"></i> Search Carpools
+                </div>
+                
+                <div class="input-group">
+                    <i class="fas fa-dot-circle text-primary" style="color: #ec4899;"></i>
+                    <input id="carpool-start-search" placeholder="Search leaving from" autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-map-marker-alt text-danger" style="color: #dc3545;"></i>
+                    <input id="carpool-dest-search" placeholder="Search destination" autocomplete="off">
+                </div>
+                
+                <button class="btn success-btn w-100 mb-4" onclick="searchCarpools()" style="background: #ec4899; box-shadow: 0 4px 15px rgba(236,72,153,0.25);">
+                    <i class="fas fa-search mr-2"></i> Find Commutes
+                </button>
+
+                <div class="section-title">Available Travel Plans</div>
+                <div id="carpoolsListContainer" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
+                    <p class="text-muted text-center py-4" style="font-size: 0.85rem; font-style: italic;">No active travel plans queried yet.</p>
+                </div>
+            </div>
         </div>
 
         <!-- ========================================= -->
@@ -913,14 +895,14 @@
             </div>
 
             <!-- Driver Information Block -->
-            <div class="driver-tracking-profile">
+            <div class="driver-tracking-profile" id="driver-tracking-card" style="display: none;">
                 <img id="tracking-driver-img" src="/media/images/harsha.png" alt="Driver" onerror="this.src='/media/images/team-1.jpg'">
                 <div class="driver-name-box">
                     <h4 id="tracking-rider-name">Rahul Sharma</h4>
-                    <div class="driver-meta-text">
-                        <i class="fas fa-star"></i>
-                        <span id="tracking-rating">4.8</span>
-                        <span>• 89 Rides Completed</span>
+                    <div class="driver-meta-text" style="display: flex; align-items: center; gap: 5px;">
+                        <span id="tracking-stars" style="color: #f59e0b; display: flex; align-items: center; gap: 2px;"></span>
+                        <span id="tracking-rating" style="font-weight: 700; color: #1e293b;">4.8</span>
+                        <span class="text-muted">• Chauffeur Partner</span>
                     </div>
                 </div>
                 <div class="driver-vehicle-plate" id="tracking-plate">
@@ -941,20 +923,229 @@
 
             <!-- Active Ride Call/Cancel Controls -->
             <div class="flex-row" id="tracking-actions">
-                <button class="btn" style="background: #fee2e2; color: var(--danger); flex: 1;" onclick="window.location.href='/feature/'">
+                <button class="btn" style="background: #fee2e2; color: var(--danger); flex: 1;" onclick="cancelActiveRide()">
                     Cancel Ride
                 </button>
                 <button class="btn black" style="flex: 2;" onclick="alert('Calling driver via encrypted line...')">
                     <i class="fas fa-phone-alt"></i> Call Driver
                 </button>
             </div>
+
+            <!-- CANCELLATION REASON PANEL -->
+            <div id="cancel-reason-panel" style="display: none; background: #fff; border: 1.5px solid #fee2e2; border-radius: 18px; padding: 20px; margin-top: 15px; animation: slideUp 0.3s ease-out; text-align: left;">
+                <h4 style="font-weight: 800; font-size: 15px; color: var(--danger); margin-top: 0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-exclamation-triangle"></i> Cancel Ride Reason
+                </h4>
+                
+                <div class="cancel-options" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                    <label class="cancel-option" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: #444; padding: 6px 0; margin: 0;">
+                        <input type="radio" name="cancel_reason" value="Driver asked to cancel" style="accent-color: var(--danger); margin: 0;" checked>
+                        <span>Driver asked to cancel</span>
+                    </label>
+                    <label class="cancel-option" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: #444; padding: 6px 0; margin: 0;">
+                        <input type="radio" name="cancel_reason" value="Driver delayed / not moving" style="accent-color: var(--danger); margin: 0;">
+                        <span>Driver delayed / not moving</span>
+                    </label>
+                    <label class="cancel-option" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: #444; padding: 6px 0; margin: 0;">
+                        <input type="radio" name="cancel_reason" value="Changed mind / Plan changed" style="accent-color: var(--danger); margin: 0;">
+                        <span>Changed mind / Plan changed</span>
+                    </label>
+                    <label class="cancel-option" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: #444; padding: 6px 0; margin: 0;">
+                        <input type="radio" name="cancel_reason" value="Incorrect location entered" style="accent-color: var(--danger); margin: 0;">
+                        <span>Incorrect location entered</span>
+                    </label>
+                    <label class="cancel-option" style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: #444; padding: 6px 0; margin: 0;">
+                        <input type="radio" name="cancel_reason" value="Driver demanded extra cash" style="accent-color: var(--danger); margin: 0;">
+                        <span>Driver demanded extra cash</span>
+                    </label>
+                </div>
+
+                <div class="flex-row">
+                    <button class="btn" style="background: #e2e8f0; color: #475569; flex: 1; padding: 12px; font-size: 14px;" onclick="hideCancelPanel()">
+                        Go Back
+                    </button>
+                    <button class="btn" style="background: var(--danger); color: #fff; flex: 1.5; padding: 12px; font-size: 14px;" onclick="submitCancellation()">
+                        Confirm Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- PAYMENT OVERLAY CONTAINER (Initially Hidden) -->
+            <div id="payment-panel" style="display: none; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 20px;">
+                <h4 class="font-weight-bold text-dark mb-3 text-center" style="font-family: 'Oswald', sans-serif;">Select Payment Method</h4>
+                
+                <div class="payment-options" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                    <!-- Option 1: UPI QR Code -->
+                    <label class="payment-option-card active" id="pay-opt-upi" onclick="selectPaymentMethod('upi')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid var(--primary); padding: 15px; border-radius: 12px; cursor: pointer; background: rgba(234,179,8,0.05); transition: all 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                            <i class="fas fa-qrcode text-primary" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <strong class="text-dark d-block">UPI QR Code</strong>
+                                <small class="text-muted">Scan & Pay using any UPI App</small>
+                            </div>
+                        </div>
+                        <i class="fas fa-check-circle text-primary" id="pay-check-upi" style="font-size: 1.25rem;"></i>
+                    </label>
+
+                    <!-- Option 2: Cash -->
+                    <label class="payment-option-card" id="pay-opt-cash" onclick="selectPaymentMethod('cash')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid rgba(0,0,0,0.08); padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                            <i class="fas fa-money-bill-wave text-success" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <strong class="text-dark d-block">Pay Cash to Rider</strong>
+                                <small class="text-muted">Hand over cash to chauffeur</small>
+                            </div>
+                        </div>
+                        <i class="far fa-circle text-muted" id="pay-check-cash" style="font-size: 1.25rem;"></i>
+                    </label>
+
+                    <!-- Option 3: Net Banking / Cards -->
+                    <label class="payment-option-card" id="pay-opt-card" onclick="selectPaymentMethod('card')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid rgba(0,0,0,0.08); padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                            <i class="fas fa-credit-card text-info" style="font-size: 1.5rem;"></i>
+                            <div>
+                                <strong class="text-dark d-block">Online Card / Wallet</strong>
+                                <small class="text-muted">Credit/Debit card or digital wallets</small>
+                            </div>
+                        </div>
+                        <i class="far fa-circle text-muted" id="pay-check-card" style="font-size: 1.25rem;"></i>
+                    </label>
+                </div>
+
+                <!-- QR Code Block (Visible only when UPI is selected) -->
+                <div id="upi-qr-block" class="text-center p-3 border rounded-lg mb-3" style="background: #f8f9fa;">
+                    <div style="margin: 10px auto; width: 150px; height: 150px; background: white; padding: 10px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <!-- Styled Simulated QR Code -->
+                        <div style="background: url('https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=upi://pay?pa=rideshare@ybl%26pn=RideShare%26am=145') no-repeat center; background-size: contain; width: 130px; height: 130px;"></div>
+                        <div style="position: absolute; width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                            <i class="fas fa-car-side text-navy" style="font-size: 0.9rem;"></i>
+                        </div>
+                    </div>
+                    <span class="badge bg-warning text-dark font-weight-bold py-1 px-3">UPI ID: rideshare@ybl</span>
+                    <p class="text-muted mt-2 mb-0" style="font-size: 0.75rem;">Scan this code using PhonePe, GPay, Paytm, or BHIM to pay the fare.</p>
+                </div>
+
+                <!-- Card Details Block (Visible only when CARD is selected) -->
+                <div id="card-details-block" class="p-3 border rounded-lg mb-3" style="background: #f8f9fa; display: none;">
+                    <div class="form-group mb-2">
+                        <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">Card Number</label>
+                        <input type="text" class="form-control form-control-sm" placeholder="4111 2222 3333 4444" maxlength="19">
+                    </div>
+                    <div class="row">
+                        <div class="col-6 pr-1">
+                            <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">Expiry Date</label>
+                            <input type="text" class="form-control form-control-sm" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div class="col-6 pl-1">
+                            <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">CVV</label>
+                            <input type="password" class="form-control form-control-sm" placeholder="•••" maxlength="3" autocomplete="new-password">
+                        </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button onclick="processPayment()" class="btn success-btn w-100 py-3 font-weight-bold text-uppercase" style="font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(46,204,113,0.25); background: #2ecc71; border: none; color: white;">
+                    Confirm & Pay <span id="payment-fare-val">₹145</span>
+                </button>
+            </div>
+
+            <!-- SUCCESS PANEL (Initially Hidden) -->
+            <div id="payment-success-panel" style="display: none; text-align: center; padding: 30px 10px;">
+                <div class="success-icon-wrapper" style="width: 80px; height: 80px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                    <i class="fas fa-check-circle text-success" style="font-size: 3.5rem; animation: popCheck 0.5s ease-out; color: #2ecc71;"></i>
+                </div>
+                <h3 class="font-weight-bold text-dark mb-2" style="font-family: 'Oswald', sans-serif;">Payment Successful!</h3>
+                <p class="text-muted mb-4" style="font-size: 0.9rem;">Thank you for riding with RideShare. Your payment of <strong class="text-success" id="success-price-val">₹145</strong> was successfully processed.</p>
+                <button onclick="openFeedbackModal()" class="btn success-btn w-100 py-3 font-weight-bold rounded-lg mb-2" style="background: #2ecc71; color: white; border: none; font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(46,204,113,0.25);">
+                    Rate Your Ride
+                </button>
+                <button onclick="resetToNewBooking()" class="btn w-100 py-2 font-weight-bold text-muted" style="background: none; border: none; font-size: 13px;">
+                    Skip & Book Another
+                </button>
+            </div>
         </div>
 
+    <!-- Feedback / Review Modal (Initially Hidden) -->
+    <div id="feedback-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); z-index: 20000; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); transition: all 0.3s ease;">
+        <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 420px; width: 90%; padding: 30px 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div style="font-size: 3rem; margin-bottom: 10px;">⭐</div>
+            <h3 class="font-weight-bold mb-2" style="font-family: 'Oswald', sans-serif; color: #1e293b; font-size: 1.6rem;">Rate Your Chauffeur</h3>
+            <p class="text-muted mb-4" style="font-size: 0.85rem; line-height: 1.4;">How was your trip with our ride partner? Share your rating and feedback below.</p>
+            
+            <!-- Star Ratings Selector -->
+            <div class="star-rating-container mb-4" style="display: flex; justify-content: center; gap: 12px; font-size: 2.2rem; cursor: pointer; color: #cbd5e1;">
+                <i class="fas fa-star star-btn" data-star="1" onclick="selectFeedbackStars(1)"></i>
+                <i class="fas fa-star star-btn" data-star="2" onclick="selectFeedbackStars(2)"></i>
+                <i class="fas fa-star star-btn" data-star="3" onclick="selectFeedbackStars(3)"></i>
+                <i class="fas fa-star star-btn" data-star="4" onclick="selectFeedbackStars(4)"></i>
+                <i class="fas fa-star star-btn" data-star="5" onclick="selectFeedbackStars(5)"></i>
+            </div>
+            
+            <!-- Comments Box (Optional) -->
+            <div class="form-group mb-4 text-left">
+                <label style="font-weight: 700; font-size: 0.8rem; color: #475569; text-transform: uppercase;">Write a Comment (Optional)</label>
+                <textarea id="feedback-comments" class="form-control" rows="3" placeholder="Tell us about the driver, vehicle cleanliness, route taken, etc..." style="border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 0.85rem; padding: 10px; resize: none;"></textarea>
+            </div>
+            
+            <button onclick="submitRideFeedback()" class="btn w-100 py-3 font-weight-bold rounded-lg mb-2" style="background: var(--primary); color: #ffffff; border: none; font-size: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);">
+                Submit Review
+            </button>
+            <button onclick="skipRideFeedback()" class="btn w-100 py-2 font-weight-bold text-muted" style="background: none; border: none; font-size: 13px;">
+                Skip
+            </button>
+        </div>
+    </div>
+
+    <!-- Payment Successful Notification Modal (Initially Hidden) -->
+    <div id="payment-success-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); z-index: 15000; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); transition: all 0.3s ease;">
+        <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 400px; width: 90%; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div class="success-icon-wrapper" style="width: 80px; height: 80px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="fas fa-check-circle text-success" style="font-size: 3.5rem; color: #2ecc71;"></i>
+            </div>
+            <h3 class="font-weight-bold text-dark mb-2" style="font-family: 'Oswald', sans-serif;">Payment Successful</h3>
+            <p class="text-muted mb-4" style="font-size: 0.9rem;">Your payment has been successfully collected by the chauffeur.</p>
+            <button onclick="dismissPaymentSuccessModal()" class="btn success-btn w-100 py-3 font-weight-bold text-uppercase" style="font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(46,204,113,0.3); background: #2ecc71; border: none; color: white;">
+                Dismiss
+            </button>
+        </div>
+    </div>
+
+    <!-- Beautiful Popup Notification Modal (Initially Hidden) -->
+    <div id="status-popup-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px); transition: all 0.3s ease;">
+        <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 400px; width: 90%; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+            <div id="popup-icon-container" style="font-size: 3.5rem; margin-bottom: 15px;">📡</div>
+            <h3 id="popup-title" class="font-weight-bold mb-2" style="font-family: 'Oswald', sans-serif; color: #1e293b; font-size: 1.5rem;">Broadcasting Booking...</h3>
+            <p id="popup-message" class="text-muted mb-4" style="font-size: 0.85rem; line-height: 1.4;">Searching for active chauffeurs in the Hyderabad dispatch grid. First to accept claims the ride.</p>
+            
+            <div id="popup-driver-card" class="p-3 border rounded-lg mb-4 text-left" style="background: #f8fafc; display: flex; align-items: center; gap: 12px; display: none;">
+                <img id="popup-driver-img" src="" alt="Driver" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                <div>
+                    <strong class="text-dark d-block" id="popup-driver-name">--</strong>
+                    <small class="text-muted" id="popup-vehicle-details">--</small>
+                </div>
+            </div>
+
+            <button onclick="closeStatusPopup()" class="btn w-100 py-3 font-weight-bold rounded-lg" style="background: var(--primary); color: #ffffff; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                Close & Track Live
+            </button>
+        </div>
     </div>
 
     <!-- Leaflet & Pure JS Autocomplete / Routing Logic -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+        // Server-passed active ride details
+        const serverActiveRide = {
+            id: {% if active_ride %}{{ active_ride.id }}{% else %}null{% endif %},
+            pickup: "{% if active_ride %}{{ active_ride.pickup|escapejs }}{% endif %}",
+            drop: "{% if active_ride %}{{ active_ride.drop|escapejs }}{% endif %}",
+            price: "{% if active_ride %}₹{{ active_ride.price }}{% endif %}",
+            vehicle: "{% if active_ride %}{{ active_ride.vehicle }}{% endif %}"
+        };
+
+        const serverUnratedRide = {
+            id: {% if unrated_ride %}{{ unrated_ride.id }}{% else %}null{% endif %}
+        };
+
         let map, pickupMarker, dropMarker, routePolyline, vehicleMarker;
         
         // Saved coordinate state for booking
@@ -1017,12 +1208,96 @@
                 // Initialize the Live Vehicle Simulation with the URL parameter states
                 initLiveTrackingFromUrl();
             }
+
+            // 4. Pre-populate pickup & destination from URL search params if present
+            const pParam = urlParams.get('pickup');
+            const dParam = urlParams.get('drop');
+            if (pParam) {
+                document.getElementById('pickup').value = decodeURIComponent(pParam);
+            }
+            if (dParam) {
+                document.getElementById('drop').value = decodeURIComponent(dParam);
+            }
+            if (pParam && dParam) {
+                // Wait briefly for geocoding setup and trigger calculation with autoConfirm = true
+                setTimeout(() => {
+                    calculateRouteBtn(true);
+                }, 600);
+            }
+
+            // 5. Restore active tracking state from serverActiveRide if user has an active ride in database
+            if (serverActiveRide && serverActiveRide.id) {
+                activeRideId = serverActiveRide.id;
+                
+                document.getElementById('booking-ui').style.display = 'none'; 
+                document.getElementById('tracking-ui').style.display = 'block';
+
+                const cachedRideId = localStorage.getItem('active_ride_id');
+                if (cachedRideId && parseInt(cachedRideId) === activeRideId && localStorage.getItem('active_ride_pickup_lat')) {
+                    bookingCoords.pickup = {
+                        lat: parseFloat(localStorage.getItem('active_ride_pickup_lat')),
+                        lng: parseFloat(localStorage.getItem('active_ride_pickup_lng')),
+                        name: localStorage.getItem('active_ride_pname')
+                    };
+                    bookingCoords.drop = {
+                        lat: parseFloat(localStorage.getItem('active_ride_drop_lat')),
+                        lng: parseFloat(localStorage.getItem('active_ride_drop_lng')),
+                        name: localStorage.getItem('active_ride_dname')
+                    };
+                } else {
+                    // Geocode pickup and drop addresses to restore map markers
+                    geocodeText(serverActiveRide.pickup).then(coords => {
+                        if (coords) bookingCoords.pickup = { lat: coords.lat, lng: coords.lng, name: serverActiveRide.pickup };
+                    });
+                    geocodeText(serverActiveRide.drop).then(coords => {
+                        if (coords) bookingCoords.drop = { lat: coords.lat, lng: coords.lng, name: serverActiveRide.drop };
+                    });
+                }
+
+                const pName = serverActiveRide.pickup;
+                const dName = serverActiveRide.drop;
+                const price = serverActiveRide.price;
+                const vehicle = localStorage.getItem('active_ride_vehicle') || 'car';
+
+                document.getElementById('lbl-pickup').innerText = pName;
+                document.getElementById('lbl-drop').innerText = dName;
+                document.getElementById('lbl-price').innerText = price;
+
+                // Match layout
+                document.getElementById('otp-container').style.display = 'none';
+                document.getElementById('driver-tracking-card').style.display = 'none';
+                document.getElementById('live-stats-bar').style.opacity = '0.4';
+                document.getElementById('turn-ui').style.display = 'none';
+                document.getElementById('btn-start-ride').style.display = 'none';
+
+                startStatusPolling(pName, dName, price, vehicle);
+            } else if (serverUnratedRide && serverUnratedRide.id) {
+                activeRideId = serverUnratedRide.id;
+                document.getElementById('booking-ui').style.display = 'none';
+                document.getElementById('payment-success-modal-overlay').style.display = 'flex';
+            } else {
+                // Clear any leftover inactive ride details in localStorage and show fresh UI
+                localStorage.removeItem('active_ride_id');
+                localStorage.removeItem('active_ride_pickup_lat');
+                localStorage.removeItem('active_ride_pickup_lng');
+                localStorage.removeItem('active_ride_drop_lat');
+                localStorage.removeItem('active_ride_drop_lng');
+                localStorage.removeItem('active_ride_pname');
+                localStorage.removeItem('active_ride_dname');
+                localStorage.removeItem('active_ride_price');
+                localStorage.removeItem('active_ride_vehicle');
+                resetToNewBooking();
+            }
+            if (typeof restoreDraftBookingState === 'function') {
+                restoreDraftBookingState();
+            }
         });
 
         // Nominatim Geocoding Autocomplete Search Input Setup
         function setupAutocomplete(inputId, dropdownId) {
             const input = document.getElementById(inputId);
             const dropdown = document.getElementById(dropdownId);
+            if (!input || !dropdown) return;
             let timeout = null;
 
             input.addEventListener('input', () => {
@@ -1059,6 +1334,9 @@
                                             lng: parseFloat(item.lon),
                                             name: item.display_name
                                         };
+                                        if (typeof saveDraftBookingState === 'function') {
+                                            saveDraftBookingState();
+                                        }
                                     }
                                 });
                                 dropdown.appendChild(div);
@@ -1082,7 +1360,7 @@
         }
 
         // Action when pressing "Check Route & Prices"
-        async function calculateRouteBtn() {
+        async function calculateRouteBtn(autoConfirm = false) {
             let pickupVal = document.getElementById("pickup").value;
             let dropVal = document.getElementById("drop").value;
 
@@ -1122,16 +1400,48 @@
                 // Update pricing and details card
                 document.getElementById('distance-time').innerText = `${dist.toFixed(1)} km • ${durationMins} min`;
                 
+                if (typeof saveDraftBookingState === 'function') {
+                    saveDraftBookingState();
+                }
+                
                 // Show grid selector & details options card
                 document.getElementById('vehicle-selector').style.display = 'flex';
                 document.getElementById('ride-option-card').classList.add('active');
                 
                 updateVehicleUI();
+
+                if (autoConfirm) {
+                    setTimeout(() => {
+                        confirmAndTrack();
+                    }, 500);
+                }
             } else {
                 alert("Unable to fetch driving route. drawing direct path...");
                 // fallback direct polyline drawing
                 drawDirectPath(bookingCoords.pickup, bookingCoords.drop);
+
+                if (autoConfirm) {
+                    setTimeout(() => {
+                        confirmAndTrack();
+                    }, 500);
+                }
             }
+        }
+
+        function getStarIconsString(rating) {
+            let starsHtml = '';
+            const val = parseFloat(rating);
+            // Draw 5 stars
+            for (let i = 1; i <= 5; i++) {
+                if (val >= i - 0.2) {
+                    starsHtml += '<i class="fas fa-star"></i>';
+                } else if (val >= i - 0.7) {
+                    starsHtml += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star"></i>';
+                }
+            }
+            return starsHtml;
         }
 
         async function geocodeText(text) {
@@ -1217,6 +1527,9 @@
             document.getElementById("v-" + type).classList.add("active");
             document.getElementById("vehicle_hidden").value = type;
             updateVehicleUI();
+            if (typeof saveDraftBookingState === 'function') {
+                saveDraftBookingState();
+            }
         }
 
         function updateVehicleUI() {
@@ -1232,45 +1545,790 @@
             document.getElementById("price-display").innerText = "₹" + finalPrice;
         }
 
-        // Actions when clicking "Confirm Booking"
+        // --- Tab Switcher ---
+        function switchTab(tab) {
+            if (tab === 'taxi') {
+                document.getElementById('tab-content-taxi').style.display = 'block';
+                document.getElementById('tab-content-carpool').style.display = 'none';
+                document.getElementById('tab-btn-taxi').style.borderBottom = '3px solid var(--primary) !important';
+                document.getElementById('tab-btn-taxi').classList.add('text-primary');
+                document.getElementById('tab-btn-taxi').classList.remove('text-muted');
+                document.getElementById('tab-btn-carpool').style.borderBottom = 'none';
+                document.getElementById('tab-btn-carpool').classList.remove('text-primary');
+                document.getElementById('tab-btn-carpool').classList.add('text-muted');
+            } else {
+                document.getElementById('tab-content-taxi').style.display = 'none';
+                document.getElementById('tab-content-carpool').style.display = 'block';
+                document.getElementById('tab-btn-carpool').style.borderBottom = '3px solid var(--primary) !important';
+                document.getElementById('tab-btn-carpool').classList.add('text-primary');
+                document.getElementById('tab-btn-carpool').classList.remove('text-muted');
+                document.getElementById('tab-btn-taxi').style.borderBottom = 'none';
+                document.getElementById('tab-btn-taxi').classList.remove('text-primary');
+                document.getElementById('tab-btn-taxi').classList.add('text-muted');
+                
+                searchCarpools();
+            }
+        }
+
+        // --- Carpool Search & Reservation ---
+        function searchCarpools() {
+            const start = document.getElementById('carpool-start-search').value;
+            const dest = document.getElementById('carpool-dest-search').value;
+            
+            fetch(`/api/carpool/list/?start=${encodeURIComponent(start)}&destination=${encodeURIComponent(dest)}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('carpoolsListContainer');
+                container.innerHTML = '';
+                if (data.success && data.offers.length > 0) {
+                    data.offers.forEach(o => {
+                        const card = document.createElement('div');
+                        card.className = 'glass-card p-3 mb-2 text-left';
+                        card.style.border = '1px solid rgba(0,0,0,0.06)';
+                        card.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-light text-dark font-weight-bold" style="font-size:0.7rem;">Host: ${o.host}</span>
+                                <small class="text-muted" style="font-size:0.75rem;">${o.date} | ${o.time}</small>
+                            </div>
+                            <div class="font-weight-bold text-dark" style="font-size: 0.9rem;">${o.route}</div>
+                            <small class="text-muted d-block mt-1">Vehicle: ${o.vehicle} | Available Seats: <strong class="text-danger">${o.seats}</strong></small>
+                            <button onclick="bookCarpoolSeat(${o.id})" class="btn btn-sm btn-primary w-100 py-2 mt-2 rounded-lg font-weight-bold" style="font-size:0.8rem; background: #ec4899; border:none; box-shadow:0 3px 8px rgba(236,72,153,0.25);">
+                                Reserve Free Commute Seat
+                            </button>
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = `<p class="text-muted text-center py-4" style="font-size: 0.85rem; font-style: italic;">No active travel plans found.</p>`;
+                }
+            });
+        }
+
+        function bookCarpoolSeat(id) {
+            fetch(`/api/carpool/book/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                searchCarpools();
+            });
+        }
+
+        // --- Real-time dispatch matching script ---
+        let activeRideId = null;
+        let statusPollInterval = null;
+        let phase1Started = false;
+        let phase1Completed = false;
+        let phase2Started = false;
+        let phase2Completed = false;
+
+        let trackPickLat = null;
+        let trackPickLng = null;
+        let trackDropLat = null;
+        let trackDropLng = null;
+        let trackPName = "";
+        let trackDName = "";
+        let trackPrice = "";
+        let trackVehicleType = "";
+        let globalVehicleIcon = null;
+
+        let acceptedPopupShown = false;
+        let arrivedPopupShown = false;
+        let inProgressPopupShown = false;
+
+        function showStatusPopup(title, message, icon, driverName, vehicleDetails, driverImg) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-message').innerText = message;
+            document.getElementById('popup-icon-container').innerText = icon;
+            
+            const driverCard = document.getElementById('popup-driver-card');
+            if (driverName) {
+                driverCard.style.display = 'flex';
+                document.getElementById('popup-driver-name').innerText = driverName;
+                document.getElementById('popup-vehicle-details').innerText = vehicleDetails;
+                document.getElementById('popup-driver-img').src = driverImg;
+            } else {
+                driverCard.style.display = 'none';
+            }
+
+            document.getElementById('status-popup-overlay').style.display = 'flex';
+        }
+
+        function closeStatusPopup() {
+            document.getElementById('status-popup-overlay').style.display = 'none';
+        }
+
         function confirmAndTrack() {
             const pName = document.getElementById('pickup_hidden').value;
             const dName = document.getElementById('drop_hidden').value;
+            const dist = document.getElementById('distance_hidden').value;
             const price = document.getElementById('price-display').innerText;
             const vehicle = document.getElementById('vehicle_hidden').value;
 
-            // Direct simulation load
-            document.getElementById('booking-ui').style.display = 'none'; 
-            document.getElementById('tracking-ui').style.display = 'block';
+            const formData = new FormData();
+            formData.append('pickup', pName);
+            formData.append('drop', dName);
+            formData.append('distance', dist);
 
-            // Clean existing map details
+            // Clean map route
             if (routePolyline) map.removeLayer(routePolyline);
 
-            startLiveTrackingSimulation(
-                bookingCoords.pickup.lat, bookingCoords.pickup.lng,
-                bookingCoords.drop.lat, bookingCoords.drop.lng,
-                pName, dName, price, vehicle
-            );
+            // Create ride request
+            fetch('/api/ride/request/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    activeRideId = data.ride_id;
+
+                    // Save to localStorage for refresh recovery
+                    localStorage.setItem('active_ride_id', data.ride_id);
+                    localStorage.setItem('active_ride_pickup_lat', bookingCoords.pickup.lat);
+                    localStorage.setItem('active_ride_pickup_lng', bookingCoords.pickup.lng);
+                    localStorage.setItem('active_ride_drop_lat', bookingCoords.drop.lat);
+                    localStorage.setItem('active_ride_drop_lng', bookingCoords.drop.lng);
+                    localStorage.setItem('active_ride_pname', pName);
+                    localStorage.setItem('active_ride_dname', dName);
+                    localStorage.setItem('active_ride_price', price);
+                    localStorage.setItem('active_ride_vehicle', vehicle);
+                    
+                    // Show Matching State
+                    document.getElementById('booking-ui').style.display = 'none'; 
+                    document.getElementById('tracking-ui').style.display = 'block';
+
+                    document.getElementById('tracking-status-title').innerText = "Matching Chauffeur...";
+                    document.getElementById('tracking-status-subtitle').innerText = "Broadcasting booking to dispatch grid. First driver to accept gets the ride.";
+                    document.getElementById('otp-container').style.display = 'none';
+                    document.getElementById('driver-tracking-card').style.display = 'none';
+                    document.getElementById('live-stats-bar').style.opacity = '0.4';
+                    document.getElementById('turn-ui').style.display = 'none';
+                    document.getElementById('btn-start-ride').style.display = 'none';
+
+                    document.getElementById('lbl-pickup').innerText = pName;
+                    document.getElementById('lbl-drop').innerText = dName;
+                    document.getElementById('lbl-price').innerText = price;
+
+                    // Show Finding Ride popup immediately
+                    showStatusPopup(
+                        "Finding Your Ride...",
+                        "Broadcasting your booking request to nearby drivers in the area. Please wait while we find a chauffeur.",
+                        "📡",
+                        null, null, null
+                    );
+
+                    // Start AJAX status polling
+                    startStatusPolling(pName, dName, price, vehicle);
+                } else {
+                    alert(data.message || 'Booking request failed. Please login first.');
+                }
+            });
         }
 
-        // =========================================
-        // LIVE SIMULATION & TRACKING CODE (Leaflet)
-        // =========================================
+        function startStatusPolling(pName, dName, price, vehicle) {
+            if (statusPollInterval) clearInterval(statusPollInterval);
+
+            // Populate active variables
+            trackPName = pName;
+            trackDName = dName;
+            trackPrice = price;
+            trackVehicleType = vehicle;
+
+            statusPollInterval = setInterval(() => {
+                fetch(`/api/ride/status/${activeRideId}/`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const status = data.status;
+
+                        // Load driver profile metadata
+                        const driver = driversList[vehicle] || driversList.car;
+                        
+                        let driverName = data.driver_name;
+                        let driverRating = data.driver_rating || driver.rating;
+                        let driverPlate = driver.plate;
+                        let driverImg = driver.img;
+                        
+                        if (driverName && driverName !== 'Searching...') {
+                            const plates = {
+                                'harsha': 'TS 09 EU 8888',
+                                'rahul': 'TS 12 AB 5678',
+                                'rider': 'TS 08 XY 9999'
+                            };
+                            const photos = {
+                                'harsha': '/media/images/harsha.png',
+                                'rahul': '/media/images/rahul.png',
+                                'rider': '/media/images/team-1.jpg'
+                            };
+                            const ratings = {
+                                'harsha': '4.9',
+                                'rahul': '4.8',
+                                'rider': '4.7'
+                            };
+                            
+                            const key = driverName.toLowerCase();
+                            driverPlate = plates[key] || `TS 09 ${vehicle === 'bike' ? 'BK' : 'CR'} ${1000 + (data.ride_id % 9000)}`;
+                            driverImg = photos[key] || driver.img;
+                            driverRating = data.driver_rating || ratings[key] || '4.8';
+                        } else {
+                            driverName = 'Searching...';
+                        }
+
+                        document.getElementById('tracking-rider-name').innerText = driverName;
+                        document.getElementById('tracking-rating').innerText = driverRating;
+                        document.getElementById('tracking-stars').innerHTML = getStarIconsString(driverRating);
+                        document.getElementById('tracking-plate').innerText = driverPlate;
+                        document.getElementById('tracking-driver-img').src = driverImg;
+                        
+                        if (status === 'Accepted') {
+                            initializeTrackingElements(bookingCoords.pickup.lat, bookingCoords.pickup.lng, bookingCoords.drop.lat, bookingCoords.drop.lng, vehicle);
+                            document.getElementById('otp-container').style.display = 'block';
+                            document.getElementById('driver-tracking-card').style.display = 'flex';
+                            document.getElementById('live-stats-bar').style.opacity = '1';
+                            document.getElementById('tracking-otp').innerText = data.pin;
+                            
+                            if (!acceptedPopupShown) {
+                                acceptedPopupShown = true;
+                                showStatusPopup(
+                                    "Ride Accepted! 🎉",
+                                    "Your chauffeur is on the way to your pickup location.",
+                                    "🚘",
+                                    driverName,
+                                    `${vehicle === 'bike' ? 'Express Bike' : 'Premium Sedan'} • ${driverPlate}`,
+                                    driverImg
+                                );
+                            }
+                            
+                            runPhase1Approach();
+                        } else if (status === 'Arrived') {
+                            initializeTrackingElements(bookingCoords.pickup.lat, bookingCoords.pickup.lng, bookingCoords.drop.lat, bookingCoords.drop.lng, vehicle);
+                            document.getElementById('otp-container').style.display = 'block';
+                            document.getElementById('driver-tracking-card').style.display = 'flex';
+                            document.getElementById('live-stats-bar').style.opacity = '1';
+                            document.getElementById('tracking-otp').innerText = data.pin;
+
+                            if (!phase1Started) {
+                                phase1Started = true;
+                                phase1Completed = true;
+                                vehicleMarker.setLatLng([trackPickLat, trackPickLng]);
+                            }
+                            
+                            if (phase1Completed) {
+                                document.getElementById('tracking-status-title').innerText = "Driver Arrived!";
+                                document.getElementById('tracking-status-subtitle').innerText = "Please share the PIN with the driver to start the ride.";
+                                document.getElementById('otp-container').style.borderColor = "var(--success)";
+                                document.getElementById('otp-container').style.background = "#e8f5e9";
+                                
+                                if (!arrivedPopupShown) {
+                                    arrivedPopupShown = true;
+                                    showStatusPopup(
+                                        "Driver Arrived! 🚖",
+                                        `Please share the PIN (${data.pin}) with your driver to start the ride.`,
+                                        "📍",
+                                        driverName,
+                                        `${vehicle === 'bike' ? 'Express Bike' : 'Premium Sedan'} • ${driverPlate}`,
+                                        driverImg
+                                    );
+                                }
+                            }
+                        } else if (status === 'In_Progress') {
+                            initializeTrackingElements(bookingCoords.pickup.lat, bookingCoords.pickup.lng, bookingCoords.drop.lat, bookingCoords.drop.lng, vehicle);
+                            document.getElementById('driver-tracking-card').style.display = 'flex';
+                            
+                            if (!inProgressPopupShown) {
+                                inProgressPopupShown = true;
+                                showStatusPopup(
+                                    "Ride Started! 🛣️",
+                                    "Your ride is currently in progress. Enjoy your journey!",
+                                    "✨",
+                                    driverName,
+                                    `${vehicle === 'bike' ? 'Express Bike' : 'Premium Sedan'} • ${driverPlate}`,
+                                    driverImg
+                                );
+                            }
+                            
+                            runPhase2Trip();
+                        } else if (status === 'Cancelled') {
+                            clearInterval(statusPollInterval);
+                            localStorage.removeItem('active_ride_id');
+                            localStorage.removeItem('active_ride_pickup_lat');
+                            localStorage.removeItem('active_ride_pickup_lng');
+                            localStorage.removeItem('active_ride_drop_lat');
+                            localStorage.removeItem('active_ride_drop_lng');
+                            localStorage.removeItem('active_ride_pname');
+                            localStorage.removeItem('active_ride_dname');
+                            localStorage.removeItem('active_ride_price');
+                            localStorage.removeItem('active_ride_vehicle');
+                            alert("Currently, riders are not available on your route right now.");
+
+                            resetToNewBooking();
+                        } else if (status === 'Completed') {
+                            clearInterval(statusPollInterval);
+                            // Clean localStorage
+                            localStorage.removeItem('active_ride_id');
+                            localStorage.removeItem('active_ride_pickup_lat');
+                            localStorage.removeItem('active_ride_pickup_lng');
+                            localStorage.removeItem('active_ride_drop_lat');
+                            localStorage.removeItem('active_ride_drop_lng');
+                            localStorage.removeItem('active_ride_pname');
+                            localStorage.removeItem('active_ride_dname');
+                            localStorage.removeItem('active_ride_price');
+                            localStorage.removeItem('active_ride_vehicle');
+
+                            // Show payment panel with the real fare
+                            showPaymentOverlay();
+                        }
+                    }
+                });
+            }, 2000);
+        }
+
+        // Ensure markers and setup are ready
+        function initializeTrackingElements(pickLat, pickLng, dropLat, dropLng, vehicleType) {
+            if (!pickLat || !pickLng || !dropLat || !dropLng) {
+                console.warn("Tracking coordinates not ready yet.");
+                return;
+            }
+            trackPickLat = pickLat;
+            trackPickLng = pickLng;
+            trackDropLat = dropLat;
+            trackDropLng = dropLng;
+            trackVehicleType = vehicleType;
+
+            const carSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000080" width="36" height="36"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>');
+            const bikeSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232ecc71" width="36" height="36"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.4l1.8-1.9zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>');
+            
+            globalVehicleIcon = L.icon({
+                iconUrl: vehicleType === 'bike' ? bikeSvg : carSvg,
+                iconSize: [38, 38],
+                iconAnchor: [19, 19]
+            });
+
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (dropMarker) map.removeLayer(dropMarker);
+
+            const pickupIcon = L.divIcon({
+                html: '<div style="background:#2ecc71; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+            const dropIcon = L.divIcon({
+                html: '<div style="background:#e74c3c; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
+                className: ''
+            });
+
+            pickupMarker = L.marker([pickLat, pickLng], { icon: pickupIcon }).addTo(map).bindPopup('Pickup Location');
+            dropMarker = L.marker([dropLat, dropLng], { icon: dropIcon }).addTo(map).bindPopup('Dropoff Location');
+
+            if (!vehicleMarker) {
+                const spawnLat = (phase2Started || phase2Completed) ? pickLat : (pickLat - 0.007);
+                const spawnLng = (phase2Started || phase2Completed) ? pickLng : (pickLng - 0.008);
+                vehicleMarker = L.marker([spawnLat, spawnLng], { icon: globalVehicleIcon }).addTo(map);
+            }
+        }
+
+        async function runPhase1Approach() {
+            if (phase1Started) return;
+            phase1Started = true;
+
+            const driverStartLat = trackPickLat - 0.007;
+            const driverStartLng = trackPickLng - 0.008;
+
+            let route1 = await getDrivingRoute({ lat: driverStartLat, lng: driverStartLng }, { lat: trackPickLat, lng: trackPickLng });
+            let path1 = route1 ? route1.geometry.coordinates.map(c => [c[1], c[0]]) : [[driverStartLat, driverStartLng], [trackPickLat, trackPickLng]];
+            let steps1 = route1 ? route1.legs[0].steps : [];
+
+            map.setView([driverStartLat, driverStartLng], 15);
+
+            animateRoute(path1, steps1, "Driver is Arriving", () => {
+                phase1Completed = true;
+                document.getElementById('tracking-status-title').innerText = "Driver Arrived!";
+                document.getElementById('tracking-status-subtitle').innerText = "Please share the PIN with the driver to begin the ride.";
+                document.getElementById('otp-container').style.borderColor = "var(--success)";
+                document.getElementById('otp-container').style.background = "#e8f5e9";
+                document.getElementById('turn-ui').style.display = 'none';
+            });
+        }
+
+        async function runPhase2Trip() {
+            if (phase2Started) return;
+            phase2Started = true;
+            phase1Started = true;
+            phase1Completed = true;
+
+            vehicleMarker.setLatLng([trackPickLat, trackPickLng]);
+
+            document.getElementById('tracking-status-title').innerText = "On Trip";
+            document.getElementById('tracking-status-subtitle').innerText = `Heading to ${trackDName}`;
+            document.getElementById('otp-container').style.display = 'none';
+
+            let route2 = await getDrivingRoute({ lat: trackPickLat, lng: trackPickLng }, { lat: trackDropLat, lng: trackDropLng });
+            let path2 = route2 ? route2.geometry.coordinates.map(c => [c[1], c[0]]) : [[trackPickLat, trackPickLng], [trackDropLat, trackDropLng]];
+            let steps2 = route2 ? route2.legs[0].steps : [];
+
+            animateRoute(path2, steps2, "On Trip", () => {
+                phase2Completed = true;
+                showArrivedWaitingState();
+            });
+        }
+
+        function showArrivedWaitingState() {
+            document.getElementById('turn-ui').style.display = 'none';
+            document.getElementById('otp-container').style.display = 'none';
+            document.getElementById('live-stats-bar').style.display = 'none';
+            document.getElementById('tracking-actions').style.display = 'none';
+
+            document.getElementById('tracking-status-title').innerText = "Arrived at Destination";
+            document.getElementById('tracking-status-subtitle').innerText = "Waiting for chauffeur to end the ride & collect payment.";
+        }
+
+        let activePaymentMethod = 'upi';
+
+        function selectPaymentMethod(method) {
+            activePaymentMethod = method;
+            
+            document.querySelectorAll('.payment-option-card').forEach(card => {
+                card.classList.remove('active');
+                card.style.border = '2px solid rgba(0,0,0,0.08)';
+                card.style.background = 'transparent';
+            });
+            
+            document.getElementById('pay-check-upi').className = 'far fa-circle text-muted';
+            document.getElementById('pay-check-cash').className = 'far fa-circle text-muted';
+            document.getElementById('pay-check-card').className = 'far fa-circle text-muted';
+
+            const activeCard = document.getElementById('pay-opt-' + method);
+            activeCard.classList.add('active');
+            activeCard.style.border = '2px solid var(--primary)';
+            activeCard.style.background = 'rgba(234,179,8,0.05)';
+            
+            document.getElementById('pay-check-' + method).className = 'fas fa-check-circle text-primary';
+
+            if (method === 'upi') {
+                document.getElementById('upi-qr-block').style.display = 'block';
+                document.getElementById('card-details-block').style.display = 'none';
+            } else if (method === 'card') {
+                document.getElementById('upi-qr-block').style.display = 'none';
+                document.getElementById('card-details-block').style.display = 'block';
+            } else {
+                document.getElementById('upi-qr-block').style.display = 'none';
+                document.getElementById('card-details-block').style.display = 'none';
+            }
+        }
+
+        function showPaymentOverlay() {
+            document.getElementById('turn-ui').style.display = 'none';
+            document.getElementById('otp-container').style.display = 'none';
+            document.getElementById('live-stats-bar').style.display = 'none';
+            document.getElementById('tracking-actions').style.display = 'none';
+
+            document.getElementById('tracking-status-title').innerText = "Arrived at Destination";
+            document.getElementById('tracking-status-subtitle').innerText = "Please complete the fare payment to end your session.";
+
+            const finalFare = document.getElementById('lbl-price').innerText;
+            document.getElementById('payment-fare-val').innerText = finalFare;
+            document.getElementById('success-price-val').innerText = finalFare;
+
+            document.getElementById('payment-panel').style.display = 'block';
+        }
+
+        function processPayment() {
+            // Hide the payment panel
+            document.getElementById('payment-panel').style.display = 'none';
+            
+            // Show full-screen Payment Successful modal overlay
+            // Dismiss button on that modal calls openFeedbackModal() automatically
+            document.getElementById('payment-success-modal-overlay').style.display = 'flex';
+        }
+
+        function cancelActiveRide() {
+            if (!activeRideId) {
+                resetToNewBooking();
+                return;
+            }
+            // Show cancel reasons panel and hide Call/Cancel actions
+            document.getElementById('tracking-actions').style.display = 'none';
+            document.getElementById('cancel-reason-panel').style.display = 'block';
+        }
+
+        function hideCancelPanel() {
+            document.getElementById('cancel-reason-panel').style.display = 'none';
+            document.getElementById('tracking-actions').style.display = 'flex';
+        }
+
+        function submitCancellation() {
+            const selectedReasonEl = document.querySelector('input[name="cancel_reason"]:checked');
+            const reason = selectedReasonEl ? selectedReasonEl.value : "No reason provided";
+
+            const formData = new FormData();
+            formData.append('reason', reason);
+
+            fetch(`/api/ride/cancel/${activeRideId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    if (statusPollInterval) clearInterval(statusPollInterval);
+                    
+                    // Clear all localStorage keys
+                    localStorage.removeItem('active_ride_id');
+                    localStorage.removeItem('active_ride_pickup_lat');
+                    localStorage.removeItem('active_ride_pickup_lng');
+                    localStorage.removeItem('active_ride_drop_lat');
+                    localStorage.removeItem('active_ride_drop_lng');
+                    localStorage.removeItem('active_ride_pname');
+                    localStorage.removeItem('active_ride_dname');
+                    localStorage.removeItem('active_ride_price');
+                    localStorage.removeItem('active_ride_vehicle');
+                    
+                    alert("Ride cancelled successfully.");
+                    
+                    document.getElementById('cancel-reason-panel').style.display = 'none';
+                    resetToNewBooking();
+                } else {
+                    alert(data.message || "Failed to cancel ride.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error cancelling ride.");
+            });
+        }
+
+        let selectedStars = 0;
+
+        function openFeedbackModal() {
+            selectedStars = 0;
+            document.querySelectorAll('.star-btn').forEach(star => {
+                star.style.color = '#cbd5e1';
+            });
+            document.getElementById('feedback-comments').value = '';
+            document.getElementById('feedback-modal-overlay').style.display = 'flex';
+        }
+
+        function selectFeedbackStars(rating) {
+            selectedStars = rating;
+            document.querySelectorAll('.star-btn').forEach(star => {
+                const starVal = parseInt(star.getAttribute('data-star'));
+                if (starVal <= rating) {
+                    star.style.color = '#f59e0b';
+                } else {
+                    star.style.color = '#cbd5e1';
+                }
+            });
+        }
+
+        function dismissPaymentSuccessModal() {
+            document.getElementById('payment-success-modal-overlay').style.display = 'none';
+            openFeedbackModal();
+        }
+
+        function skipRideFeedback() {
+            const formData = new FormData();
+            formData.append('rating', '0');
+            formData.append('feedback', 'Skipped feedback');
+
+            fetch(`/api/ride/feedback/${activeRideId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                closeFeedbackModal();
+            })
+            .catch(err => {
+                console.error(err);
+                closeFeedbackModal();
+            });
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedback-modal-overlay').style.display = 'none';
+            resetToNewBooking();
+        }
+
+        function submitRideFeedback() {
+            if (selectedStars === 0) {
+                alert("Please select a star rating (1 to 5 stars) before submitting, or click 'Skip' to proceed.");
+                return;
+            }
+
+            const feedbackText = document.getElementById('feedback-comments').value.trim();
+
+            const formData = new FormData();
+            formData.append('rating', selectedStars);
+            if (feedbackText) {
+                formData.append('feedback', feedbackText);
+            }
+
+            fetch(`/api/ride/feedback/${activeRideId}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Thank you for your feedback!");
+                    closeFeedbackModal();
+                } else {
+                    alert(data.message || "Failed to submit feedback.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error submitting feedback.");
+            });
+        }
+
+        function resetToNewBooking() {
+            if (pickupMarker) map.removeLayer(pickupMarker);
+            if (dropMarker) map.removeLayer(dropMarker);
+            if (routePolyline) map.removeLayer(routePolyline);
+            if (vehicleMarker) map.removeLayer(vehicleMarker);
+            pickupMarker = null;
+            dropMarker = null;
+            routePolyline = null;
+            vehicleMarker = null;
+
+            document.getElementById('pickup').value = '';
+            document.getElementById('drop').value = '';
+            document.getElementById('pickup_hidden').value = '';
+            document.getElementById('drop_hidden').value = '';
+            document.getElementById('distance_hidden').value = '';
+
+            document.getElementById('payment-success-panel').style.display = 'none';
+            document.getElementById('tracking-ui').style.display = 'none';
+            document.getElementById('booking-ui').style.display = 'block';
+            document.getElementById('ride-option-card').classList.remove('active');
+            document.getElementById('vehicle-selector').style.display = 'none';
+            
+            localStorage.removeItem('active_ride_id');
+            localStorage.removeItem('active_ride_pickup_lat');
+            localStorage.removeItem('active_ride_pickup_lng');
+            localStorage.removeItem('active_ride_drop_lat');
+            localStorage.removeItem('active_ride_drop_lng');
+            localStorage.removeItem('active_ride_pname');
+            localStorage.removeItem('active_ride_dname');
+            localStorage.removeItem('active_ride_price');
+            localStorage.removeItem('active_ride_vehicle');
+
+            // Clear draft items as well on complete reset
+            localStorage.removeItem('draft_pickup');
+            localStorage.removeItem('draft_drop');
+            localStorage.removeItem('draft_pickup_lat');
+            localStorage.removeItem('draft_pickup_lng');
+            localStorage.removeItem('draft_pickup_name');
+            localStorage.removeItem('draft_drop_lat');
+            localStorage.removeItem('draft_drop_lng');
+            localStorage.removeItem('draft_drop_name');
+            localStorage.removeItem('draft_vehicle');
+
+            activeRideId = null;
+            phase1Started = false;
+            phase1Completed = false;
+            phase2Started = false;
+            phase2Completed = false;
+            acceptedPopupShown = false;
+            arrivedPopupShown = false;
+            inProgressPopupShown = false;
+
+            document.getElementById('live-stats-bar').style.display = 'flex';
+            document.getElementById('live-stats-bar').style.opacity = '1';
+            document.getElementById('tracking-actions').style.display = 'flex';
+        }
+
+        // Draft state helpers for SPA transitions
+        function saveDraftBookingState() {
+            localStorage.setItem('draft_pickup', document.getElementById("pickup").value);
+            localStorage.setItem('draft_drop', document.getElementById("drop").value);
+            if (bookingCoords.pickup) {
+                localStorage.setItem('draft_pickup_lat', bookingCoords.pickup.lat);
+                localStorage.setItem('draft_pickup_lng', bookingCoords.pickup.lng);
+                localStorage.setItem('draft_pickup_name', bookingCoords.pickup.name);
+            }
+            if (bookingCoords.drop) {
+                localStorage.setItem('draft_drop_lat', bookingCoords.drop.lat);
+                localStorage.setItem('draft_drop_lng', bookingCoords.drop.lng);
+                localStorage.setItem('draft_drop_name', bookingCoords.drop.name);
+            }
+            const veh = document.getElementById("vehicle_hidden") ? document.getElementById("vehicle_hidden").value : 'car';
+            localStorage.setItem('draft_vehicle', veh);
+        }
+
+        function restoreDraftBookingState() {
+            if (serverActiveRide && serverActiveRide.id) return;
+
+            const pickup = localStorage.getItem('draft_pickup');
+            const drop = localStorage.getItem('draft_drop');
+            if (!pickup && !drop) return;
+
+            if (pickup) document.getElementById("pickup").value = pickup;
+            if (drop) document.getElementById("drop").value = drop;
+
+            if (localStorage.getItem('draft_pickup_lat')) {
+                bookingCoords.pickup = {
+                    lat: parseFloat(localStorage.getItem('draft_pickup_lat')),
+                    lng: parseFloat(localStorage.getItem('draft_pickup_lng')),
+                    name: localStorage.getItem('draft_pickup_name')
+                };
+            }
+            if (localStorage.getItem('draft_drop_lat')) {
+                bookingCoords.drop = {
+                    lat: parseFloat(localStorage.getItem('draft_drop_lat')),
+                    lng: parseFloat(localStorage.getItem('draft_drop_lng')),
+                    name: localStorage.getItem('draft_drop_name')
+                };
+            }
+
+            const veh = localStorage.getItem('draft_vehicle') || 'car';
+            if (document.getElementById("vehicle_hidden")) {
+                document.getElementById("vehicle_hidden").value = veh;
+                const vCar = document.getElementById("v-car");
+                const vBike = document.getElementById("v-bike");
+                if (vCar) vCar.classList.remove("active");
+                if (vBike) vBike.classList.remove("active");
+                const selectedEl = document.getElementById("v-" + veh);
+                if (selectedEl) selectedEl.classList.add("active");
+            }
+
+            if (bookingCoords.pickup && bookingCoords.drop) {
+                setTimeout(() => {
+                    calculateRouteBtn(false);
+                }, 200);
+            }
+        }
+
         function initLiveTrackingFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
-            
             const pickLat = parseFloat(urlParams.get('pickLat')) || 17.4486;
             const pickLng = parseFloat(urlParams.get('pickLng')) || 78.3908;
             const dropLat = parseFloat(urlParams.get('dropLat')) || 17.4300;
             const dropLng = parseFloat(urlParams.get('dropLng')) || 78.4080;
-            
             const pName = decodeURIComponent(urlParams.get('pName') || "Madhapur Metro Station");
             const dName = decodeURIComponent(urlParams.get('dName') || "Jubilee Hills Checkpost");
-            const rName = decodeURIComponent(urlParams.get('rName') || "Rahul Sharma");
             const price = decodeURIComponent(urlParams.get('price') || "₹145");
             const vehicle = urlParams.get('vehicle') || "car";
 
-            startLiveTrackingSimulation(pickLat, pickLng, dropLat, dropLng, pName, dName, price, vehicle);
+            initializeTrackingElements(pickLat, pickLng, dropLat, dropLng, vehicle);
+            runPhase1Approach();
         }
 
         // Haversine Distance helper
@@ -1289,109 +2347,15 @@
             return R * c;
         }
 
-        async function startLiveTrackingSimulation(pickLat, pickLng, dropLat, dropLng, pName, dName, price, vehicleType) {
-            // Update active booking details inside tracker cards
-            document.getElementById('lbl-pickup').innerText = pName;
-            document.getElementById('lbl-drop').innerText = dName;
-            document.getElementById('lbl-price').innerText = price;
-
-            // Load driver metadata
-            const driver = driversList[vehicleType] || driversList.car;
-            document.getElementById('tracking-rider-name').innerText = driver.name;
-            document.getElementById('tracking-rating').innerText = driver.rating;
-            document.getElementById('tracking-plate').innerText = driver.plate;
-            document.getElementById('tracking-driver-img').src = driver.img;
-
-            // Setup customized high fidelity vector vehicle icon
-            const carSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23000080" width="36" height="36"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>');
-            const bikeSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%232ecc71" width="36" height="36"><path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.7-1.6-.7s-1.1.2-1.4.6L8.5 8.4c-.3.4-.5.8-.5 1.4v5h2v-4.4l1.8-1.9zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>');
-            
-            const vehicleIcon = L.icon({
-                iconUrl: vehicleType === 'bike' ? bikeSvg : carSvg,
-                iconSize: [38, 38],
-                iconAnchor: [19, 19]
-            });
-
-            // Set up driver starting coordinate (Simulated Offset away from pickup)
-            const driverStartLat = pickLat - 0.007;
-            const driverStartLng = pickLng - 0.008;
-
-            if (pickupMarker) map.removeLayer(pickupMarker);
-            if (dropMarker) map.removeLayer(dropMarker);
-
-            const pickupIcon = L.divIcon({
-                html: '<div style="background:#2ecc71; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
-                className: ''
-            });
-            const dropIcon = L.divIcon({
-                html: '<div style="background:#e74c3c; width:22px; height:22px; border-radius:50%; border:3px solid white; box-shadow:0 3px 10px rgba(0,0,0,0.3);"></div>',
-                className: ''
-            });
-
-            pickupMarker = L.marker([pickLat, pickLng], { icon: pickupIcon }).addTo(map).bindPopup('Pickup Location');
-            dropMarker = L.marker([dropLat, dropLng], { icon: dropIcon }).addTo(map).bindPopup('Dropoff Location');
-
-            if(vehicleMarker) map.removeLayer(vehicleMarker);
-            vehicleMarker = L.marker([driverStartLat, driverStartLng], { icon: vehicleIcon }).addTo(map);
-
-            // Phase 1: Driver travelling from simulated spawn to Pickup Location
-            let route1 = await getDrivingRoute({ lat: driverStartLat, lng: driverStartLng }, { lat: pickLat, lng: pickLng });
-            let path1 = route1 ? route1.geometry.coordinates.map(c => [c[1], c[0]]) : [[driverStartLat, driverStartLng], [pickLat, pickLng]];
-            let steps1 = route1 ? route1.legs[0].steps : [];
-
-            map.setView([driverStartLat, driverStartLng], 15);
-
-            animateRoute(path1, steps1, "Driver is Arriving", () => {
-                // Driver Arrived
-                document.getElementById('tracking-status-title').innerText = "Driver Arrived!";
-                document.getElementById('tracking-status-subtitle').innerText = "Please share the PIN with the driver to begin the ride.";
-                document.getElementById('otp-container').style.borderColor = "var(--success)";
-                document.getElementById('otp-container').style.background = "#e8f5e9";
-                document.getElementById('turn-ui').style.display = 'none';
-
-                // Display Start Button
-                const btnStart = document.getElementById('btn-start-ride');
-                btnStart.style.display = 'block';
-                btnStart.onclick = async () => {
-                    btnStart.style.display = 'none';
-
-                    // Start Phase 2: Heading from Pickup to Drop destination
-                    document.getElementById('tracking-status-title').innerText = "On Trip";
-                    document.getElementById('tracking-status-subtitle').innerText = `Heading to ${dName}`;
-                    document.getElementById('otp-container').style.display = 'none';
-
-                    let route2 = await getDrivingRoute({ lat: pickLat, lng: pickLng }, { lat: dropLat, lng: dropLng });
-                    let path2 = route2 ? route2.geometry.coordinates.map(c => [c[1], c[0]]) : [[pickLat, pickLng], [dropLat, dropLng]];
-                    let steps2 = route2 ? route2.legs[0].steps : [];
-
-                    animateRoute(path2, steps2, "On Trip", () => {
-                        // Trip Finished
-                        document.getElementById('tracking-status-title').innerText = "Trip Completed";
-                        document.getElementById('tracking-status-subtitle').innerText = "You have safely arrived at your destination.";
-                        document.getElementById('turn-ui').style.display = 'none';
-                        document.getElementById('tracking-actions').innerHTML = `
-                            <button class="btn success-btn w-100" onclick="window.location.href='/feature/'">
-                                <i class="fas fa-star"></i> Rate Ride & Return
-                            </button>
-                        `;
-                    });
-                };
-            });
-        }
-
         // Smooth vehicle route animation logic
         function animateRoute(points, steps, stageName, onComplete) {
-            // Draw visual blue path overlay
             if (routePolyline) map.removeLayer(routePolyline);
             routePolyline = L.polyline(points, { color: '#007bff', weight: 6, dashArray: '10, 12', opacity: 0.85 }).addTo(map);
 
-            let stepIndex = 0;
             let currentPos = points[0];
+            let speed = 42; 
+            const intervalTime = 50; 
 
-            let speed = 42; // km/h base
-            const intervalTime = 50; // ms
-
-            // Expand points to create high density smooth transitions
             const smoothRoute = [];
             const segments = 15;
             for(let i=0; i<points.length - 1; i++){
@@ -1411,7 +2375,6 @@
 
             if(window.animInterval) clearInterval(window.animInterval);
 
-            // Compute turn step index tracker
             let currentStepIndex = 0;
             let distanceAccrued = 0;
 
@@ -1426,25 +2389,20 @@
                 const prevPos = currentPos;
                 currentPos = smoothRoute[stepCount];
                 
-                // Move vehicle marker
                 vehicleMarker.setLatLng(currentPos);
                 map.panTo(currentPos);
 
-                // Add small randomness to speed
                 speed = 38 + Math.floor(Math.random() * 18);
                 if (Math.random() < 0.15) {
                     speed = 12; // simulated traffic halt
                 }
 
-                // Compute distance segment
                 const segmentDist = getDistanceMeters(prevPos[0], prevPos[1], currentPos[0], currentPos[1]);
                 distanceAccrued += segmentDist;
 
-                // Handle Turn-by-turn alerts
                 if (steps && steps.length > 0) {
                     let currentStep = steps[currentStepIndex];
                     
-                    // Cycle next step
                     while (currentStep && distanceAccrued >= currentStep.distance && currentStepIndex < steps.length - 1) {
                         distanceAccrued -= currentStep.distance;
                         currentStepIndex++;
@@ -1477,12 +2435,10 @@
                     }
                 }
 
-                // Calculate total remaining path distance
                 let remainingDist = getDistanceMeters(currentPos[0], currentPos[1], points[points.length - 1][0], points[points.length - 1][1]);
                 const remainingDistKm = remainingDist / 1000;
                 const etaMins = Math.max(1, Math.round((remainingDistKm / (speed || 20)) * 60));
 
-                // UI indicators
                 if (speed < 15) {
                     document.getElementById('tracking-status-subtitle').innerText = "Vehicle slowed down in traffic.";
                 } else if (stageName === "On Trip") {
@@ -1499,5 +2455,4 @@
             }, intervalTime);
         }
     </script>
-</body>
-</html>
+{% endblock %}

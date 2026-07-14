@@ -1,0 +1,768 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Chauffeur Portal - Active Route</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        .premium-navbar {
+            background-color: #f59e0b !important; /* Amber tone for rider admin */
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .premium-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body {
+            padding-top: 80px !important;
+            background-color: var(--body-bg) !important;
+            color: var(--text-color) !important;
+        }
+        #rider-map {
+            height: 420px;
+            width: 100%;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(234, 179, 8, 0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            background: #111;
+            color: #fff;
+            padding: 12px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .stat-box label {
+            font-size: 9px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+        .stat-box span {
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .nav-card {
+            background: #ebf5ff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #eab308;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .pin-input {
+            border-radius: 12px;
+            height: 46px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: 5px;
+            text-align: center;
+            width: 100%;
+            max-width: 200px;
+            border: 2px solid #eab308;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        .route-node {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+        }
+        .route-node::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #eab308;
+        }
+        .route-node.node-dest::before {
+            background: #dc3545;
+        }
+        .route-line {
+            position: absolute;
+            left: 11px;
+            top: 14px;
+            width: 2px;
+            height: 25px;
+            background: rgba(234, 179, 8, 0.3);
+        }
+        .border-left-warning {
+            border-left: 4px solid #eab308 !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Rider Header Navbar -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid d-flex align-items-center">
+            <!-- Dropdown Menu Icon (Hamburger) -->
+            <div class="dropdown mr-2 d-flex align-items-center" style="align-self: center;">
+                <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
+                    <i class="fas fa-bars"></i>
+                </a>
+                <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="min-width: 310px !important; transform-origin: top left !important;">
+                    <!-- Menu Header -->
+                    <div class="dropdown-user-header d-flex align-items-center" style="background: linear-gradient(135deg, #eab308 0%, #854d0e 100%) !important;">
+                        <i class="fas fa-motorcycle" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
+                        <div>
+                            <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Rider Settings Console</h6>
+                            <small class="text-white-50" style="font-size: 0.75rem;">Interactive Controls & Settings</small>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Real-Time Controls</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-robot"></i><span>Auto-Accept Rides</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-rider-autoaccept" checked onclick="showToast('Auto-Accept Status Updated')">
+                                        <label class="custom-control-label" for="switch-rider-autoaccept"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-fire"></i><span>Demand Heatmap</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-rider-heatmap" checked onclick="showToast('Live Demand Heatmap Layer Toggled')">
+                                        <label class="custom-control-label" for="switch-rider-heatmap"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Surge Area Boost: 1.5x active')">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-chart-line"></i><span>Peak Surge Rate</span>
+                                    </div>
+                                    <span class="menu-badge badge-gold">1.5x</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Console Settings</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <a class="premium-dropdown-item" href="#" onclick="showToast('Routing to nearest Gas Station...')">
+                                    <i class="fas fa-gas-pump"></i><span>Auto-Nav to Gas Station</span>
+                                </a>
+                            </li>
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-volume-up"></i><span>Audio Alerts</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-rider-sound" checked onclick="showToast('Console Sounds Muted/Unmuted')">
+                                        <label class="custom-control-label" for="switch-rider-sound"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Switching to Vector 3D Mode...')">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-layer-group"></i><span>Map Style Mode</span>
+                                    </div>
+                                    <span class="menu-badge badge-neutral">3D View</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <ul class="dropdown-list-container">
+                            <li>
+                                <a class="premium-dropdown-item" href="{% url 'home' %}">
+                                    <i class="fas fa-home"></i><span>Exit to User Portal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
+                                    <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <a class="navbar-brand font-weight-bold" href="{% url 'portal_rider' %}" style="margin-bottom: 0; align-self: center;">
+                <i class="fas fa-motorcycle mr-2"></i>Chauffeur Console
+            </a>
+            <div class="collapse navbar-collapse" id="adminNavbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_rider' %}"><i class="fas fa-chart-line mr-1"></i> Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" style="background: rgba(0,0,0,0.06);" href="{% url 'portal_rider_active' %}"><i class="fas fa-map-marked-alt mr-1"></i> Active Navigation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_rider_earnings' %}"><i class="fas fa-wallet mr-1"></i> Earnings Ledger</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_rider_trips' %}"><i class="fas fa-history mr-1"></i> Trip Logs</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-navy" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit to User Portal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'portal_logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        {% if active_ride %}
+        <div class="row">
+            <!-- Left Column: Map -->
+            <div class="col-lg-8 mb-4">
+                <div class="glass-card p-3">
+                    <div id="rider-map"></div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <label>Speed</label>
+                            <span id="gps-speed">0 km/h</span>
+                        </div>
+                        <div class="stat-box">
+                            <label>Distance</label>
+                            <span id="gps-dist">0.00 km</span>
+                        </div>
+                        <div class="stat-box">
+                            <label>ETA</label>
+                            <span id="gps-eta">0 min</span>
+                        </div>
+                    </div>
+                    <div class="nav-card" id="nav-alert" style="display: none;">
+                        <i class="fas fa-location-arrow text-warning mr-2 animate-bounce"></i>
+                        <span id="nav-text" class="font-weight-bold">Calculating route...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Ride Details & Actions -->
+            <div class="col-lg-4 mb-4 text-left">
+                <!-- Ride Ticket Card -->
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="badge badge-warning text-dark font-weight-bold px-3 py-2">TaxiRS-{{ active_ride.id }}</span>
+                        <span class="text-subtitle font-weight-bold">Status: <span class="text-warning" id="rideStatusLabel">{{ active_ride.status }}</span></span>
+                    </div>
+                    
+                    <!-- Pickup & Drop Nodes -->
+                    <div class="mb-4">
+                        <div class="route-node">
+                            <i class="fas fa-circle text-success mr-2" style="font-size: 10px;"></i>
+                            <span id="pickNameText" class="font-weight-bold">{{ active_ride.pickup }}</span>
+                        </div>
+                        <div class="route-line" style="margin-left: 5px; height: 30px; border-left: 2px dashed rgba(255,255,255,0.15); margin-top: 5px; margin-bottom: 5px;"></div>
+                        <div class="route-node node-dest">
+                            <i class="fas fa-map-marker-alt text-danger mr-2" style="font-size: 10px;"></i>
+                            <span id="dropNameText" class="font-weight-bold">{{ active_ride.drop }}</span>
+                        </div>
+                    </div>
+                    
+                    <hr style="border-top: 1px solid rgba(255,255,255,0.05);" class="my-4">
+                    
+                    <div class="text-subtitle mb-4">
+                        <div class="mb-2">Commuter: <strong>{{ active_ride.user.username }}</strong></div>
+                        <div class="mb-2">Contact: <strong>{{ active_ride.user.email }}</strong></div>
+                        <div>Gross Fare: <strong class="text-success font-weight-bold" style="font-size: 1.2rem;">₹{{ active_ride.price }}</strong></div>
+                    </div>
+                    
+                    <!-- Action Control Panel -->
+                    <div id="actionPanel">
+                        {% if active_ride.status == 'Accepted' %}
+                            <button onclick="updateStatus('arrive')" class="btn btn-warning btn-block font-weight-bold text-dark rounded-pill py-2 mb-3">
+                                <i class="fas fa-check mr-2"></i> Mark Arrived
+                            </button>
+                        {% elif active_ride.status == 'Arrived' %}
+                            <div class="form-group mb-3 text-center">
+                                <label class="font-weight-bold text-subtitle mb-2">Enter PIN from Commuter</label>
+                                <input type="text" id="ridePinCode" class="form-control pin-input text-center mx-auto" placeholder="0000" maxlength="4" style="font-size: 1.5rem; width: 150px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                            </div>
+                            <button onclick="updateStatus('start')" class="btn btn-warning btn-block font-weight-bold text-dark rounded-pill py-2 mb-3">
+                                <i class="fas fa-play mr-2"></i> Start Trip
+                            </button>
+                        {% elif active_ride.status == 'In_Progress' %}
+                            <button onclick="openDriverPaymentModal()" class="btn btn-warning btn-block font-weight-bold text-dark rounded-pill py-2 mb-3">
+                                <i class="fas fa-coins mr-2"></i> Collect Payment
+                            </button>
+                        {% endif %}
+                        
+                        <button onclick="showRiderCancelPanel()" class="btn btn-outline-danger btn-block font-weight-bold rounded-pill py-2">
+                            <i class="fas fa-times mr-2"></i> Cancel Ride
+                        </button>
+                    </div>
+                    
+                    <!-- Cancel Reasons Selection Panel -->
+                    <div id="rider-cancel-panel" style="display: none;">
+                        <h5 class="text-danger mb-3 font-weight-bold">Select Cancellation Reason</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="rider_cancel_reason" id="rc1" value="Renter is unresponsive" checked>
+                            <label class="form-check-label text-subtitle" for="rc1">Renter is unresponsive</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="rider_cancel_reason" id="rc2" value="Renter cancelled verbally">
+                            <label class="form-check-label text-subtitle" for="rc2">Renter cancelled verbally</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="rider_cancel_reason" id="rc3" value="Vehicle mechanical issues">
+                            <label class="form-check-label text-subtitle" for="rc3">Vehicle mechanical issues</label>
+                        </div>
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="radio" name="rider_cancel_reason" id="rc4" value="Heavy traffic / delays">
+                            <label class="form-check-label text-subtitle" for="rc4">Heavy traffic / delays</label>
+                        </div>
+                        <button onclick="submitRiderCancellation()" class="btn btn-danger btn-block font-weight-bold rounded-pill py-2 mb-2">
+                            Confirm Cancellation
+                        </button>
+                        <button onclick="hideRiderCancelPanel()" class="btn btn-outline-secondary btn-block font-weight-bold rounded-pill py-2">
+                            Go Back
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Modal Overlay -->
+        <div id="driver-payment-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.9); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center; padding: 20px;">
+            <div class="glass-card p-4 text-center" style="max-width: 400px; width: 100%; border: 1px solid rgba(234, 179, 8, 0.2);">
+                <h4 class="font-weight-bold mb-3 text-title">Collect Payment</h4>
+                <p class="text-subtitle mb-4">Select payment method for gross fare: <strong>₹{{ active_ride.price }}</strong></p>
+                
+                <div class="payment-method-selectors d-flex gap-3 justify-content-center mb-4">
+                    <label id="label-pay-qr" onclick="selectDriverPaymentMethod('qr')" style="border: 2px solid #eab308; padding: 15px; border-radius: 12px; cursor: pointer; flex: 1; transition: all 0.2s ease; background: rgba(234,179,8,0.05);">
+                        <i class="fas fa-qrcode d-block mb-1 text-warning" style="font-size: 1.5rem;"></i>
+                        <span class="text-title">Scan QR</span>
+                        <input type="radio" name="driver_payment_method" value="qr" checked style="display: none;">
+                    </label>
+                    <label id="label-pay-cash" onclick="selectDriverPaymentMethod('cash')" style="border: 2px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; cursor: pointer; flex: 1; transition: all 0.2s ease;">
+                        <i class="fas fa-money-bill-wave d-block mb-1 text-success" style="font-size: 1.5rem;"></i>
+                        <span class="text-title">Cash</span>
+                        <input type="radio" name="driver_payment_method" value="cash" style="display: none;">
+                    </label>
+                </div>
+                
+                <div id="driver-qr-container" class="mb-4">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=ride-share@ybl%26am={{ active_ride.price }}%26tn=RideShare-{{ active_ride.id }}" class="mx-auto d-block" alt="QR Code" style="border: 4px solid white; border-radius: 8px; width: 150px; height: 150px;">
+                    <p class="text-subtitle mt-3 mb-0">Ask commuter to scan the UPI QR code to settle fare.</p>
+                </div>
+                
+                <div id="driver-cash-container" class="mb-4" style="display: none;">
+                    <div class="p-3 bg-dark border-left-warning rounded-lg text-left" style="background: rgba(0,0,0,0.3) !important;">
+                        <p class="text-subtitle mb-1">Total Cash Amount:</p>
+                        <h3 class="font-weight-bold text-warning mb-0">₹{{ active_ride.price }}</h3>
+                    </div>
+                    <p class="text-subtitle mt-3 mb-0">Confirm you have received the physical cash from the commuter.</p>
+                </div>
+                
+                <button onclick="confirmDriverPaymentCollected()" class="btn btn-warning btn-block font-weight-bold text-dark rounded-pill py-2 mb-2">
+                    Confirm Payment Collected
+                </button>
+                <button onclick="closeDriverPaymentModal()" class="btn btn-outline-secondary btn-block font-weight-bold rounded-pill py-2">
+                    Cancel
+                </button>
+            </div>
+        </div>
+        
+        <!-- Success Modal Overlay -->
+        <div id="driver-success-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.95); backdrop-filter: blur(10px); z-index: 2000; align-items: center; justify-content: center; padding: 20px;">
+            <div class="glass-card p-5 text-center" style="max-width: 400px; width: 100%; border: 1px solid rgba(46, 204, 113, 0.2);">
+                <div class="text-success mb-4" style="font-size: 4rem;">
+                    <i class="far fa-check-circle animate-pulse"></i>
+                </div>
+                <h3 class="font-weight-bold mb-2 text-title">Trip Completed!</h3>
+                <p class="text-subtitle mb-4">Payment transaction successfully verified. You are now ready to accept new dispatch requests.</p>
+                <button onclick="dismissDriverSuccessModal()" class="btn btn-warning btn-block font-weight-bold text-dark rounded-pill py-2">
+                    Return to Feed
+                </button>
+            </div>
+        </div>
+        {% else %}
+    
+        <div class="glass-card text-center py-5 text-subtitle">
+            <i class="fas fa-road mb-3 d-block" style="font-size: 3rem; opacity: 0.3;"></i>
+            <h4>No active navigation session.</h4>
+            <p class="text-muted">You do not have any claimed dispatch tickets. Claim a ticket from the overview dashboard.</p>
+            <a href="{% url 'portal_rider' %}" class="btn btn-warning px-4 font-weight-bold text-dark mt-3 rounded-pill">Go to Feed Overview</a>
+        </div>
+        {% endif %}
+    </div>
+    <!-- Scripts -->
+    {% if active_ride %}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map, pickupMarker, dropMarker, routePolyline, vehicleMarker;
+        document.addEventListener("DOMContentLoaded", () => {
+            initRiderMap();
+        });
+        function updateStatus(action) {
+            const formData = new FormData();
+            formData.append('action', action);
+            if (action === 'start') {
+                const pin = document.getElementById('ridePinCode').value;
+                if (!pin) {
+                    alert('Please enter user confirmation PIN.');
+                    return;
+                }
+                formData.append('pin', pin);
+            }
+            fetch(`/api/ride/update/{{ active_ride.id }}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert(data.message || 'Action failed');
+                }
+            });
+        }
+        function showRiderCancelPanel() {
+            document.getElementById('actionPanel').style.display = 'none';
+            document.getElementById('rider-cancel-panel').style.display = 'block';
+        }
+        function hideRiderCancelPanel() {
+            document.getElementById('rider-cancel-panel').style.display = 'none';
+            document.getElementById('actionPanel').style.display = 'block';
+        }
+        function submitRiderCancellation() {
+            const selectedReasonEl = document.querySelector('input[name="rider_cancel_reason"]:checked');
+            const reason = selectedReasonEl ? selectedReasonEl.value : "Driver cancelled without specifying reason";
+            const formData = new FormData();
+            formData.append('reason', reason);
+            fetch(`/api/ride/cancel/{{ active_ride.id }}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Job cancelled successfully.");
+                    location.reload();
+                } else {
+                    alert(data.message || "Failed to cancel job.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error cancelling job.");
+            });
+        }
+        function openDriverPaymentModal() {
+            document.getElementById('driver-payment-modal-overlay').style.display = 'flex';
+            selectDriverPaymentMethod('qr');
+        }
+        function closeDriverPaymentModal() {
+            document.getElementById('driver-payment-modal-overlay').style.display = 'none';
+        }
+        function selectDriverPaymentMethod(method) {
+            document.querySelectorAll('.payment-method-selectors label').forEach(lbl => {
+                lbl.style.borderColor = '#e2e8f0';
+                lbl.style.background = 'none';
+            });
+            if (method === 'qr') {
+                document.getElementById('label-pay-qr').style.borderColor = '#2ecc71';
+                document.getElementById('label-pay-qr').style.background = 'rgba(46,204,113,0.05)';
+                document.getElementById('driver-qr-container').style.display = 'block';
+                document.getElementById('driver-cash-container').style.display = 'none';
+                document.querySelector('input[name="driver_payment_method"][value="qr"]').checked = true;
+            } else {
+                document.getElementById('label-pay-cash').style.borderColor = '#2ecc71';
+                document.getElementById('label-pay-cash').style.background = 'rgba(46,204,113,0.05)';
+                document.getElementById('driver-qr-container').style.display = 'none';
+                document.getElementById('driver-cash-container').style.display = 'block';
+                document.querySelector('input[name="driver_payment_method"][value="cash"]').checked = true;
+            }
+        }
+        function confirmDriverPaymentCollected() {
+            const formData = new FormData();
+            formData.append('action', 'complete');
+            fetch(`/api/ride/update/{{ active_ride.id }}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeDriverPaymentModal();
+                    document.getElementById('driver-success-modal-overlay').style.display = 'flex';
+                } else {
+                    alert(data.message || "Failed to complete ride.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Error completing ride.");
+            });
+        }
+        function dismissDriverSuccessModal() {
+            window.location.href = "{% url 'portal_rider' %}";
+        }
+        async function initRiderMap() {
+            map = L.map('rider-map', { zoomControl: false }).setView([17.4486, 78.3908], 13);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap & CARTO',
+                maxZoom: 20
+            }).addTo(map);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            const pName = document.getElementById('pickNameText').innerText;
+            const dName = document.getElementById('dropNameText').innerText;
+            const pickupCoords = await geocodeText(pName);
+            const dropCoords = await geocodeText(dName);
+            if (pickupCoords && dropCoords) {
+                const pickupIcon = L.divIcon({
+                    html: '<div style="background:#2ecc71; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"></div>',
+                    className: ''
+                });
+                const dropIcon = L.divIcon({
+                    html: '<div style="background:#e74c3c; width:18px; height:18px; border-radius:50%; border:3px solid white; box-shadow:0 3px 8px rgba(0,0,0,0.3);"></div>',
+                    className: ''
+                });
+                pickupMarker = L.marker([pickupCoords.lat, pickupCoords.lng], { icon: pickupIcon }).addTo(map);
+                dropMarker = L.marker([dropCoords.lat, dropCoords.lng], { icon: dropIcon }).addTo(map);
+                const vehicleSvg = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23eab308" width="32" height="32"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>');
+                const vehicleIcon = L.icon({
+                    iconUrl: vehicleSvg,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+                const status = "{{ active_ride.status }}";
+                let startLat, startLng, endLat, endLng;
+                if (status === 'Accepted') {
+                    startLat = pickupCoords.lat - 0.007;
+                    startLng = pickupCoords.lng - 0.008;
+                    endLat = pickupCoords.lat;
+                    endLng = pickupCoords.lng;
+                    vehicleMarker = L.marker([startLat, startLng], { icon: vehicleIcon }).addTo(map);
+                    const route = await getDrivingRoute({ lat: startLat, lng: startLng }, { lat: endLat, lng: endLng });
+                    const points = route ? route.geometry.coordinates.map(c => [c[1], c[0]]) : [[startLat, startLng], [endLat, endLng]];
+                    const steps = route ? route.legs[0].steps : [];
+                    routePolyline = L.polyline(points, { color: '#eab308', weight: 5, dashArray: '8, 10', opacity: 0.8 }).addTo(map);
+                    map.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+                    animateDriverRoute(points, steps);
+                } else if (status === 'Arrived') {
+                    // Static at pickup, waiting for PIN validation
+                    startLat = pickupCoords.lat;
+                    startLng = pickupCoords.lng;
+                    vehicleMarker = L.marker([startLat, startLng], { icon: vehicleIcon }).addTo(map);
+                    map.setView([startLat, startLng], 16);
+                    document.getElementById('gps-speed').innerText = "0 km/h";
+                    document.getElementById('gps-dist').innerText = "0.00 km";
+                    document.getElementById('gps-eta').innerText = "0 min";
+                } else if (status === 'In_Progress') {
+                    startLat = pickupCoords.lat;
+                    startLng = pickupCoords.lng;
+                    endLat = dropCoords.lat;
+                    endLng = dropCoords.lng;
+                    vehicleMarker = L.marker([startLat, startLng], { icon: vehicleIcon }).addTo(map);
+                    const route = await getDrivingRoute({ lat: startLat, lng: startLng }, { lat: endLat, lng: endLng });
+                    const points = route ? route.geometry.coordinates.map(c => [c[1], c[0]]) : [[startLat, startLng], [endLat, endLng]];
+                    const steps = route ? route.legs[0].steps : [];
+                    routePolyline = L.polyline(points, { color: '#eab308', weight: 5, dashArray: '8, 10', opacity: 0.8 }).addTo(map);
+                    map.fitBounds(routePolyline.getBounds(), { padding: [40, 40] });
+                    animateDriverRoute(points, steps);
+                }
+            }
+        }
+        async function geocodeText(text) {
+            const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=1&countrycodes=in`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+                }
+            } catch(e) { console.error(e); }
+            return null;
+        }
+        async function getDrivingRoute(origin, dest) {
+            const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${dest.lng},${dest.lat}?geometries=geojson&steps=true&overview=full`;
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.code === 'Ok') return data.routes[0];
+            } catch(e) { console.error(e); }
+            return null;
+        }
+        function getDistanceMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const phi1 = lat1 * Math.PI / 180;
+            const phi2 = lat2 * Math.PI / 180;
+            const deltaPhi = (lat2 - lat1) * Math.PI / 180;
+            const deltaLambda = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(deltaPhi/2) * Math.sin(deltaPhi/2) +
+                      Math.cos(phi1) * Math.cos(phi2) *
+                      Math.sin(deltaLambda/2) * Math.sin(deltaLambda/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+        function animateDriverRoute(points, steps) {
+            let currentPos = points[0];
+            let speed = 40;
+            const intervalTime = 100;
+            const smoothRoute = [];
+            const segments = 10;
+            for(let i=0; i<points.length - 1; i++){
+                const start = points[i];
+                const end = points[i+1];
+                for(let j=0; j<segments; j++) {
+                    const frac = j/segments;
+                    smoothRoute.push([
+                        start[0] + (end[0] - start[0]) * frac,
+                        start[1] + (end[1] - start[1]) * frac
+                    ]);
+                }
+            }
+            smoothRoute.push(points[points.length - 1]);
+            let stepCount = 0;
+            let totalSteps = smoothRoute.length;
+            let currentStepIndex = 0;
+            let distanceAccrued = 0;
+            if (window.driverInterval) clearInterval(window.driverInterval);
+            window.driverInterval = setInterval(() => {
+                if (stepCount >= totalSteps) {
+                    clearInterval(window.driverInterval);
+                    document.getElementById('gps-speed').innerText = "0 km/h";
+                    return;
+                }
+                const prevPos = currentPos;
+                currentPos = smoothRoute[stepCount];
+                vehicleMarker.setLatLng(currentPos);
+                map.panTo(currentPos);
+                speed = 35 + Math.floor(Math.random() * 15);
+                const segmentDist = getDistanceMeters(prevPos[0], prevPos[1], currentPos[0], currentPos[1]);
+                distanceAccrued += segmentDist;
+                if (steps && steps.length > 0) {
+                    let currentStep = steps[currentStepIndex];
+                    while (currentStep && distanceAccrued >= currentStep.distance && currentStepIndex < steps.length - 1) {
+                        distanceAccrued -= currentStep.distance;
+                        currentStepIndex++;
+                        currentStep = steps[currentStepIndex];
+                    }
+                    if (currentStep) {
+                        document.getElementById('nav-alert').style.display = 'flex';
+                        const maneuver = currentStep.maneuver || {};
+                        const modifier = maneuver.modifier || "straight";
+                        const road = currentStep.name || "street";
+                        document.getElementById('nav-text').innerText = maneuver.type === 'arrive' ? 'Destination nearby!' : `In ${Math.round(currentStep.distance - distanceAccrued)}m turn ${modifier} onto ${road}`;
+                    }
+                }
+                const remainingDist = getDistanceMeters(currentPos[0], currentPos[1], points[points.length - 1][0], points[points.length - 1][1]) / 1000;
+                const etaMins = Math.max(1, Math.round((remainingDist / (speed || 20)) * 60));
+                document.getElementById('gps-speed').innerText = `${Math.round(speed)} km/h`;
+                document.getElementById('gps-dist').innerText = `${remainingDist.toFixed(2)} km`;
+                document.getElementById('gps-eta').innerText = `${etaMins} min`;
+                stepCount++;
+            }, intervalTime);
+        }
+    </script>
+    {% endif %}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    
+</body>
+</html>

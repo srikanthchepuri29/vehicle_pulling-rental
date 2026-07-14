@@ -47,6 +47,11 @@
         --hero-text-body: #94a3b8;
     }
 
+    html, body {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
     body {
         font-family: 'Inter', sans-serif;
         background-color: #f8fafc;
@@ -757,34 +762,68 @@
         right: 50% !important;
         margin-left: -50vw !important;
         margin-right: -50vw !important;
-        background: linear-gradient(135deg, #818591 0%, #42444d 100%) !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+        border-top: 1px solid rgba(0, 0, 128, 0.08) !important;
+        border-bottom: 1px solid rgba(0, 0, 128, 0.08) !important;
         padding: 80px 0 !important;
         overflow: hidden !important;
+        color: #1e293b;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .immersive-calculator-section {
+        background: linear-gradient(135deg, #090d16 0%, #111827 100%) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
         color: #ffffff;
+    }
+
+    .immersive-calculator-section .text-title {
+        color: #0f172a;
+        transition: color 0.3s ease;
+    }
+
+    .immersive-calculator-section .text-subtitle {
+        color: #475569;
+        transition: color 0.3s ease;
+    }
+
+    [data-theme="dark"] .immersive-calculator-section .text-title {
+        color: #ffffff;
+    }
+
+    [data-theme="dark"] .immersive-calculator-section .text-subtitle {
+        color: #cbd5e1;
     }
 
     .immersive-calculator-section::before {
         content: '';
         position: absolute;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, rgba(101, 167, 233, 0.06) 0%, transparent 70%);
-        bottom: -200px;
-        right: -100px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(13, 110, 253, 0.03) 0%, transparent 70%);
+        bottom: -250px;
+        right: -150px;
         pointer-events: none;
+    }
+
+    [data-theme="dark"] .immersive-calculator-section::before {
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
     }
 
     .immersive-calculator-section::after {
         content: '';
         position: absolute;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, transparent 70%);
-        top: -100px;
-        left: -100px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.02) 0%, transparent 70%);
+        top: -150px;
+        left: -150px;
         pointer-events: none;
+    }
+
+    [data-theme="dark"] .immersive-calculator-section::after {
+        background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%);
     }
 
     .slider-container {
@@ -794,27 +833,181 @@
     .premium-slider {
         -webkit-appearance: none;
         width: 100%;
-        height: 8px;
-        border-radius: 5px;
-        background: rgba(255, 255, 255, 0.1);
+        height: 6px;
+        border-radius: 10px;
+        background: #e2e8f0;
         outline: none;
         transition: background 0.3s;
+    }
+
+    [data-theme="dark"] .premium-slider {
+        background: rgba(255, 255, 255, 0.12);
     }
 
     .premium-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         border-radius: 50%;
-        background: var(--sky-blue);
+        background: #0d6efd;
         cursor: pointer;
-        box-shadow: 0 0 15px rgba(101, 167, 233, 0.8);
-        transition: transform 0.2s ease;
+        box-shadow: 0 0 10px rgba(13, 110, 253, 0.3);
+        border: 3px solid #ffffff;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    [data-theme="dark"] .premium-slider::-webkit-slider-thumb {
+        background: #38bdf8;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
     }
 
     .premium-slider::-webkit-slider-thumb:hover {
         transform: scale(1.2);
+        background: #0b5ed7;
+    }
+
+    [data-theme="dark"] .premium-slider::-webkit-slider-thumb:hover {
+        background: #0ea5e9;
+    }
+
+    /* Perks Glass Card */
+    .perk-glass-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 128, 0.08);
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+    }
+
+    [data-theme="dark"] .perk-glass-card {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: none;
+    }
+
+    .perk-glass-card:hover {
+        background: #ffffff !important;
+        border-color: #0d6efd !important;
+        transform: translateY(-4px);
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.06);
+    }
+
+    [data-theme="dark"] .perk-glass-card:hover {
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-color: rgba(255, 255, 255, 0.12) !important;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .calc-config-card {
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 128, 0.08);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .calc-config-card {
+        background: rgba(15, 23, 42, 0.65);
+        border-color: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    }
+
+    .form-input-premium {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important;
+        padding: 0 18px !important;
+        height: 48px !important;
+        border-radius: 12px !important;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        outline: none;
+        width: 100%;
+    }
+
+    [data-theme="dark"] .form-input-premium {
+        background: rgba(15, 23, 42, 0.8) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+    }
+
+    .form-input-premium:focus {
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 12px rgba(13, 110, 253, 0.15) !important;
+    }
+
+    [data-theme="dark"] .form-input-premium:focus {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.25) !important;
+    }
+
+    .calc-savings-number {
+        font-size: 3.25rem;
+        font-weight: 800;
+        color: #0d6efd;
+        text-shadow: 0 0 20px rgba(13, 110, 253, 0.15);
+        font-family: 'Outfit', sans-serif;
+        margin: 15px 0;
+        transition: color 0.3s ease;
+    }
+
+    [data-theme="dark"] .calc-savings-number {
+        color: #38bdf8;
+        text-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
+    }
+
+    .btn-calc-cta {
+        background: #0d6efd;
+        border: none;
+        color: #ffffff !important;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.20);
+        border-radius: 12px !important;
+        font-weight: 700;
+        padding: 14px 20px;
+        width: 100%;
+        display: block;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+    }
+
+    .btn-calc-cta:hover {
+        background: #0b5ed7;
+        box-shadow: 0 10px 25px rgba(13, 110, 253, 0.35);
+        transform: translateY(-2px);
+    }
+
+    [data-theme="dark"] .btn-calc-cta {
+        background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+        color: #070a13 !important;
+        box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3);
+    }
+
+    [data-theme="dark"] .btn-calc-cta:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 12px 30px rgba(56, 189, 248, 0.45);
+        transform: translateY(-2px);
+    }
+
+    .calc-result-card {
+        background: linear-gradient(135deg, rgba(13, 110, 253, 0.05) 0%, rgba(13, 110, 253, 0.01) 100%) !important;
+        border: 1px solid rgba(13, 110, 253, 0.2) !important;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(13, 110, 253, 0.05);
+        padding: 24px;
+        transition: all 0.3s ease;
+    }
+
+    [data-theme="dark"] .calc-result-card {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(56, 189, 248, 0.02) 100%) !important;
+        border-color: rgba(56, 189, 248, 0.25) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
     }
 </style>
 
@@ -840,9 +1033,23 @@
                 style="font-size: 0.7rem; letter-spacing: 0.5px; border-radius: 12px; background: rgba(101, 167, 233, 0.2) !important; color: #65a7e9 !important; border: 1px solid rgba(101, 167, 233, 0.4);">
                 <i class="fas fa-tower-broadcast mr-1"></i> Live Grid Command
             </span>
+            {% if user.is_authenticated %}
+            <!-- Logged-in User Account Details Card -->
+            <div class="user-details-card d-flex align-items-center mb-3 p-3 rounded-lg animate__animated animate__fadeIn" style="background: rgba(101, 167, 233, 0.1); border: 1px solid rgba(101, 167, 233, 0.25); border-radius: 16px;">
+                <div class="user-avatar-circle mr-3" style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--royal-navy) 0%, var(--sky-blue) 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.25rem; box-shadow: 0 4px 10px rgba(0, 0, 128, 0.15);">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+                <div class="user-profile-meta" style="flex: 1; min-width: 0;">
+                    <h5 class="outfit-font text-title mb-0" style="font-size: 0.95rem; font-weight: 700; color: var(--hero-text-title); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ user.username }}</h5>
+                    <span class="text-muted d-block" style="font-size: 0.78rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="fas fa-envelope mr-1"></i> {{ user.email }}</span>
+                    <span class="badge badge-success text-uppercase mt-1" style="font-size: 0.65rem; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);">Verified Client</span>
+                </div>
+            </div>
+            {% else %}
             <h2 class="outfit-font text-title mb-1"><b>Explore Commutes</b></h2>
             <p class="text-body mb-3" style="font-size: 0.82rem; line-height: 1.4;">Find active vehicles nearest to your
                 location. Select a travel category below to start booking, sharing, or renting instantly.</p>
+            {% endif %}
         </div>
 
         <!-- Mode Tab Selectors -->
@@ -859,7 +1066,7 @@
             <button class="mode-btn" id="modeBtnCarpool"
                 onclick="switchImmersiveMode(event, 'immersive-carpool', 'carpool')">
                 <i class="fas fa-users"></i>
-                <span>Carpool</span>
+                <span>Pooling</span>
             </button>
             <button class="mode-btn" id="modeBtnRent" onclick="switchImmersiveMode(event, 'immersive-rent', 'rental')">
                 <i class="fas fa-key"></i>
@@ -871,11 +1078,11 @@
         <div class="mode-content-panes mt-3">
             <!-- MODE 1: Cabs (Uber Style) -->
             <div id="immersive-cab" class="immersive-pane active">
-                <form action="http://127.0.0.1:8000/car/" method="GET">
+                <form action="{% url 'ride_page' %}" method="GET" onsubmit="return checkLoginAndProceed(event)">
                     <div class="form-group-premium">
                         <label>Pickup Location</label>
                         <div class="input-wrapper-premium">
-                            <input type="text" class="form-input-premium" value="Madhapur Metro Station, Hyderabad"
+                            <input type="text" name="pickup" class="form-input-premium" value="Madhapur Metro Station, Hyderabad"
                                 required>
                             <i class="fas fa-dot-circle input-icon" style="color: #007bff;"></i>
                         </div>
@@ -883,7 +1090,7 @@
                     <div class="form-group-premium">
                         <label>Drop Destination</label>
                         <div class="input-wrapper-premium">
-                            <input type="text" class="form-input-premium" placeholder="Where are you heading?" required>
+                            <input type="text" name="drop" class="form-input-premium" placeholder="Where are you heading?" required>
                             <i class="fas fa-map-marker-alt input-icon" style="color: #ef4444;"></i>
                         </div>
                     </div>
@@ -895,18 +1102,18 @@
 
             <!-- MODE 2: Bike Taxi (Rapido Style) -->
             <div id="immersive-bike" class="immersive-pane">
-                <form action="http://127.0.0.1:8000/ride_page/" method="GET">
+                <form action="{% url 'ride_page' %}" method="GET" onsubmit="return checkLoginAndProceed(event)">
                     <div class="form-group-premium">
                         <label>Quick Pick Point</label>
                         <div class="input-wrapper-premium">
-                            <input type="text" class="form-input-premium" value="Madhapur, Hyderabad" required>
+                            <input type="text" name="pickup" class="form-input-premium" value="Madhapur, Hyderabad" required>
                             <i class="fas fa-crosshairs input-icon" style="color: #eab308;"></i>
                         </div>
                     </div>
                     <div class="form-group-premium">
                         <label>Drop Point</label>
                         <div class="input-wrapper-premium">
-                            <input type="text" class="form-input-premium" placeholder="Enter target landmark..."
+                            <input type="text" name="drop" class="form-input-premium" placeholder="Enter target landmark..."
                                 required>
                             <i class="fas fa-flag-checkered input-icon" style="color: #ef4444;"></i>
                         </div>
@@ -920,19 +1127,19 @@
 
             <!-- MODE 3: Carpool (BlaBlaCar Style) -->
             <div id="immersive-carpool" class="immersive-pane">
-                <form action="http://127.0.0.1:8000/feature/" method="GET">
+                <form action="{% url 'user_carpools' %}" method="GET" onsubmit="return checkLoginAndProceed(event)">
                     <div class="row">
                         <div class="col-md-6 form-group-premium pr-md-1">
                             <label>Leaving From</label>
                             <div class="input-wrapper-premium">
-                                <input type="text" class="form-input-premium" value="Hyderabad" required>
+                                <input type="text" name="start" class="form-input-premium" value="Hyderabad" required>
                                 <i class="fas fa-compass input-icon" style="color: #10b981;"></i>
                             </div>
                         </div>
                         <div class="col-md-6 form-group-premium pl-md-1">
                             <label>Going To</label>
                             <div class="input-wrapper-premium">
-                                <input type="text" class="form-input-premium" placeholder="Destination..." required>
+                                <input type="text" name="destination" class="form-input-premium" placeholder="Destination..." required>
                                 <i class="fas fa-circle-chevron-right input-icon" style="color: #ef4444;"></i>
                             </div>
                         </div>
@@ -959,14 +1166,14 @@
                     </div>
                     <button type="submit" class="btn-action-immersive"
                         style="background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important; box-shadow: 0 6px 15px rgba(16, 185, 129, 0.25) !important;">
-                        <i class="fas fa-magnifying-glass mr-2"></i> Search Carpools
+                        <i class="fas fa-magnifying-glass mr-2"></i> Search Pools
                     </button>
                 </form>
             </div>
 
             <!-- MODE 4: Rentals (Showroom Style) -->
             <div id="immersive-rent" class="immersive-pane">
-                <form action="http://127.0.0.1:8000/car/" method="GET">
+                <form action="{% url 'car' %}" method="GET" onsubmit="return checkLoginAndProceed(event)">
                     <div class="form-group-premium">
                         <label>Showroom Fleet Pickup</label>
                         <div class="input-wrapper-premium">
@@ -1022,19 +1229,6 @@
                 <span class="text-success" style="font-size: 0.8rem; font-weight: 700;"><i
                         class="fas fa-check-circle mr-1"></i> 4 Active Drivers matched in 3km radius</span>
             </div>
-        </div>
-    </div>
-
-    <!-- Floating Live activity Log Feed Console (Bottom Right) -->
-    <div class="floating-activity-feed">
-        <div class="feed-header d-flex justify-content-between align-items-center mb-1">
-            <span class="feed-title"><i class="fas fa-code-branch text-info mr-1"></i> Grid Activity Stream</span>
-            <span class="badge status-live-pill">LIVE</span>
-        </div>
-        <div class="feed-log-body" id="feedLogBody">
-            <div class="feed-item"><i>[System]</i> Grid Command Core Initialized.</div>
-            <div class="feed-item"><i>[Map]</i> Center: Madhapur Metro [17.4483, 78.3741].</div>
-            <div class="feed-item"><i>[Fleet]</i> 4 nearby drivers are tracking.</div>
         </div>
     </div>
 
@@ -1116,9 +1310,10 @@
                             <small class="text-muted d-block">Fares start at</small>
                             <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹5/km</strong>
                         </div>
-                        <a href="http://127.0.0.1:8000/feature/"
+                        <a href="{% url 'user_carpools' %}"
                             class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
-                            style="font-size: 0.85rem; font-weight: 700;">Find Ride</a>
+                            style="font-size: 0.85rem; font-weight: 700;"
+                            onclick="return checkLoginAndProceed(event)">Find Ride</a>
                     </div>
                 </div>
             </div>
@@ -1146,9 +1341,10 @@
                             <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹35 flat
                                 rate</strong>
                         </div>
-                        <a href="http://127.0.0.1:8000/ride_page/"
+                        <a href="{% url 'ride_page' %}"
                             class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
-                            style="font-size: 0.85rem; font-weight: 700;">Book Swift</a>
+                            style="font-size: 0.85rem; font-weight: 700;"
+                            onclick="return checkLoginAndProceed(event)">Book Swift</a>
                     </div>
                 </div>
             </div>
@@ -1175,9 +1371,10 @@
                             <small class="text-muted d-block">Rentals start at</small>
                             <strong class="text-navy font-weight-bold" style="font-size: 1.15rem;">₹15,000/day</strong>
                         </div>
-                        <a href="http://127.0.0.1:8000/car/"
+                        <a href="{% url 'car' %}"
                             class="btn btn-outline-primary px-3 rounded-lg py-2 hover-glow-classic"
-                            style="font-size: 0.85rem; font-weight: 700;">View Fleet</a>
+                            style="font-size: 0.85rem; font-weight: 700;"
+                            onclick="return checkLoginAndProceed(event)">View Fleet</a>
                     </div>
                 </div>
             </div>
@@ -1196,10 +1393,10 @@
                     style="font-weight: 800; border-radius: 20px; letter-spacing: 1px;">
                     <i class="fas fa-handshake mr-1"></i> RideShare Partner Network
                 </span>
-                <h2 class="display-4 font-weight-bold outfit-font text-white mb-3" style="line-height: 1.2;">
-                    Turn empty seats<br>into <span style="color: #65a7e9;">live earnings</span>
+                <h2 class="display-4 font-weight-bold outfit-font text-title mb-3" style="line-height: 1.2;">
+                    Turn empty seats<br>into <span class="calc-savings-val" style="text-shadow: 0 0 15px rgba(13,110,253,0.15);">live savings</span>
                 </h2>
-                <p class="text-white-50 mb-4 fs-5" style="max-width: 550px;">
+                <p class="text-subtitle mb-4 fs-5" style="max-width: 550px;">
                     Join Hyderabad's fastest growing smart commuter grid. Share fuel costs, meet verified local
                     professionals, and split commute expenses seamlessly in real time.
                 </p>
@@ -1207,54 +1404,50 @@
                 <!-- Live Perks Grid -->
                 <div class="row g-3">
                     <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 p-3 perk-glass-card">
                             <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
-                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                                <i class="fas fa-wallet" style="color: #65a7e9; font-size: 1.2rem;"></i>
+                                style="width: 48px; height: 48px; background: rgba(13, 110, 253, 0.08); border: 1px solid rgba(13, 110, 253, 0.15);">
+                                <i class="fas fa-wallet" style="color: #0d6efd; font-size: 1.1rem;"></i>
                             </div>
                             <div>
-                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Real-time Pay
-                                    Split</h6>
-                                <small class="text-white-50">Instant digital fuel credits</small>
+                                <h6 class="text-title font-weight-bold mb-0" style="font-size: 0.9rem;">Real-time Pay Split</h6>
+                                <small class="text-subtitle" style="font-size: 0.75rem;">Instant digital fuel credits</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 p-3 perk-glass-card">
                             <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
-                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                                <i class="fas fa-shield-halved" style="color: #65a7e9; font-size: 1.2rem;"></i>
+                                style="width: 48px; height: 48px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.15);">
+                                <i class="fas fa-shield-alt" style="color: #10b981; font-size: 1.1rem;"></i>
                             </div>
                             <div>
-                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">100% Secure
-                                    Grid</h6>
-                                <small class="text-white-50">Fully verified commuters</small>
+                                <h6 class="text-title font-weight-bold mb-0" style="font-size: 0.9rem;">100% Secure Grid</h6>
+                                <small class="text-subtitle" style="font-size: 0.75rem;">Fully verified commuters</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 p-3 perk-glass-card">
                             <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
-                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                                <i class="fas fa-chart-line" style="color: #eab308; font-size: 1.2rem;"></i>
+                                style="width: 48px; height: 48px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.15);">
+                                <i class="fas fa-coins" style="color: #f59e0b; font-size: 1.1rem;"></i>
                             </div>
                             <div>
-                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Fuel Premium
-                                    Bonus</h6>
-                                <small class="text-white-50">Get up to 15% extra sharing cash</small>
+                                <h6 class="text-title font-weight-bold mb-0" style="font-size: 0.9rem;">Fuel Premium Bonus</h6>
+                                <small class="text-subtitle" style="font-size: 0.75rem;">Get up to 15% extra sharing cash</small>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6 mb-3">
-                        <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3 p-3 perk-glass-card">
                             <div class="p-3 rounded-circle text-center d-flex align-items-center justify-content-center"
-                                style="width: 52px; height: 52px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                                <i class="fas fa-clock" style="color: #eab308; font-size: 1.2rem;"></i>
+                                style="width: 48px; height: 48px; background: rgba(236, 72, 153, 0.08); border: 1px solid rgba(236, 72, 153, 0.15);">
+                                <i class="fas fa-calendar-alt" style="color: #ec4899; font-size: 1.1rem;"></i>
                             </div>
                             <div>
-                                <h6 class="text-white font-weight-bold mb-0" style="font-size: 0.95rem;">Flexible
-                                    Schedule</h6>
-                                <small class="text-white-50">Share only when you drive</small>
+                                <h6 class="text-title font-weight-bold mb-0" style="font-size: 0.9rem;">Flexible Schedule</h6>
+                                <small class="text-subtitle" style="font-size: 0.75rem;">Share only when you drive</small>
                             </div>
                         </div>
                     </div>
@@ -1266,14 +1459,10 @@
                 <div class="row g-4 align-items-stretch">
                     <!-- Config Controls Card -->
                     <div class="col-md-7">
-                        <div class="p-4 rounded-lg h-100"
-                            style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+                        <div class="calc-config-card h-100">
                             <div class="form-group-premium mb-4">
-                                <label style="color: #ffffff; font-size: 0.75rem; letter-spacing: 0.8px;">Select Vehicle
-                                    Tier</label>
-                                <select id="calcVehicleType" class="form-input-premium"
-                                    style="background: rgba(0,0,0,0.4) !important; border-color: rgba(255,255,255,0.15) !important; color: #ffffff !important; padding-left: 18px !important; height: 46px !important;"
-                                    onchange="updateEarnings()">
+                                <label class="text-subtitle" style="font-size: 0.75rem; letter-spacing: 0.8px; font-weight: 700; text-transform: uppercase;">Select Vehicle Tier</label>
+                                <select id="calcVehicleType" class="form-input-premium" onchange="updateEarnings()">
                                     <option value="bike">🏍️ Express Bike Taxi</option>
                                     <option value="sedan" selected>🚘 Daily Comfort Sedan</option>
                                     <option value="suv">🚙 Premium Luxury SUV</option>
@@ -1282,10 +1471,8 @@
 
                             <div class="slider-container mb-4">
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold text-white-50" style="font-size: 0.8rem;">Daily
-                                        Commute Distance</span>
-                                    <span class="font-weight-bold" style="color: #65a7e9; font-size: 0.95rem;"
-                                        id="calcDistanceVal">40 km / day</span>
+                                    <span class="font-weight-bold text-subtitle" style="font-size: 0.8rem;">Daily Commute Distance</span>
+                                    <span class="font-weight-bold calc-savings-val" style="font-size: 0.95rem;" id="calcDistanceVal">40 km / day</span>
                                 </div>
                                 <input type="range" class="premium-slider" id="calcDistance" min="10" max="150"
                                     value="40" oninput="updateEarnings()">
@@ -1293,10 +1480,8 @@
 
                             <div class="slider-container mb-0">
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span class="font-weight-bold text-white-50" style="font-size: 0.8rem;">Travel
-                                        Frequencies / Week</span>
-                                    <span class="font-weight-bold" style="color: #65a7e9; font-size: 0.95rem;"
-                                        id="calcDaysVal">5 Days</span>
+                                    <span class="font-weight-bold text-subtitle" style="font-size: 0.8rem;">Travel Frequencies / Week</span>
+                                    <span class="font-weight-bold calc-savings-val" style="font-size: 0.95rem;" id="calcDaysVal">5 Days</span>
                                 </div>
                                 <input type="range" class="premium-slider" id="calcDays" min="1" max="7" value="5"
                                     oninput="updateEarnings()">
@@ -1306,23 +1491,19 @@
 
                     <!-- Result Display Card -->
                     <div class="col-md-5">
-                        <div class="earnings-display-box h-100 p-4 rounded-lg d-flex flex-column justify-content-center align-items-center"
-                            style="background: linear-gradient(135deg, rgba(101,167,233,0.1) 0%, rgba(101,167,233,0.02) 100%) !important; border: 1px solid rgba(101, 167, 233, 0.3) !important; border-radius: 24px !important; backdrop-filter: blur(15px) !important; box-shadow: 0 20px 40px rgba(0,0,0,0.3) !important;">
-                            <span class="text-uppercase text-white-50 font-weight-bold"
+                        <div class="calc-result-card h-100 d-flex flex-column justify-content-center align-items-center">
+                            <span class="text-uppercase text-subtitle font-weight-bold"
                                 style="font-size: 0.72rem; letter-spacing: 1.5px;">ESTIMATED SAVINGS</span>
 
                             <!-- Counter Display with Glowing Effect -->
-                            <div class="earnings-number" id="earningsDisplay"
-                                style="font-size: 3.25rem; font-weight: 800; color: #65a7e9; text-shadow: 0 0 25px rgba(101,167,233,0.5); font-family: 'Outfit', sans-serif; margin: 15px 0;">
+                            <div class="calc-savings-number" id="earningsDisplay">
                                 ₹4,000
                             </div>
 
-                            <span class="text-white-50 font-weight-bold"
+                            <span class="text-subtitle font-weight-bold"
                                 style="font-size: 0.8rem; letter-spacing: 0.5px;">per calendar month</span>
 
-                            <a href="http://127.0.0.1:8000/feature/"
-                                class="btn btn-primary btn-block rounded-lg py-3 mt-4 hover-glow-classic font-weight-bold"
-                                style="background: #65a7e9; border: none; color: #09132e; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 8px 25px rgba(101,167,233,0.35);">
+                            <a href="{% url 'portal_login' 'carpool' %}" class="btn-calc-cta font-weight-bold">
                                 Register Vehicle
                             </a>
                         </div>
@@ -1333,82 +1514,7 @@
     </div>
 </section>
 
-<!-- Footer Start -->
-<div class="container-fluid premium-footer py-5 px-sm-3 px-md-5">
-    <div class="row pt-5">
-        <div class="col-lg-3 col-md-6 mb-5">
-            <h4 class="text-uppercase text-light mb-4">Get In Touch</h4>
-            <p class="mb-2"><i class="fa fa-map-marker-alt text-white mr-3"></i>135, Madhapur, Hyderabad, Telangana,
-                India</p>
-            <p class="mb-2"><i class="fa fa-phone-alt text-white mr-3"></i>+919912459754</p>
-            <p><i class="fa fa-envelope text-white mr-3"></i>info@example.com</p>
-            <h6 class="text-uppercase text-white py-2">Follow Us</h6>
-            <div class="d-flex justify-content-start">
-                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                <a class="btn btn-lg btn-dark btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a class="btn btn-lg btn-dark btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-5">
-            <h4 class="text-uppercase text-light mb-4">Useful Links</h4>
-            <div class="d-flex flex-column justify-content-start">
-                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Privacy Policy</a>
-                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Terms & Conditions</a>
-                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>New Member Registration</a>
-                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Affiliate Programme</a>
-                <a class="mb-2" href="#"><i class="fa fa-angle-right text-white mr-2"></i>Return & Refund</a>
-                <a href="#"><i class="fa fa-angle-right text-white mr-2"></i>Help & FAQs</a>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-5">
-            <h4 class="text-uppercase text-light mb-4">Car Gallery</h4>
-            <div class="row mx-n1">
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-1.jpg" alt=""></a>
-                </div>
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-2.jpg" alt=""></a>
-                </div>
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-3.jpg" alt=""></a>
-                </div>
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-4.jpg" alt=""></a>
-                </div>
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-5.jpg" alt=""></a>
-                </div>
-                <div class="col-4 px-1 mb-2">
-                    <a href=""><img class="w-100" src="/media/images/gallery-6.jpg" alt=""></a>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-md-6 mb-5">
-            <h4 class="text-uppercase text-light mb-4">Newsletter</h4>
-            <p class="mb-4">Whether you need a quick city ride or a long-distance trip, our well-maintained vehicles and
-                professional drivers ensure a safe and enjoyable experience.</p>
-            <form method="POST"> {% csrf_token %}
-                <div class="w-100 mb-3">
-                    <div class="input-group">
-                        <input type="email" name="email" class="form-control bg-dark" style="padding: 25px;"
-                            placeholder="Your Email" required>
-                        <div class="input-group-append">
-                            <button class="btn btn-primary text-uppercase px-3" type="submit">
-                                Sign Up
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-<div class="container-fluid bg-dark py-4 px-sm-3 px-md-5">
-    <p class="mb-2 text-center mtext-body">&copy; <a href="#">My website</a>.All Rights Reserved.</p>
-    <p class="m-0 text-center mtext-body">Designed by <a href="https://">srikanth chepuri</a></p>
-</div>
-<!-- Footer End -->
+{% include 'footer.html' %}
 
 <!-- Leaflet.js Script library -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1571,6 +1677,7 @@
     // Write real-time network items inside grid terminal console
     function appendLog(text) {
         const body = document.getElementById('feedLogBody');
+        if (!body) return;
         const newItem = document.createElement('div');
         newItem.className = 'feed-item';
 
@@ -1736,6 +1843,155 @@
             }
         }
     });
+</script>
+
+<!-- Feedback / Review Modal (Initially Hidden) -->
+<div id="feedback-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); z-index: 20000; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); transition: all 0.3s ease;">
+    <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 420px; width: 90%; padding: 30px 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Inter', sans-serif;">
+        <div style="font-size: 3rem; margin-bottom: 10px;">⭐</div>
+        <h3 class="font-weight-bold mb-2" style="font-family: 'Oswald', sans-serif; color: #1e293b; font-size: 1.6rem; margin-top: 0;">Rate Your Chauffeur</h3>
+        <p class="text-muted mb-4" style="font-size: 0.85rem; line-height: 1.4;">How was your trip with our ride partner? Share your rating and feedback below.</p>
+        
+        <!-- Star Ratings Selector -->
+        <div class="star-rating-container mb-4" style="display: flex; justify-content: center; gap: 12px; font-size: 2.2rem; cursor: pointer; color: #cbd5e1; margin-bottom: 20px;">
+            <i class="fas fa-star star-btn" data-star="1" onclick="selectFeedbackStars(1)"></i>
+            <i class="fas fa-star star-btn" data-star="2" onclick="selectFeedbackStars(2)"></i>
+            <i class="fas fa-star star-btn" data-star="3" onclick="selectFeedbackStars(3)"></i>
+            <i class="fas fa-star star-btn" data-star="4" onclick="selectFeedbackStars(4)"></i>
+            <i class="fas fa-star star-btn" data-star="5" onclick="selectFeedbackStars(5)"></i>
+        </div>
+        
+        <!-- Comments Box (Optional) -->
+        <div class="form-group mb-4 text-left" style="text-align: left; margin-bottom: 20px;">
+            <label style="font-weight: 700; font-size: 0.8rem; color: #475569; text-transform: uppercase; display: block; margin-bottom: 5px;">Write a Comment (Optional)</label>
+            <textarea id="feedback-comments" class="form-control" rows="3" placeholder="Tell us about the driver, vehicle cleanliness, route taken, etc..." style="width: 100%; border-radius: 12px; border: 1.5px solid #e2e8f0; font-size: 0.85rem; padding: 10px; resize: none; box-sizing: border-box;"></textarea>
+        </div>
+        
+        <button onclick="submitRideFeedback()" class="btn w-100 py-3 font-weight-bold rounded-lg mb-2" style="width: 100%; background: #4f46e5; color: #ffffff; border: none; font-size: 15px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35); padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+            Submit Review
+        </button>
+        <button onclick="skipRideFeedback()" class="btn w-100 py-2 font-weight-bold text-muted" style="width: 100%; background: none; border: none; font-size: 13px; color: #64748b; font-weight: bold; cursor: pointer; margin-top: 10px;">
+            Skip
+        </button>
+    </div>
+</div>
+
+<!-- Payment Successful Notification Modal (Initially Hidden) -->
+<div id="payment-success-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.75); z-index: 15000; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); transition: all 0.3s ease;">
+    <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 400px; width: 90%; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); font-family: 'Inter', sans-serif;">
+        <div class="success-icon-wrapper" style="width: 80px; height: 80px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-check-circle text-success" style="font-size: 3.5rem; color: #2ecc71;"></i>
+        </div>
+        <h3 class="font-weight-bold text-dark mb-2" style="font-family: 'Oswald', sans-serif; margin-top: 0;">Payment Successful</h3>
+        <p class="text-muted mb-4" style="font-size: 0.9rem;">Your payment has been successfully collected by the chauffeur.</p>
+        <button onclick="dismissPaymentSuccessModal()" class="btn success-btn w-100 py-3 font-weight-bold text-uppercase" style="width: 100%; font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(46,204,113,0.3); background: #2ecc71; border: none; color: white; padding: 12px; font-weight: bold; cursor: pointer;">
+            Dismiss
+        </button>
+    </div>
+</div>
+
+<!-- Scripts for Home Page Modal Recovery -->
+<script>
+    const serverUnratedRide = {
+        id: {% if unrated_ride %}{{ unrated_ride.id }}{% else %}null{% endif %}
+    };
+    let activeRideId = serverUnratedRide.id;
+    let selectedStars = 0;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        if (serverUnratedRide && serverUnratedRide.id) {
+            document.getElementById('payment-success-modal-overlay').style.display = 'flex';
+        }
+    });
+
+    function dismissPaymentSuccessModal() {
+        document.getElementById('payment-success-modal-overlay').style.display = 'none';
+        openFeedbackModal();
+    }
+
+    function openFeedbackModal() {
+        selectedStars = 0;
+        document.querySelectorAll('.star-btn').forEach(star => {
+            star.style.color = '#cbd5e1';
+        });
+        document.getElementById('feedback-comments').value = '';
+        document.getElementById('feedback-modal-overlay').style.display = 'flex';
+    }
+
+    function selectFeedbackStars(rating) {
+        selectedStars = rating;
+        document.querySelectorAll('.star-btn').forEach(star => {
+            const starVal = parseInt(star.getAttribute('data-star'));
+            if (starVal <= rating) {
+                star.style.color = '#f59e0b';
+            } else {
+                star.style.color = '#cbd5e1';
+            }
+        });
+    }
+
+    function closeFeedbackModal() {
+        document.getElementById('feedback-modal-overlay').style.display = 'none';
+        window.location.reload();
+    }
+
+    function submitRideFeedback() {
+        if (selectedStars === 0) {
+            alert("Please select a star rating (1 to 5 stars) before submitting, or click 'Skip' to proceed.");
+            return;
+        }
+
+        const feedbackText = document.getElementById('feedback-comments').value.trim();
+
+        const formData = new FormData();
+        formData.append('rating', selectedStars);
+        if (feedbackText) {
+            formData.append('feedback', feedbackText);
+        }
+
+        fetch(`/api/ride/feedback/${activeRideId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert("Thank you for your feedback!");
+                closeFeedbackModal();
+            } else {
+                alert(data.message || "Failed to submit feedback.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error submitting feedback.");
+        });
+    }
+
+    function skipRideFeedback() {
+        const formData = new FormData();
+        formData.append('rating', '0');
+        formData.append('feedback', 'Skipped feedback');
+
+        fetch(`/api/ride/feedback/${activeRideId}/`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            closeFeedbackModal();
+        })
+        .catch(err => {
+            console.error(err);
+            closeFeedbackModal();
+        });
+    }
 </script>
 
 {% endblock %}

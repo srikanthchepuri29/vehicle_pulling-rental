@@ -1,0 +1,1322 @@
+
+content = r"""{% extends 'index.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════
+   PREMIUM PROFILE SETTINGS  
+   ═══════════════════════════════════════════════════ */
+:root {
+  --pr:#0062ff; --pr-d:#0047cc; --pr-l:#e6efff; --pr-g:rgba(0,98,255,.16);
+  --ok:#00c07a; --warn:#f59e0b; --err:#ff4444; --pur:#7c3aed;
+  --navy:#08122a; --bg:#f2f5fb; --card:#fff; --bdr:#e3e9f5;
+  --t1:#0d1b3e; --t2:#4a5568; --t3:#94a3b8;
+  --r-xl:24px; --r-lg:18px; --r-md:13px;
+  --sh-sm:0 2px 14px rgba(8,18,42,.06);
+  --sh-md:0 8px 32px rgba(8,18,42,.10);
+  --sh-lg:0 20px 60px rgba(8,18,42,.14);
+}
+
+body { background:var(--bg) !important; }
+
+/* ── Layout ─────────────────────────────────────── */
+.sp-shell {
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:1.5rem;
+  max-width:1160px;
+  margin:0 auto;
+  padding:1.75rem 1.25rem 4rem;
+  align-items:start;
+  font-family:'Inter',sans-serif;
+}
+
+/* ── SIDEBAR ────────────────────────────────────── */
+.sp-sidebar { position:sticky; top:82px; }
+
+/* Hero card */
+.sp-hero {
+  border-radius:var(--r-xl);
+  background:linear-gradient(150deg,#08122a 0%,#0d2060 60%,#0a1644 100%);
+  padding:2rem 1.4rem 1.4rem;
+  text-align:center;
+  margin-bottom:1rem;
+  box-shadow:var(--sh-lg);
+  position:relative;
+  overflow:hidden;
+}
+.sp-hero::before{
+  content:'';position:absolute;
+  width:220px;height:220px;border-radius:50%;
+  background:rgba(0,98,255,.10);
+  top:-70px;right:-70px;
+}
+.sp-hero::after{
+  content:'';position:absolute;
+  width:140px;height:140px;border-radius:50%;
+  background:rgba(0,98,255,.07);
+  bottom:-40px;left:-40px;
+}
+
+.sp-ava-ring {
+  width:96px;height:96px;border-radius:50%;
+  margin:0 auto 1rem;position:relative;
+  cursor:pointer;
+}
+.sp-ava-ring img {
+  width:100%;height:100%;border-radius:50%;
+  object-fit:cover;
+  border:3px solid var(--pr);
+  box-shadow:0 0 0 5px rgba(0,98,255,.25);
+  transition:transform .3s;
+}
+.sp-ava-ring:hover img{transform:scale(1.05);}
+.sp-cam{
+  position:absolute;bottom:2px;right:2px;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--pr);border:2px solid #fff;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:.65rem;
+  transition:transform .2s;
+}
+.sp-ava-ring:hover .sp-cam{transform:scale(1.15);}
+
+.sp-uname{
+  font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:1.2rem;color:#fff;
+  margin:0 0 .2rem;
+}
+.sp-email{font-size:.75rem;color:rgba(255,255,255,.45);margin:0 0 .8rem;word-break:break-all;}
+.sp-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(0,98,255,.25);
+  border:1px solid rgba(0,98,255,.4);
+  color:#6eacff;
+  font-size:.67rem;font-weight:700;letter-spacing:.09em;
+  padding:3px 11px;border-radius:50px;text-transform:uppercase;
+  margin-bottom:1.1rem;
+}
+
+.sp-mini-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  background:rgba(255,255,255,.06);
+  border-radius:13px;padding:.8rem .4rem;
+  gap:.25rem;
+}
+.sp-mini-val{
+  font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:1.1rem;color:#fff;line-height:1;
+}
+.sp-mini-lbl{font-size:.62rem;color:rgba(255,255,255,.4);margin-top:2px;}
+
+/* Nav */
+.sp-nav{
+  background:var(--card);
+  border-radius:var(--r-xl);
+  box-shadow:var(--sh-sm);
+  border:1px solid var(--bdr);
+  overflow:hidden;
+  padding:.35rem 0;
+}
+.sp-nav-grp{
+  font-size:.65rem;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--t3);padding:.65rem 1.15rem .2rem;
+}
+.sp-nav-a{
+  display:flex;align-items:center;gap:.65rem;
+  padding:.62rem 1.15rem;
+  font-size:.875rem;font-weight:500;
+  color:var(--t2);cursor:pointer;
+  border-left:3px solid transparent;
+  text-decoration:none !important;
+  transition:all .18s;
+}
+.sp-nav-a:hover{background:var(--pr-l);color:var(--pr);}
+.sp-nav-a.active{
+  background:linear-gradient(90deg,var(--pr-l),#eef3ff);
+  color:var(--pr);font-weight:700;
+  border-left-color:var(--pr);
+}
+.sp-nav-a i{width:17px;text-align:center;font-size:.85rem;}
+.sp-nav-hr{height:1px;background:var(--bdr);margin:.35rem 0;}
+
+/* ── CONTENT ────────────────────────────────────── */
+.sp-content{min-width:0;}
+.sp-panel{display:none;}
+.sp-panel.on{display:block;}
+
+/* Panel heading */
+.sp-ph{display:flex;align-items:center;gap:.9rem;margin-bottom:1.4rem;}
+.sp-ph-ico{
+  width:46px;height:46px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;flex-shrink:0;
+}
+.sp-ph-ttl{
+  font-family:'Outfit',sans-serif;
+  font-weight:800;font-size:1.3rem;color:var(--t1);margin:0 0 .1rem;
+}
+.sp-ph-sub{font-size:.8rem;color:var(--t3);margin:0;}
+
+/* Cards */
+.sp-card{
+  background:var(--card);
+  border-radius:var(--r-xl);
+  box-shadow:var(--sh-sm);
+  border:1px solid var(--bdr);
+  margin-bottom:1.2rem;
+  overflow:hidden;
+  transition:box-shadow .22s;
+}
+.sp-card:hover{box-shadow:var(--sh-md);}
+.sp-ch{
+  padding:1rem 1.4rem;
+  background:#fafcff;
+  border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:.55rem;
+  font-weight:700;font-size:.87rem;color:var(--t1);
+}
+.sp-cb{padding:1.4rem 1.5rem;}
+
+/* Stat boxes */
+.sp-stat-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:.9rem;margin-bottom:1.2rem;
+}
+.sp-stat-box{
+  background:var(--card);
+  border:1px solid var(--bdr);
+  border-radius:var(--r-lg);
+  padding:1.1rem 1rem;
+  text-align:center;
+  box-shadow:var(--sh-sm);
+  transition:all .22s;
+}
+.sp-stat-box:hover{transform:translateY(-3px);box-shadow:var(--sh-md);}
+.sp-stat-n{
+  font-family:'Outfit',sans-serif;
+  font-weight:900;font-size:1.55rem;
+  color:var(--t1);line-height:1;
+}
+.sp-stat-l{font-size:.7rem;color:var(--t3);margin-top:.3rem;font-weight:500;}
+
+/* Info rows */
+.sp-info-row{
+  display:flex;align-items:center;
+  padding:.8rem 0;border-bottom:1px solid var(--bdr);gap:.7rem;
+}
+.sp-info-row:last-child{border:none;}
+.sp-info-ico{
+  width:33px;height:33px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.82rem;flex-shrink:0;
+}
+.sp-info-lbl{font-size:.74rem;color:var(--t3);margin:0;}
+.sp-info-val{font-size:.88rem;font-weight:600;color:var(--t1);margin:0;}
+
+/* Form elements */
+.sp-lbl{
+  display:block;font-size:.72rem;
+  font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--t3);
+  margin-bottom:.4rem;
+}
+.sp-ig{
+  display:flex;align-items:stretch;
+  border:1.5px solid var(--bdr);
+  border-radius:var(--r-md);
+  background:#f7f9fe;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.sp-ig:focus-within{
+  border-color:var(--pr);
+  box-shadow:0 0 0 3px var(--pr-g);
+  background:#fff;
+}
+.sp-ig .ico{
+  padding:0 .8rem;color:var(--t3);
+  display:flex;align-items:center;
+  font-size:.87rem;
+}
+.sp-ig .ico.r{border-left:1px solid var(--bdr);}
+.sp-inp{
+  flex:1;border:none;background:transparent;
+  padding:.68rem .8rem .68rem 0;
+  font-size:.9rem;color:var(--t1);outline:none;
+  font-family:'Inter',sans-serif;min-height:44px;
+}
+.sp-inp::placeholder{color:var(--t3);}
+.sp-hint{font-size:.72rem;color:var(--t3);margin-top:.28rem;}
+
+/* Photo drop zone */
+.sp-dropzone{
+  border:2px dashed #c2d4f0;
+  border-radius:16px;background:#eff4ff;
+  padding:1.8rem 1.2rem;text-align:center;
+  cursor:pointer;transition:all .22s;
+  position:relative;overflow:hidden;
+}
+.sp-dropzone:hover{border-color:var(--pr);background:#e6efff;}
+.sp-dropzone input{
+  position:absolute;inset:0;opacity:0;
+  cursor:pointer;z-index:2;width:100%;height:100%;
+}
+.sp-cloud{font-size:2.4rem;color:var(--pr);opacity:.75;margin-bottom:.4rem;}
+
+/* Buttons */
+.sp-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.68rem 1.6rem;border-radius:var(--r-md);
+  font-size:.87rem;font-weight:700;border:none;
+  cursor:pointer;transition:all .2s;
+  font-family:'Inter',sans-serif;
+  text-decoration:none !important;
+}
+.sp-btn:active{transform:scale(.97);}
+.sp-btn-blue{
+  background:linear-gradient(135deg,var(--pr),var(--pr-d));
+  color:#fff;box-shadow:0 6px 18px var(--pr-g);
+}
+.sp-btn-blue:hover{box-shadow:0 8px 26px rgba(0,98,255,.34);transform:translateY(-1px);}
+.sp-btn-grn{
+  background:linear-gradient(135deg,#00c07a,#009e66);
+  color:#fff;box-shadow:0 6px 18px rgba(0,192,122,.24);
+}
+.sp-btn-grn:hover{box-shadow:0 8px 26px rgba(0,192,122,.36);transform:translateY(-1px);}
+.sp-btn-pur{
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  color:#fff;box-shadow:0 6px 18px rgba(124,58,237,.24);
+}
+.sp-btn-pur:hover{box-shadow:0 8px 26px rgba(124,58,237,.36);transform:translateY(-1px);}
+.sp-btn-red{
+  background:linear-gradient(135deg,#ff4444,#dc2626);
+  color:#fff;box-shadow:0 6px 18px rgba(255,68,68,.24);
+}
+.sp-btn-red:hover{box-shadow:0 8px 26px rgba(255,68,68,.36);transform:translateY(-1px);}
+.sp-btn-sky{
+  background:linear-gradient(135deg,#0ea5e9,#0284c7);
+  color:#fff;box-shadow:0 6px 18px rgba(14,165,233,.22);
+}
+.sp-btn-sky:hover{box-shadow:0 8px 26px rgba(14,165,233,.34);transform:translateY(-1px);}
+.sp-btn-ol{
+  background:transparent;color:var(--pr);
+  border:2px solid var(--pr);box-shadow:none;
+}
+.sp-btn-ol:hover{background:var(--pr-l);}
+
+/* Toggle */
+.sp-tog-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.8rem 0;border-bottom:1px solid var(--bdr);
+}
+.sp-tog-row:last-child{border:none;}
+.sp-tog-h{font-size:.87rem;font-weight:600;color:var(--t1);margin:0 0 .12rem;}
+.sp-tog-p{font-size:.75rem;color:var(--t3);margin:0;}
+.sw{position:relative;width:46px;height:25px;cursor:pointer;flex-shrink:0;}
+.sw input{display:none;}
+.sw-t{
+  display:block;width:100%;height:100%;
+  border-radius:50px;background:#d0dae8;
+  transition:background .3s;position:relative;
+}
+.sw-t::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:19px;height:19px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);
+  transition:transform .3s;
+}
+.sw input:checked+.sw-t{background:var(--pr);}
+.sw input:checked+.sw-t::after{transform:translateX(21px);}
+
+/* Alert */
+.sp-alert{
+  border-radius:var(--r-lg);
+  padding:.85rem 1.1rem;
+  margin-bottom:1.3rem;
+  display:flex;align-items:flex-start;gap:.6rem;
+  font-size:.86rem;font-weight:500;
+}
+.sp-alert-ok{background:#e7faf4;color:#065f46;border:1px solid #a7f3d0;}
+.sp-alert-err{background:#fff1f1;color:#991b1b;border:1px solid #fecaca;}
+.sp-alert button{margin-left:auto;background:none;border:none;font-size:1rem;cursor:pointer;color:inherit;}
+
+/* Activity item */
+.sp-act{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.7rem 0;border-bottom:1px solid var(--bdr);
+}
+.sp-act:last-child{border:none;}
+.sp-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.sp-act-sub{font-size:.7rem;color:var(--t3);}
+
+/* Danger box */
+.sp-danger-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+  background:#fff8f8;
+  border:1.5px solid #ffd0d0;
+  border-radius:var(--r-md);
+  padding:1.1rem 1.3rem;
+  margin-bottom:.75rem;
+}
+.sp-danger-row:last-child{margin:0;}
+.sp-danger-row h6{font-weight:700;color:var(--err);margin:0 0 .2rem;font-size:.88rem;}
+.sp-danger-row p{font-size:.78rem;color:var(--t2);margin:0;}
+
+/* PW strength */
+.pw-bar{height:4px;border-radius:2px;background:var(--bdr);overflow:hidden;margin-top:.35rem;}
+.pw-fill{height:100%;border-radius:2px;width:0;transition:width .4s,background .4s;}
+
+/* Recent ride */
+.sp-ride-row{
+  display:flex;align-items:center;gap:1rem;
+  background:#f7f9fe;border-radius:var(--r-md);
+  padding:.9rem 1.1rem;border:1px solid var(--bdr);
+}
+.sp-ride-ico{
+  width:40px;height:40px;border-radius:11px;
+  background:var(--pr-l);color:var(--pr);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+}
+
+/* Location chip */
+.loc-chip{
+  display:inline-flex;align-items:center;gap:.35rem;
+  background:var(--pr-l);color:var(--pr);
+  border:1px solid rgba(0,98,255,.18);
+  border-radius:50px;padding:4px 11px;
+  font-size:.75rem;font-weight:600;margin:.2rem;
+}
+
+/* Mobile */
+.sp-mob-nav{
+  display:none;background:var(--card);
+  border:1px solid var(--bdr);border-radius:var(--r-lg);
+  padding:.4rem;margin-bottom:1.1rem;
+  overflow-x:auto;gap:.35rem;white-space:nowrap;
+}
+.sp-mob-btn{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.45rem .8rem;border-radius:10px;
+  font-size:.77rem;font-weight:600;
+  color:var(--t2);border:none;background:transparent;cursor:pointer;
+  transition:all .18s;
+}
+.sp-mob-btn.active{background:var(--pr-l);color:var(--pr);}
+
+/* Progress bar */
+.prog-wrap{height:8px;border-radius:4px;background:var(--bdr);overflow:hidden;margin:.5rem 0;}
+.prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pr),var(--ok));}
+
+/* Avatar options grid */
+.ava-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;
+  margin-top:.75rem;
+}
+.ava-opt{
+  width:52px;height:52px;border-radius:50%;
+  border:2.5px solid var(--bdr);
+  cursor:pointer;transition:all .2s;
+  overflow:hidden;
+}
+.ava-opt:hover{border-color:var(--pr);transform:scale(1.08);}
+.ava-opt.selected{border-color:var(--pr);box-shadow:0 0 0 3px var(--pr-g);}
+.ava-opt img{width:100%;height:100%;object-fit:cover;}
+
+@media(max-width:900px){
+  .sp-shell{grid-template-columns:1fr;}
+  .sp-sidebar{position:static;}
+  .sp-mob-nav{display:flex;}
+  .sp-nav{display:none;}
+  .sp-stat-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:576px){
+  .sp-stat-grid{grid-template-columns:1fr 1fr;}
+  .sp-shell{padding:1rem .75rem 3rem;gap:1rem;}
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="sp-shell">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sp-sidebar">
+  <!-- Hero card -->
+  <div class="sp-hero">
+    <form method="POST" action="{% url 'passenger_settings' %}" enctype="multipart/form-data" id="quickPhotoForm">
+      {% csrf_token %}
+      <input type="hidden" name="form_action" value="upload_photo">
+      <input type="file" name="profile_image" id="qpInput" accept="image/*"
+             style="display:none" onchange="quickPhotoSubmit(this)">
+    </form>
+    <div class="sp-ava-ring" onclick="document.getElementById('qpInput').click()" title="Click to change photo">
+      <img src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ request.user.username }}&backgroundColor=0062ff&textColor=ffffff{% endif %}"
+           alt="Avatar" id="sideAva">
+      <div class="sp-cam"><i class="fas fa-camera"></i></div>
+    </div>
+    <p class="sp-uname">{{ request.user.get_full_name|default:request.user.username }}</p>
+    <p class="sp-email">{{ request.user.email|default:"No email set" }}</p>
+    <div class="sp-badge"><i class="fas fa-user"></i> Passenger</div>
+    <div class="sp-mini-grid">
+      <div><div class="sp-mini-val">{{ total_rides }}</div><div class="sp-mini-lbl">Rides</div></div>
+      <div><div class="sp-mini-val">₹{{ total_spent }}</div><div class="sp-mini-lbl">Spent</div></div>
+      <div><div class="sp-mini-val">{{ avg_rating|default:"—" }}</div><div class="sp-mini-lbl">Avg ★</div></div>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav class="sp-nav">
+    <div class="sp-nav-grp">Account</div>
+    <a class="sp-nav-a active" onclick="showTab('overview')" href="#overview">
+      <i class="fas fa-th-large"></i> Overview
+    </a>
+    <a class="sp-nav-a" onclick="showTab('profile')" href="#profile">
+      <i class="fas fa-user-edit"></i> Edit Profile
+    </a>
+    <a class="sp-nav-a" onclick="showTab('security')" href="#security">
+      <i class="fas fa-shield-alt"></i> Security
+    </a>
+    <div class="sp-nav-hr"></div>
+    <div class="sp-nav-grp">Preferences</div>
+    <a class="sp-nav-a" onclick="showTab('locations')" href="#locations">
+      <i class="fas fa-map-marker-alt"></i> Saved Places
+    </a>
+    <a class="sp-nav-a" onclick="showTab('notifications')" href="#notifications">
+      <i class="fas fa-bell"></i> Notifications
+    </a>
+    <a class="sp-nav-a" onclick="showTab('privacy')" href="#privacy">
+      <i class="fas fa-lock"></i> Privacy
+    </a>
+    <div class="sp-nav-hr"></div>
+    <div class="sp-nav-grp">More</div>
+    <a class="sp-nav-a" onclick="showTab('activity')" href="#activity">
+      <i class="fas fa-history"></i> Activity
+    </a>
+    <a class="sp-nav-a" onclick="showTab('danger')" href="#danger">
+      <i class="fas fa-exclamation-triangle" style="color:var(--err)"></i>
+      <span style="color:var(--err)">Danger Zone</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- ═══════════════ CONTENT ═══════════════ -->
+<main class="sp-content">
+
+  <!-- Mobile nav -->
+  <div class="sp-mob-nav">
+    <button class="sp-mob-btn active" onclick="showTab('overview')"><i class="fas fa-th-large"></i> Overview</button>
+    <button class="sp-mob-btn" onclick="showTab('profile')"><i class="fas fa-user-edit"></i> Profile</button>
+    <button class="sp-mob-btn" onclick="showTab('security')"><i class="fas fa-shield-alt"></i> Security</button>
+    <button class="sp-mob-btn" onclick="showTab('locations')"><i class="fas fa-map-pin"></i> Places</button>
+    <button class="sp-mob-btn" onclick="showTab('notifications')"><i class="fas fa-bell"></i> Notifs</button>
+    <button class="sp-mob-btn" onclick="showTab('privacy')"><i class="fas fa-lock"></i> Privacy</button>
+    <button class="sp-mob-btn" onclick="showTab('activity')"><i class="fas fa-history"></i> Activity</button>
+  </div>
+
+  <!-- Alerts -->
+  {% if messages %}{% for msg in messages %}
+  <div class="sp-alert sp-alert-{% if msg.tags == 'error' %}err{% else %}ok{% endif %}">
+    <i class="fas fa-{% if msg.tags == 'error' %}times-circle{% else %}check-circle{% endif %}" style="margin-top:2px;flex-shrink:0;"></i>
+    <span>{{ msg }}</span>
+    <button onclick="this.parentElement.remove()">&times;</button>
+  </div>
+  {% endfor %}{% endif %}
+
+  <!-- ══════════════ OVERVIEW ══════════════ -->
+  <div class="sp-panel on" id="tab-overview">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#e6efff;color:var(--pr)"><i class="fas fa-chart-pie"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Overview</p>
+        <p class="sp-ph-sub">Your ride statistics and account at a glance</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sp-stat-grid">
+      <div class="sp-stat-box">
+        <div class="sp-stat-n" style="color:var(--pr)">{{ total_rides }}</div>
+        <div class="sp-stat-l">Total Rides</div>
+      </div>
+      <div class="sp-stat-box">
+        <div class="sp-stat-n" style="color:var(--ok)">{{ completed_rides }}</div>
+        <div class="sp-stat-l">Completed</div>
+      </div>
+      <div class="sp-stat-box">
+        <div class="sp-stat-n" style="color:var(--warn)">₹{{ total_spent }}</div>
+        <div class="sp-stat-l">Total Spent</div>
+      </div>
+      <div class="sp-stat-box">
+        <div class="sp-stat-n" style="color:var(--pur)">{{ total_distance }} km</div>
+        <div class="sp-stat-l">Travelled</div>
+      </div>
+    </div>
+
+    <!-- Completion ratio -->
+    {% if total_rides > 0 %}
+    <div class="sp-card" style="margin-bottom:1.2rem;">
+      <div class="sp-ch"><i class="fas fa-chart-bar" style="color:var(--pr)"></i> Ride Completion Rate</div>
+      <div class="sp-cb">
+        <div style="display:flex;justify-content:space-between;font-size:.83rem;margin-bottom:.3rem;">
+          <span style="font-weight:600;color:var(--t1)">{{ completed_rides }} completed</span>
+          <span style="color:var(--t3)">{% widthratio completed_rides total_rides 100 %}%</span>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-fill" style="width:{% widthratio completed_rides total_rides 100 %}%"></div>
+        </div>
+        <div style="display:flex;gap:1rem;margin-top:.6rem;font-size:.74rem;color:var(--t3);">
+          <span><span style="color:var(--ok);font-weight:700;">●</span> {{ completed_rides }} Done</span>
+          <span><span style="color:var(--err);font-weight:700;">●</span> {{ cancelled_rides }} Cancelled</span>
+          <span><span style="color:var(--warn);font-weight:700;">●</span> {{ total_rides }} Total</span>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent ride -->
+    <div class="sp-card" style="margin-bottom:1.2rem;">
+      <div class="sp-ch"><i class="fas fa-route" style="color:var(--pr)"></i> Last Ride</div>
+      <div class="sp-cb">
+        {% if recent_ride %}
+        <div class="sp-ride-row">
+          <div class="sp-ride-ico"><i class="fas fa-car-side"></i></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:.87rem;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              {{ recent_ride.pickup|truncatechars:30 }} → {{ recent_ride.drop|truncatechars:30 }}
+            </div>
+            <div style="font-size:.74rem;color:var(--t3);margin-top:.12rem;">
+              {{ recent_ride.created_at|date:"d M Y • g:i A" }} &nbsp;·&nbsp; ₹{{ recent_ride.price }}
+            </div>
+          </div>
+          <span style="padding:3px 10px;border-radius:50px;font-size:.68rem;font-weight:700;
+            {% if recent_ride.status == 'Completed' %}background:#e7faf4;color:#065f46;
+            {% elif recent_ride.status == 'Cancelled' %}background:#fff1f1;color:#991b1b;
+            {% else %}background:#fef9ec;color:#92400e;{% endif %}">
+            {{ recent_ride.status }}
+          </span>
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:1.5rem 0;color:var(--t3);">
+          <i class="fas fa-taxi" style="font-size:2rem;opacity:.3;display:block;margin-bottom:.6rem;"></i>
+          No rides yet — <a href="/" style="color:var(--pr);font-weight:600;">Book your first ride</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Account meta -->
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-id-card" style="color:var(--pr)"></i> Account Details</div>
+      <div class="sp-cb" style="padding:1.1rem 1.4rem;">
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#e6efff;color:var(--pr)"><i class="fas fa-user"></i></div>
+          <div><p class="sp-info-lbl">Username</p><p class="sp-info-val">{{ request.user.username }}</p></div>
+        </div>
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#e7faf4;color:var(--ok)"><i class="fas fa-envelope"></i></div>
+          <div><p class="sp-info-lbl">Email</p><p class="sp-info-val">{{ request.user.email|default:"—" }}</p></div>
+        </div>
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#fef9ec;color:var(--warn)"><i class="fas fa-phone"></i></div>
+          <div><p class="sp-info-lbl">Phone</p><p class="sp-info-val">{{ profile.phone|default:"Not set" }}</p></div>
+        </div>
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#f5f3ff;color:var(--pur)"><i class="fas fa-calendar-alt"></i></div>
+          <div><p class="sp-info-lbl">Member Since</p><p class="sp-info-val">{{ member_since }} <span style="font-size:.73rem;color:var(--t3);font-weight:400;">({{ account_age_days }} days)</span></p></div>
+        </div>
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#fff1f1;color:var(--err)"><i class="fas fa-sign-in-alt"></i></div>
+          <div><p class="sp-info-lbl">Last Login</p><p class="sp-info-val">{{ last_login }}</p></div>
+        </div>
+        {% if avg_rating %}
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#fef9ec;color:var(--warn)"><i class="fas fa-star"></i></div>
+          <div><p class="sp-info-lbl">Average Rating</p><p class="sp-info-val">{{ avg_rating }} / 5.0 ⭐</p></div>
+        </div>
+        {% endif %}
+        {% if profile.home_address %}
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#e7faf4;color:var(--ok)"><i class="fas fa-home"></i></div>
+          <div><p class="sp-info-lbl">Home</p><p class="sp-info-val">{{ profile.home_address|truncatechars:45 }}</p></div>
+        </div>
+        {% endif %}
+        {% if profile.work_address %}
+        <div class="sp-info-row">
+          <div class="sp-info-ico" style="background:#f5f3ff;color:var(--pur)"><i class="fas fa-briefcase"></i></div>
+          <div><p class="sp-info-lbl">Work</p><p class="sp-info-val">{{ profile.work_address|truncatechars:45 }}</p></div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ EDIT PROFILE ══════════════ -->
+  <div class="sp-panel" id="tab-profile">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#f5f3ff;color:var(--pur)"><i class="fas fa-user-edit"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Edit Profile</p>
+        <p class="sp-ph-sub">Update your photo, name and display information</p>
+      </div>
+    </div>
+
+    <!-- Photo card -->
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-camera" style="color:var(--pr)"></i> Profile Photo</div>
+      <div class="sp-cb">
+        <form method="POST" action="{% url 'passenger_settings' %}" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_action" value="upload_photo">
+          <div class="row align-items-center">
+            <div class="col-md-3 text-center mb-3 mb-md-0">
+              <img id="bigPrev"
+                   src="{% if profile.profile_image %}{{ profile.profile_image.url }}{% else %}https://api.dicebear.com/7.x/initials/svg?seed={{ request.user.username }}&backgroundColor=0062ff&textColor=ffffff{% endif %}"
+                   style="width:85px;height:85px;border-radius:50%;object-fit:cover;border:3px solid var(--pr);box-shadow:0 0 0 5px var(--pr-g);">
+              <p style="font-size:.7rem;color:var(--t3);margin:.5rem 0 0;">Current</p>
+            </div>
+            <div class="col-md-9">
+              <label class="sp-dropzone">
+                <input type="file" name="profile_image" accept="image/*" onchange="prevBig(this)">
+                <div class="sp-cloud"><i class="fas fa-cloud-upload-alt"></i></div>
+                <p style="font-weight:700;color:var(--t1);margin:.15rem 0;">Click or drag & drop image here</p>
+                <p style="font-size:.78rem;color:var(--t3);margin:0;">JPG, PNG, WebP — max 5 MB</p>
+                <span id="chosenF" style="font-size:.78rem;color:var(--pr);margin-top:.3rem;display:block;"></span>
+              </label>
+              <button type="submit" class="sp-btn sp-btn-blue w-100 mt-3" style="justify-content:center;">
+                <i class="fas fa-save"></i> Upload & Save Photo
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Avatar presets -->
+        <div style="margin-top:1.25rem;border-top:1px solid var(--bdr);padding-top:1rem;">
+          <p style="font-size:.78rem;font-weight:700;color:var(--t2);margin-bottom:.4rem;">
+            <i class="fas fa-magic mr-1" style="color:var(--pr)"></i> Or choose a generated avatar:
+          </p>
+          <div class="ava-grid">
+            {% for seed in "rapido,swift,nexus,zenith,bolt"|split:"," %}
+            <div class="ava-opt" onclick="applyAvatarPreset('{{ seed }}')" title="{{ seed }}">
+              <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ seed }}&backgroundColor=0062ff">
+            </div>
+            {% empty %}
+            {% for preset in "A,B,C,D,E"|split:"," %}
+            <div class="ava-opt" title="Avatar {{ preset }}" onclick="applyAvatarPreset('preset{{ preset }}')">
+              <img src="https://api.dicebear.com/7.x/bottts/svg?seed=ride{{ preset }}&backgroundColor=0062ff">
+            </div>
+            {% endfor %}
+            {% endfor %}
+          </div>
+          <form method="POST" action="{% url 'passenger_settings' %}" id="avatarPresetForm">
+            {% csrf_token %}
+            <input type="hidden" name="form_action" value="upload_photo">
+            <input type="hidden" name="avatar_preset" id="avatarPresetVal">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name card -->
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-signature" style="color:var(--pur)"></i> Name & Username</div>
+      <div class="sp-cb">
+        <form method="POST" action="{% url 'passenger_settings' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_action" value="rename">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">First Name</label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-id-badge"></i></span>
+                <input class="sp-inp" type="text" name="first_name"
+                       value="{{ request.user.first_name }}" placeholder="First name">
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">Last Name</label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-id-badge"></i></span>
+                <input class="sp-inp" type="text" name="last_name"
+                       value="{{ request.user.last_name }}" placeholder="Last name">
+              </div>
+            </div>
+            <div class="col-12 mb-3">
+              <label class="sp-lbl">Username <span style="color:var(--err)">*</span></label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-at"></i></span>
+                <input class="sp-inp" type="text" name="username"
+                       value="{{ request.user.username }}" placeholder="your_username" required
+                       oninput="checkUsernameLen(this.value)">
+              </div>
+              <p class="sp-hint" id="unameTip">At least 3 characters, no spaces.</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <button type="submit" class="sp-btn sp-btn-pur">
+              <i class="fas fa-check"></i> Save Name
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ SECURITY ══════════════ -->
+  <div class="sp-panel" id="tab-security">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#e0f2fe;color:#0ea5e9"><i class="fas fa-shield-alt"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Security</p>
+        <p class="sp-ph-sub">Update email, phone and password to keep your account safe</p>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-user-lock" style="color:#0ea5e9"></i> Account Credentials</div>
+      <div class="sp-cb">
+        <form method="POST" action="{% url 'passenger_settings' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_action" value="account_settings">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">Email Address</label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-envelope"></i></span>
+                <input class="sp-inp" type="email" name="email"
+                       value="{{ request.user.email }}" placeholder="your@email.com" required>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">Phone Number</label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-phone"></i></span>
+                <input class="sp-inp" type="tel" name="phone"
+                       value="{{ profile.phone|default:'' }}" placeholder="+91 98765 43210">
+              </div>
+            </div>
+          </div>
+          <hr style="border-color:var(--bdr);margin:1rem 0;">
+          <p style="font-weight:700;font-size:.85rem;color:var(--t1);margin-bottom:.75rem;">
+            <i class="fas fa-key mr-1" style="color:#0ea5e9;"></i> Change Password
+          </p>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">New Password</label>
+              <div class="sp-ig">
+                <span class="ico"><i class="fas fa-lock"></i></span>
+                <input class="sp-inp" type="password" name="password" id="pw1"
+                       placeholder="Leave blank to keep" oninput="evalPw(this.value)">
+                <button type="button" class="ico r" onclick="togPw('pw1',this)" style="cursor:pointer;border:none;background:none;">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <div class="pw-bar"><div class="pw-fill" id="pwF"></div></div>
+              <p class="sp-hint" id="pwHint"></p>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="sp-lbl">Confirm Password</label>
+              <div class="sp-ig" id="pw2G">
+                <span class="ico"><i class="fas fa-lock"></i></span>
+                <input class="sp-inp" type="password" name="confirm_password" id="pw2"
+                       placeholder="Re-enter password" oninput="matchPw()">
+                <button type="button" class="ico r" onclick="togPw('pw2',this)" style="cursor:pointer;border:none;background:none;">
+                  <i class="fas fa-eye"></i>
+                </button>
+              </div>
+              <p class="sp-hint" id="matchH"></p>
+            </div>
+          </div>
+          <div class="text-right">
+            <button type="submit" class="sp-btn sp-btn-sky">
+              <i class="fas fa-save"></i> Save Security Settings
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Session info -->
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-desktop" style="color:#0ea5e9"></i> Active Session</div>
+      <div class="sp-cb">
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--ok)"></div>
+          <div style="flex:1;">
+            <p style="margin:0;font-weight:600;font-size:.86rem;color:var(--t1);">
+              <i class="fas fa-laptop mr-1" style="color:var(--pr)"></i> Current Browser Session
+            </p>
+            <p class="sp-act-sub">Last active: {{ last_login }}</p>
+          </div>
+          <span style="background:#e7faf4;color:#065f46;padding:3px 9px;border-radius:50px;font-size:.67rem;font-weight:700;">● Active</span>
+        </div>
+        <div style="margin-top:1rem;text-align:right;">
+          <a href="{% url 'portal_logout' %}" class="sp-btn sp-btn-red" style="font-size:.82rem;padding:.55rem 1.1rem;">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ SAVED PLACES ══════════════ -->
+  <div class="sp-panel" id="tab-locations">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#e7faf4;color:var(--ok)"><i class="fas fa-map-marked-alt"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Saved Places</p>
+        <p class="sp-ph-sub">Your home & office for instant booking — just like Rapido & Uber</p>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-map-pin" style="color:var(--ok)"></i> Quick Locations</div>
+      <div class="sp-cb">
+        <form method="POST" action="{% url 'passenger_settings' %}">
+          {% csrf_token %}
+          <input type="hidden" name="form_action" value="favorite_locations">
+          <div class="mb-4">
+            <label class="sp-lbl"><i class="fas fa-home mr-1" style="color:var(--pr)"></i> Home Address</label>
+            <div class="sp-ig">
+              <span class="ico"><i class="fas fa-house-user" style="color:var(--pr)"></i></span>
+              <input class="sp-inp" type="text" name="home_address"
+                     value="{{ profile.home_address|default:'' }}"
+                     placeholder="e.g. Madhapur, Hyderabad — used as pickup">
+            </div>
+            <p class="sp-hint">Quick-select as <strong>Pickup</strong> in Swift Rides.</p>
+          </div>
+          <div class="mb-4">
+            <label class="sp-lbl"><i class="fas fa-briefcase mr-1" style="color:var(--pur)"></i> Work / Office Address</label>
+            <div class="sp-ig">
+              <span class="ico"><i class="fas fa-building" style="color:var(--pur)"></i></span>
+              <input class="sp-inp" type="text" name="work_address"
+                     value="{{ profile.work_address|default:'' }}"
+                     placeholder="e.g. HITEC City, Hyderabad — used as drop">
+            </div>
+            <p class="sp-hint">Quick-select as <strong>Drop</strong> in Swift Rides.</p>
+          </div>
+
+          {% if profile.home_address or profile.work_address %}
+          <div style="background:#f0fdf8;border:1px solid #a7f3d0;border-radius:12px;padding:.9rem 1.1rem;margin-bottom:1.1rem;">
+            <p style="font-size:.76rem;font-weight:700;color:#065f46;margin-bottom:.4rem;"><i class="fas fa-check-circle mr-1"></i> Currently Saved</p>
+            {% if profile.home_address %}
+            <span class="loc-chip"><i class="fas fa-home"></i> {{ profile.home_address|truncatechars:35 }}</span>
+            {% endif %}
+            {% if profile.work_address %}
+            <span class="loc-chip" style="background:#f5f3ff;color:var(--pur);border-color:rgba(124,58,237,.18);">
+              <i class="fas fa-briefcase"></i> {{ profile.work_address|truncatechars:35 }}
+            </span>
+            {% endif %}
+          </div>
+          {% endif %}
+          <div class="text-right">
+            <button type="submit" class="sp-btn sp-btn-grn">
+              <i class="fas fa-map-pin"></i> Save Locations
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tip banner -->
+    <div style="background:linear-gradient(135deg,#0062ff,#0047cc);border-radius:var(--r-lg);padding:1.4rem 1.5rem;color:#fff;display:flex;align-items:center;gap:1rem;">
+      <i class="fas fa-bolt" style="font-size:1.8rem;opacity:.8;flex-shrink:0;"></i>
+      <div>
+        <p style="font-weight:800;margin:0 0 .3rem;font-family:'Outfit',sans-serif;">Instant Booking Mode</p>
+        <p style="font-size:.8rem;opacity:.8;margin:0;">
+          Once you save your Home and Work, they appear as one-tap quick-select buttons on the Swift Rides screen — saving you time on every trip.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ NOTIFICATIONS ══════════════ -->
+  <div class="sp-panel" id="tab-notifications">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#fef9ec;color:var(--warn)"><i class="fas fa-bell"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Notifications</p>
+        <p class="sp-ph-sub">Manage the alerts and updates you receive</p>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-car" style="color:var(--warn)"></i> Ride Alerts</div>
+      <div class="sp-cb">
+        {% for item in "Ride Accepted,Driver Arrived,Ride Started,Ride Completed,Ride Cancelled"|split:"," %}
+        <div class="sp-tog-row">
+          <div>
+            <p class="sp-tog-h">{{ item }}</p>
+            <p class="sp-tog-p">Get notified when your ride status changes to "{{ item }}"</p>
+          </div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        {% empty %}
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Ride Accepted</p><p class="sp-tog-p">Driver picks up your request</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Driver Arrived</p><p class="sp-tog-p">Driver reaches your pickup point</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Ride Started</p><p class="sp-tog-p">Trip begins confirmation</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Ride Completed</p><p class="sp-tog-p">Trip summary and receipt</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Ride Cancelled</p><p class="sp-tog-p">Alert when a booking is cancelled</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-tag" style="color:var(--warn)"></i> Promotions & App</div>
+      <div class="sp-cb">
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Discount Alerts</p><p class="sp-tog-p">Promo codes and limited-time offers</p></div>
+          <label class="sw"><input type="checkbox"><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Weekly Summary</p><p class="sp-tog-p">Your ride stats delivered every Monday</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Referral Rewards</p><p class="sp-tog-p">Credits when friends join via your link</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Carpool Bookings</p><p class="sp-tog-p">Updates on your pool ride requests</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ PRIVACY ══════════════ -->
+  <div class="sp-panel" id="tab-privacy">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#f5f3ff;color:var(--pur)"><i class="fas fa-lock"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Privacy</p>
+        <p class="sp-ph-sub">Control who sees your data and how it is used</p>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-eye" style="color:var(--pur)"></i> Profile Visibility</div>
+      <div class="sp-cb">
+        <div class="sp-tog-row" style="padding:.9rem 0;">
+          <div>
+            <p class="sp-tog-h">Private Mode</p>
+            <p class="sp-tog-p">Only drivers on active rides can see your profile info</p>
+          </div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row" style="padding:.9rem 0;">
+          <div>
+            <p class="sp-tog-h">Show Rating to Drivers</p>
+            <p class="sp-tog-p">Your passenger rating is visible to drivers when matching</p>
+          </div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-database" style="color:var(--pur)"></i> Data Preferences</div>
+      <div class="sp-cb">
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Save Trip History</p><p class="sp-tog-p">Keep a record of all past rides for your reference</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Location Tracking</p><p class="sp-tog-p">Allow real-time location sharing during active rides only</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Anonymised Analytics</p><p class="sp-tog-p">Help improve the platform with usage data (no personal info)</p></div>
+          <label class="sw"><input type="checkbox"><span class="sw-t"></span></label>
+        </div>
+        <div class="sp-tog-row">
+          <div><p class="sp-tog-h">Personalised Offers</p><p class="sp-tog-p">Receive recommendations based on your ride patterns</p></div>
+          <label class="sw"><input type="checkbox" checked><span class="sw-t"></span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ACTIVITY ══════════════ -->
+  <div class="sp-panel" id="tab-activity">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#e7faf4;color:var(--ok)"><i class="fas fa-history"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Activity</p>
+        <p class="sp-ph-sub">Account events, login history and ride milestones</p>
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-chart-pie" style="color:var(--ok)"></i> Ride Breakdown</div>
+      <div class="sp-cb">
+        <div class="row text-center mb-3">
+          <div class="col-4">
+            <div style="font-family:'Outfit',sans-serif;font-weight:900;font-size:2.2rem;color:var(--pr);">{{ total_rides }}</div>
+            <p style="font-size:.73rem;color:var(--t3);margin:0;">Total Booked</p>
+          </div>
+          <div class="col-4">
+            <div style="font-family:'Outfit',sans-serif;font-weight:900;font-size:2.2rem;color:var(--ok);">{{ completed_rides }}</div>
+            <p style="font-size:.73rem;color:var(--t3);margin:0;">Completed</p>
+          </div>
+          <div class="col-4">
+            <div style="font-family:'Outfit',sans-serif;font-weight:900;font-size:2.2rem;color:var(--err);">{{ cancelled_rides }}</div>
+            <p style="font-size:.73rem;color:var(--t3);margin:0;">Cancelled</p>
+          </div>
+        </div>
+        {% if total_rides > 0 %}
+        <div class="prog-wrap" style="height:10px;">
+          <div class="prog-fill" style="width:{% widthratio completed_rides total_rides 100 %}%"></div>
+        </div>
+        <p style="font-size:.72rem;color:var(--t3);text-align:center;margin-top:.5rem;">
+          {% widthratio completed_rides total_rides 100 %}% completion rate
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="sp-card">
+      <div class="sp-ch"><i class="fas fa-shield-check" style="color:var(--ok)"></i> Account Timeline</div>
+      <div class="sp-cb" style="padding:1.1rem 1.4rem;">
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--ok)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Account Created</p><p class="sp-act-sub">{{ member_since }}</p></div>
+        </div>
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--pr)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Last Login</p><p class="sp-act-sub">{{ last_login }}</p></div>
+        </div>
+        {% if profile.phone %}
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--warn)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Phone Added</p><p class="sp-act-sub">{{ profile.phone }}</p></div>
+        </div>
+        {% endif %}
+        {% if profile.home_address %}
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--ok)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Home Address Set</p><p class="sp-act-sub">{{ profile.home_address|truncatechars:45 }}</p></div>
+        </div>
+        {% endif %}
+        {% if recent_ride %}
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--pur)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Last Ride Booked</p><p class="sp-act-sub">{{ recent_ride.created_at|date:"d M Y, g:i A" }} — {{ recent_ride.status }}</p></div>
+        </div>
+        {% endif %}
+        <div class="sp-act">
+          <div class="sp-dot" style="background:var(--t3)"></div>
+          <div style="flex:1"><p style="margin:0;font-weight:600;font-size:.86rem;">Account Age</p><p class="sp-act-sub">{{ account_age_days }} days — {{ member_since }}</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ DANGER ZONE ══════════════ -->
+  <div class="sp-panel" id="tab-danger">
+    <div class="sp-ph">
+      <div class="sp-ph-ico" style="background:#fff1f1;color:var(--err)"><i class="fas fa-exclamation-triangle"></i></div>
+      <div>
+        <p class="sp-ph-ttl">Danger Zone</p>
+        <p class="sp-ph-sub">Irreversible actions — read carefully before proceeding</p>
+      </div>
+    </div>
+
+    <div class="sp-card" style="border:1.5px solid #ffd0d0;">
+      <div class="sp-ch" style="background:#fff8f8;border-color:#ffd0d0;">
+        <i class="fas fa-sign-out-alt" style="color:var(--err)"></i> Session
+      </div>
+      <div class="sp-cb">
+        <div class="sp-danger-row">
+          <div class="info">
+            <h6>Sign Out Everywhere</h6>
+            <p>Terminate all active sessions. You'll need to log in again on all devices.</p>
+          </div>
+          <a href="{% url 'portal_logout' %}" class="sp-btn sp-btn-red">
+            <i class="fas fa-sign-out-alt"></i> Sign Out All
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sp-card" style="border:1.5px solid #ffd0d0;">
+      <div class="sp-ch" style="background:#fff8f8;border-color:#ffd0d0;">
+        <i class="fas fa-trash-alt" style="color:var(--err)"></i> Delete Account
+      </div>
+      <div class="sp-cb">
+        <div class="sp-danger-row" style="background:transparent;border:none;padding:0 0 1rem;">
+          <div class="info">
+            <h6 style="font-size:.95rem;">Permanently Delete Your Account</h6>
+            <p>All rides, profile data, photos and history will be erased. <strong>This cannot be undone.</strong></p>
+          </div>
+          <button class="sp-btn sp-btn-red" onclick="document.getElementById('delBox').style.display='block'">
+            <i class="fas fa-trash-alt"></i> Delete Account
+          </button>
+        </div>
+        <div id="delBox" style="display:none;background:#fff1f1;border-radius:12px;padding:1rem 1.2rem;border:1px solid #fecaca;">
+          <p style="font-size:.85rem;color:#991b1b;font-weight:600;margin-bottom:.5rem;">
+            ⚠ Type <strong>DELETE</strong> in all caps to confirm permanent deletion:
+          </p>
+          <div style="display:flex;gap:.6rem;flex-wrap:wrap;">
+            <input id="delInput" type="text" placeholder='Type DELETE here'
+                   class="sp-inp" style="border:1.5px solid #fecaca;border-radius:9px;background:#fff;flex:1;min-width:130px;">
+            <button class="sp-btn sp-btn-red" onclick="doDelete()"><i class="fas fa-check"></i> Confirm</button>
+            <button class="sp-btn sp-btn-ol" onclick="document.getElementById('delBox').style.display='none'">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<script>
+// Tab switching
+function showTab(id) {
+  document.querySelectorAll('.sp-panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.sp-nav-a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.sp-mob-btn').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('tab-' + id);
+  if (panel) panel.classList.add('on');
+  document.querySelectorAll('.sp-nav-a, .sp-mob-btn').forEach(el => {
+    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes("'" + id + "'")) {
+      el.classList.add('active');
+    }
+  });
+  return false;
+}
+
+// Quick avatar from sidebar
+function quickPhotoSubmit(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById('sideAva').src = e.target.result;
+      const bp = document.getElementById('bigPrev');
+      if (bp) bp.src = e.target.result;
+    };
+    r.readAsDataURL(input.files[0]);
+    input.closest('form').submit();
+  }
+}
+
+// Photo preview (profile panel)
+function prevBig(input) {
+  if (input.files && input.files[0]) {
+    const r = new FileReader();
+    r.onload = e => {
+      document.getElementById('bigPrev').src = e.target.result;
+      document.getElementById('sideAva').src = e.target.result;
+    };
+    r.readAsDataURL(input.files[0]);
+    document.getElementById('chosenF').textContent = '📎 ' + input.files[0].name;
+  }
+}
+
+// Avatar presets
+function applyAvatarPreset(seed) {
+  const url = 'https://api.dicebear.com/7.x/bottts/svg?seed=' + seed + '&backgroundColor=0062ff';
+  document.getElementById('sideAva').src = url;
+  const bp = document.getElementById('bigPrev');
+  if (bp) bp.src = url;
+  document.querySelectorAll('.ava-opt').forEach(el => el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  // Visual confirmation only (no server avatar_preset support yet)
+  alert('Avatar preview applied! Upload a custom photo to save permanently.');
+}
+
+// Password toggle
+function togPw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'text' ? 'password' : 'text';
+  btn.querySelector('i').className = inp.type === 'text' ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+// Password strength
+function evalPw(v) {
+  const bar = document.getElementById('pwF');
+  const hint = document.getElementById('pwHint');
+  if (!v) { bar.style.width='0'; hint.textContent=''; return; }
+  let s = 0;
+  if (v.length >= 8) s++;
+  if (/[A-Z]/.test(v)) s++;
+  if (/[0-9]/.test(v)) s++;
+  if (/[^A-Za-z0-9]/.test(v)) s++;
+  const cfg = [
+    {w:'20%',c:'#ff4444',t:'Weak — add numbers & symbols'},
+    {w:'50%',c:'#f59e0b',t:'Fair — try adding uppercase'},
+    {w:'75%',c:'#0ea5e9',t:'Good — almost there!'},
+    {w:'100%',c:'#00c07a',t:'Strong ✓'},
+  ];
+  const c = cfg[Math.min(s - 1, 3)] || cfg[0];
+  bar.style.width=c.w; bar.style.background=c.c;
+  hint.textContent = c.t; hint.style.color = c.c;
+}
+
+// Password match
+function matchPw() {
+  const pw = document.getElementById('pw1').value;
+  const cpw = document.getElementById('pw2').value;
+  const h = document.getElementById('matchH');
+  const g = document.getElementById('pw2G');
+  if (!cpw) { h.textContent=''; g.style.borderColor=''; return; }
+  if (pw === cpw) {
+    h.innerHTML='<i class="fas fa-check-circle"></i> Passwords match';
+    h.style.color='#00c07a'; g.style.borderColor='#00c07a';
+  } else {
+    h.innerHTML='<i class="fas fa-times-circle"></i> Does not match';
+    h.style.color='#ff4444'; g.style.borderColor='#ff4444';
+  }
+}
+
+// Username length tip
+function checkUsernameLen(v) {
+  const tip = document.getElementById('unameTip');
+  if (v.length < 3) { tip.textContent='Too short — at least 3 characters'; tip.style.color='#ff4444'; }
+  else if (v.includes(' ')) { tip.textContent='No spaces allowed'; tip.style.color='#ff4444'; }
+  else { tip.textContent='Looks good!'; tip.style.color='#00c07a'; }
+}
+
+// Danger delete
+function doDelete() {
+  if (document.getElementById('delInput').value === 'DELETE') {
+    alert('Account deletion is pending backend integration. Contact support.');
+  } else {
+    alert('Please type DELETE in all caps.');
+  }
+}
+
+// Restore tab from hash
+(function(){
+  const h = window.location.hash.replace('#','');
+  const tabs = ['overview','profile','security','locations','notifications','privacy','activity','danger'];
+  if (tabs.includes(h)) showTab(h);
+})();
+</script>
+{% endblock %}
+"""
+
+output_path = r"c:\Users\DELL\python\Ride Share\demo\demo\myproject\templates\passenger_settings.html"
+with open(output_path, "w", encoding="utf-8") as f:
+    f.write(content)
+print("Written successfully:", output_path)

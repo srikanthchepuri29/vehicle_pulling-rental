@@ -1,0 +1,363 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Pooling Host - Overview</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
+    <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+    <style>
+        .premium-navbar {
+            background-color: #ec4899 !important; /* Pink tone for carpool admin */
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            width: 100% !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030;
+            font-family: 'Rubik', sans-serif !important;
+        }
+
+        .premium-navbar .container-fluid {
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex !important;
+            align-items: stretch !important;
+            height: 60px !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            padding: 0 20px !important;
+            color: #ffffff !important;
+            font-size: 1.25rem !important;
+            letter-spacing: 1px !important;
+            text-decoration: none !important;
+            margin: 0 !important;
+        }
+
+        .navbar-nav {
+            display: flex !important;
+            align-items: stretch !important;
+            height: 100% !important;
+        }
+
+        .premium-navbar .nav-item {
+            display: flex !important;
+            align-items: stretch !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .premium-navbar .nav-link {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            padding: 0 18px !important;
+            display: flex !important;
+            align-items: center !important;
+            height: 60px !important;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+        }
+
+        .premium-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        body {
+            padding-top: 80px !important;
+            background-color: var(--body-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .admin-card {
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(236, 72, 153, 0.15) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-card::after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.08) 0%, transparent 70%);
+            right: -25px;
+            bottom: -25px;
+        }
+        .table-container {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 128, 0.08);
+        }
+        .admin-table th {
+            background: rgba(236, 72, 153, 0.05) !important;
+            border-bottom: 2px solid rgba(236, 72, 153, 0.15) !important;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            color: var(--text-color);
+        }
+        .admin-table td {
+            vertical-align: middle !important;
+            color: var(--text-color);
+            border-top: 1px solid rgba(0,0,0,0.05) !important;
+        }
+        [data-theme="dark"] .admin-table td {
+            border-top: 1px solid rgba(255,255,255,0.05) !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Carpool Header Navbar -->
+    <nav class="navbar navbar-expand-lg premium-navbar p-0">
+        <div class="container-fluid d-flex align-items-center">
+            <!-- Dropdown Menu Icon (Hamburger) -->
+            <div class="dropdown mr-2 d-flex align-items-center" style="align-self: center;">
+                <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
+                    <i class="fas fa-bars"></i>
+                </a>
+                <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="min-width: 310px !important; transform-origin: top left !important;">
+                    <!-- Menu Header -->
+                    <div class="dropdown-user-header d-flex align-items-center" style="background: linear-gradient(135deg, #ec4899 0%, #9d174d 100%) !important;">
+                        <i class="fas fa-users" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
+                        <div>
+                            <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Pooling Settings Console</h6>
+                            <small class="text-white-50" style="font-size: 0.75rem;">Interactive Controls & Settings</small>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Real-Time Controls</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-sync-alt"></i><span>Auto-Match Commuters</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-automatch" checked onclick="showToast('Auto-Match Preferences updated')">
+                                        <label class="custom-control-label" for="switch-pool-automatch"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item" href="#" onclick="showToast('Calculating dynamic fuel share splits...')">
+                                    <i class="fas fa-calculator"></i><span>Fuel Split Calculator</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="{% url 'portal_carpool_bookings' %}">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-bell"></i><span>Match Notifications</span>
+                                    </div>
+                                    <span class="menu-badge badge-orange">4 Pending</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Console Settings</div>
+                        <ul class="dropdown-list-container">
+
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-female"></i><span>Girls-Only Pooling</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-womenonly" onclick="showToast('Girls-Only matching mode toggled')">
+                                        <label class="custom-control-label" for="switch-pool-womenonly"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
+                                        <i class="fas fa-paw"></i><span>Co-Traveler Pets</span>
+                                    </div>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="switch-pool-pets" onclick="showToast('Pet allowance preferences updated')">
+                                        <label class="custom-control-label" for="switch-pool-pets"></label>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Maximum luggage limit set')">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-suitcase"></i><span>Luggage Allowance</span>
+                                    </div>
+                                    <span class="menu-badge badge-neutral">Max 20kg</span>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="dropdown-divider-premium"></div>
+                        
+                        <ul class="dropdown-list-container">
+                            <li>
+                                <a class="premium-dropdown-item" href="{% url 'home' %}">
+                                    <i class="fas fa-home"></i><span>Exit to User Portal</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
+                                    <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <a class="navbar-brand font-weight-bold" href="{% url 'portal_carpool' %}" style="margin-bottom: 0; align-self: center;">
+                <i class="fas fa-users mr-2"></i>Pooling Console
+            </a>
+            <div class="collapse navbar-collapse" id="adminNavbarContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" style="background: rgba(0,0,0,0.06);" href="{% url 'portal_carpool' %}"><i class="fas fa-network-wired mr-1"></i> Pooling Portal Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool_publish' %}"><i class="fas fa-plus-circle mr-1"></i> Publish Carpool Offer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool_itineraries' %}"><i class="fas fa-map-marked-alt mr-1"></i> Itineraries</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{% url 'portal_carpool_bookings' %}"><i class="fas fa-calendar-check mr-1"></i> Carpool Seat Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-navy" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit to User Portal</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'portal_logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Main Container -->
+    <div class="container py-4">
+        <!-- Welcome Message -->
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-2 text-left">
+            <div>
+                <h1 class="font-weight-bold outfit-font mb-1 text-title">Pooling Host Overview</h1>
+                <p class="text-subtitle mb-0">Publish scheduled travel plans, review passenger bookings, and track shared commutes.</p>
+            </div>
+            <span class="badge bg-pink-light text-pink px-3 py-2" style="font-size: 0.82rem; border-radius: 12px; color: #ec4899; border: 1px solid rgba(236,72,153,0.3);">
+                <i class="fas fa-user-friends mr-1"></i> PEER-TO-PEER COMMUTE
+            </span>
+        </div>
+        {% if messages %}
+        <div class="row">
+            <div class="col-12">
+                {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-lg" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- Quick Stats Cards -->
+        <div class="row mb-5">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="glass-card admin-card text-left" style="border-color: rgba(236, 72, 153, 0.15) !important;">
+                    <span class="text-muted text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Commutes Offered</span>
+                    <h3 class="font-weight-bold text-title mb-0">{{ total_offers }} Travel Plans</h3>
+                    <div class="mt-2"><small class="text-success font-weight-bold"><i class="fas fa-check mr-1"></i>Active postings</small></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="glass-card admin-card text-left" style="border-color: rgba(236, 72, 153, 0.15) !important;">
+                    <span class="text-muted text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Passengers Hosted</span>
+                    <h3 class="font-weight-bold text-title mb-0">{{ total_passengers }} Riders</h3>
+                    <div class="mt-2"><small class="text-info font-weight-bold"><i class="fas fa-user mr-1"></i>Total bookings</small></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="glass-card admin-card text-left" style="border-color: rgba(236, 72, 153, 0.15) !important;">
+                    <span class="text-muted text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Active Available Seats</span>
+                    <h3 class="font-weight-bold text-title mb-0">{{ active_seats }} Seats</h3>
+                    <div class="mt-2"><small class="text-warning font-weight-bold"><i class="fas fa-chair mr-1"></i>Open spaces</small></div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="glass-card admin-card text-left" style="border-color: rgba(236, 72, 153, 0.15) !important;">
+                    <span class="text-muted text-uppercase d-block mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">Split Fuel Saved</span>
+                    <h3 class="font-weight-bold text-title mb-0">₹{{ fuel_saved_split|floatformat:0 }}</h3>
+                    <div class="mt-2"><small class="text-primary font-weight-bold"><i class="fas fa-wallet mr-1"></i>Commuter split value</small></div>
+                </div>
+            </div>
+        </div>
+        <!-- Latest Commutes Table -->
+        <div class="glass-card p-0 table-container">
+            <div class="p-4 d-flex justify-content-between align-items-center border-bottom flex-wrap gap-2 text-left" style="background: rgba(236, 72, 153, 0.03);">
+                <div>
+                    <h5 class="font-weight-bold mb-0 text-title"><i class="fas fa-route mr-2 text-pink" style="color: #ec4899;"></i>Recent Published Plans</h5>
+                    <small class="text-subtitle">Quick view of the latest active carpools</small>
+                </div>
+                <a href="{% url 'portal_carpool_itineraries' %}" class="btn btn-sm btn-outline-danger font-weight-bold px-3 rounded-pill" style="border-color: #ec4899; color: #ec4899;">View All Itineraries</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table admin-table text-left mb-0">
+                    <thead>
+                        <tr>
+                            <th>Plan ID</th>
+                            <th>Route</th>
+                            <th>Vehicle Model</th>
+                            <th>Date & Time</th>
+                            <th>Seats Offered</th>
+                            <th>Seats Remaining</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for o in offers %}
+                        <tr>
+                            <td class="font-weight-bold text-danger">CarpoolOffer-{{ o.id }}</td>
+                            <td class="font-weight-bold text-title">{{ o.start_location }} → {{ o.destination }}</td>
+                            <td>{{ o.vehicle_name }} ({{ o.vehicle_number }})</td>
+                            <td>{{ o.date }} | {{ o.time }}</td>
+                            <td class="font-weight-bold text-title">{{ o.total_seats }}</td>
+                            <td>
+                                <strong class="text-danger" style="font-size: 1.1rem;">{{ o.available_seats }} Left</strong>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-subtitle">
+                                <i class="fas fa-folder-open mb-3 d-block" style="font-size: 2.5rem; opacity: 0.3;"></i>
+                                No active commutes listed in catalog.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    
+</body>
+</html>

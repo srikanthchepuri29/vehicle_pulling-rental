@@ -1,0 +1,928 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Premium Style Adjustments -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link rel="stylesheet" href="{% static 'css/Blog.css' %}">
+
+<style>
+    :root {
+        --rapido-yellow: #facc15;
+        --rapido-dark: #0f172a;
+        --card-bg-light: rgba(255, 255, 255, 0.9);
+        --card-bg-dark: rgba(30, 41, 59, 0.7);
+        --text-primary-light: #0f172a;
+        --text-primary-dark: #f8fafc;
+        --text-secondary-light: #475569;
+        --text-secondary-dark: #94a3b8;
+    }
+
+    body {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        min-height: 100vh;
+        font-family: 'Rubik', sans-serif;
+    }
+
+    [data-theme="dark"] body {
+        background: linear-gradient(135deg, #0b0f19 0%, #111827 100%) !important;
+    }
+
+    .history-container {
+        max-width: 1160px;
+        margin: 40px auto;
+        padding: 0 15px;
+    }
+
+    /* Page Header */
+    .history-header {
+        text-align: left;
+        margin-bottom: 30px;
+        position: relative;
+    }
+
+    .history-title {
+        font-weight: 800;
+        font-size: 2.2rem;
+        color: #1e293b;
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+    }
+
+    [data-theme="dark"] .history-title {
+        color: #f8fafc;
+    }
+
+    .history-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+    }
+
+    [data-theme="dark"] .history-subtitle {
+        color: #94a3b8;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-bottom: 35px;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    .stat-card {
+        background: var(--card-bg-light);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        padding: 18px;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(10px);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    [data-theme="dark"] .stat-card {
+        background: var(--card-bg-dark);
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="dark"] .stat-card:hover {
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+
+    [data-theme="dark"] .stat-value {
+        color: #f8fafc;
+    }
+
+    .stat-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: #64748b;
+    }
+
+    [data-theme="dark"] .stat-label {
+        color: #94a3b8;
+    }
+
+    /* Trip Card */
+    .trip-card {
+        background: var(--card-bg-light);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.02);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+        transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    [data-theme="dark"] .trip-card {
+        background: var(--card-bg-dark);
+        border-color: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .trip-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(250, 204, 21, 0.5);
+        box-shadow: 0 12px 32px rgba(250, 204, 21, 0.08);
+    }
+
+    [data-theme="dark"] .trip-card:hover {
+        border-color: rgba(250, 204, 21, 0.4);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .trip-card-main {
+        display: flex;
+        padding: 24px;
+        align-items: center;
+        gap: 24px;
+    }
+
+    .trip-body {
+        flex: 2;
+        min-width: 220px;
+    }
+
+    .trip-stats-detail {
+        flex: 1.2;
+        min-width: 180px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #475569;
+        border-left: 1px dashed rgba(0, 0, 0, 0.08);
+        padding-left: 20px;
+    }
+
+    [data-theme="dark"] .trip-stats-detail {
+        color: #cbd5e1;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .trip-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Vehicle Icon Badge */
+    .vehicle-avatar-wrapper {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+        background: rgba(250, 204, 21, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        flex-shrink: 0;
+        border: 1.5px solid rgba(250, 204, 21, 0.2);
+    }
+
+    [data-theme="dark"] .vehicle-avatar-wrapper {
+        background: rgba(250, 204, 21, 0.06);
+        border-color: rgba(250, 204, 21, 0.15);
+    }
+
+    .plate-badge {
+        position: absolute;
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e293b;
+        color: #ffffff;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 6px;
+        border: 1px solid #475569;
+        white-space: nowrap;
+        letter-spacing: 0.5px;
+    }
+
+    [data-theme="dark"] .plate-badge {
+        background: #f1f5f9;
+        color: #0f172a;
+        border-color: #cbd5e1;
+    }
+
+    /* Trip Details */
+    .trip-body {
+        flex-grow: 1;
+        min-width: 250px;
+    }
+
+    .trip-meta {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .booking-id {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #64748b;
+        background: rgba(100, 116, 139, 0.08);
+        padding: 2px 8px;
+        border-radius: 6px;
+    }
+
+    [data-theme="dark"] .booking-id {
+        color: #cbd5e1;
+        background: rgba(203, 213, 225, 0.08);
+    }
+
+    .ride-date {
+        font-size: 0.82rem;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    [data-theme="dark"] .ride-date {
+        color: #94a3b8;
+    }
+
+    /* Routing UI */
+    .route-flow {
+        position: relative;
+        padding-left: 20px;
+        margin-top: 10px;
+    }
+
+    .route-node {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary-light);
+        margin-bottom: 6px;
+        position: relative;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 420px;
+        text-align: left;
+    }
+
+    [data-theme="dark"] .route-node {
+        color: var(--text-primary-dark);
+    }
+
+    .route-node:last-child {
+        margin-bottom: 0;
+    }
+
+    .route-node::before {
+        content: '';
+        position: absolute;
+        left: -16px;
+        top: 6px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    .route-node.pickup::before {
+        background: #10b981; /* Green */
+        box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+    }
+
+    .route-node.drop::before {
+        background: #ef4444; /* Red */
+        box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+    }
+
+    .route-line {
+        position: absolute;
+        left: 7px;
+        top: 12px;
+        width: 2px;
+        height: 12px;
+        background: #cbd5e1;
+    }
+
+    [data-theme="dark"] .route-line {
+        background: #334155;
+    }
+
+    /* Pricing & Status */
+    .trip-right {
+        flex: 0 0 160px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 8px;
+        border-left: 1px dashed rgba(0, 0, 0, 0.08);
+        padding-left: 20px;
+    }
+
+    [data-theme="dark"] .trip-right {
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-book-again {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #facc15;
+        color: #0f172a;
+        font-weight: 700;
+        font-size: 0.72rem;
+        padding: 5px 12px;
+        border-radius: 8px;
+        text-decoration: none !important;
+        transition: background 0.2s ease, transform 0.15s ease;
+        box-shadow: 0 4px 10px rgba(250, 204, 21, 0.12);
+        border: none;
+        cursor: pointer;
+    }
+    .btn-book-again:hover {
+        background: #eab308;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(250, 204, 21, 0.22);
+    }
+    .btn-book-again:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 992px) {
+        .trip-card-main {
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .trip-body {
+            flex: 1 1 100%;
+        }
+        .trip-stats-detail {
+            flex: 1 1 50%;
+            border-left: none;
+            padding-left: 0;
+        }
+        .trip-right {
+            flex: 1 1 40%;
+            align-items: flex-start;
+            border-left: none;
+            padding-left: 0;
+        }
+        .trip-right div {
+            align-items: flex-start !important;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .trip-card-main {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .trip-stats-detail, .trip-right {
+            flex: 1 1 100%;
+            align-items: flex-start;
+        }
+        .trip-right {
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 15px;
+        }
+        [data-theme="dark"] .trip-right {
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+    }
+
+    .trip-price {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #10b981;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .vehicle-info-text {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+
+    [data-theme="dark"] .vehicle-info-text {
+        color: #cbd5e1;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 20px;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+    }
+
+    .status-badge.completed {
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+    }
+
+    .status-badge.cancelled {
+        background: rgba(239, 68, 68, 0.12);
+        color: #ef4444;
+    }
+
+    .status-badge.active {
+        background: rgba(245, 158, 11, 0.12);
+        color: #f59e0b;
+    }
+
+    /* Rating & Feedback Footer Panel */
+    .trip-card-footer {
+        background: rgba(250, 204, 21, 0.02);
+        border-top: 1px solid rgba(0, 0, 0, 0.03);
+        padding: 12px 24px;
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    [data-theme="dark"] .trip-card-footer {
+        background: rgba(255, 255, 255, 0.01);
+        border-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .chauffeur-info {
+        color: #64748b;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    [data-theme="dark"] .chauffeur-info {
+        color: #94a3b8;
+    }
+
+    .chauffeur-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #e2e8f0;
+    }
+
+    /* Star Ratings */
+    .rating-display {
+        color: #f59e0b;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .rating-interactive {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .rating-interactive i {
+        cursor: pointer;
+        color: #cbd5e1;
+        transition: color 0.2s ease, transform 0.2s ease;
+        font-size: 1.1rem;
+    }
+
+    [data-theme="dark"] .rating-interactive i {
+        color: #475569;
+    }
+
+    .rating-interactive i.active {
+        color: #f59e0b;
+        transform: scale(1.15);
+        text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+    }
+
+    .feedback-input-group {
+        display: none;
+        width: 100%;
+        margin-top: 10px;
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    .feedback-input-group.active {
+        display: flex;
+        gap: 8px;
+    }
+
+    .feedback-text {
+        flex-grow: 1;
+        border-radius: 10px;
+        border: 1.5px solid #cbd5e1;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    [data-theme="dark"] .feedback-text {
+        background: #1e293b;
+        border-color: #334155;
+        color: #f8fafc;
+    }
+
+    .feedback-text:focus {
+        border-color: #f59e0b;
+    }
+
+    .feedback-submit-btn {
+        background: #f59e0b;
+        color: #0f172a;
+        font-weight: 700;
+        border: none;
+        border-radius: 10px;
+        padding: 6px 16px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .feedback-submit-btn:hover {
+        background: #eab308;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--card-bg-light);
+        border: 1px dashed rgba(0, 0, 0, 0.1);
+        border-radius: 24px;
+        margin-top: 20px;
+    }
+
+    [data-theme="dark"] .empty-state {
+        background: var(--card-bg-dark);
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .empty-icon {
+        font-size: 3.5rem;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+
+    [data-theme="dark"] .empty-icon {
+        color: #475569;
+    }
+
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    [data-theme="dark"] .empty-title {
+        color: #f8fafc;
+    }
+
+    .empty-desc {
+        color: #64748b;
+        max-width: 400px;
+        margin: 0 auto 20px;
+        font-size: 0.88rem;
+    }
+
+    [data-theme="dark"] .empty-desc {
+        color: #94a3b8;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="history-container">
+        
+        <!-- Header -->
+        <div class="history-header">
+            <h1 class="history-title">Your Trips</h1>
+            <p class="history-subtitle">Detailed record of your Swift Rides (taxi/bike bookings) and commutes.</p>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-taxi text-primary mb-2" style="font-size: 1.4rem; opacity: 0.85; display: block;"></i>
+                <div class="stat-value" id="stats-total">{{ total_bookings }}</div>
+                <div class="stat-label">Total Rides</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle text-success mb-2" style="font-size: 1.4rem; opacity: 0.85; display: block;"></i>
+                <div class="stat-value text-success" id="stats-completed">{{ completed_bookings }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-times-circle text-danger mb-2" style="font-size: 1.4rem; opacity: 0.85; display: block;"></i>
+                <div class="stat-value text-danger" id="stats-cancelled">{{ cancelled_bookings }}</div>
+                <div class="stat-label">Cancelled</div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-wallet text-warning mb-2" style="font-size: 1.4rem; opacity: 0.85; display: block;"></i>
+                <div class="stat-value text-warning" id="stats-spent">₹{{ total_spent|floatformat:0 }}</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+        </div>
+
+        <!-- Trips List -->
+        <div class="trips-list-wrapper">
+            {% for trip in trips %}
+                <div class="trip-card" id="trip-card-{{ trip.id }}">
+                    <div class="trip-card-main">
+                        <!-- Vehicle Badge -->
+                        <div class="vehicle-avatar-wrapper">
+                            {{ trip.derived_vehicle_icon }}
+                            <div class="plate-badge">{{ trip.derived_vehicle_plate }}</div>
+                        </div>
+
+                        <!-- Routing info -->
+                        <div class="trip-body">
+                            <div class="trip-meta">
+                                <span class="booking-id">TaxiRS-{{ trip.id }}</span>
+                                <span class="ride-date">{{ trip.created_at|date:"d M Y • H:i" }}</span>
+                            </div>
+                            <div class="route-flow">
+                                <div class="route-node pickup" title="{{ trip.pickup }}">{{ trip.pickup }}</div>
+                                <div class="route-line"></div>
+                                <div class="route-node drop" title="{{ trip.drop }}">{{ trip.drop }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Trip Stats Detail (New Column) -->
+                        <div class="trip-stats-detail">
+                            <div class="trip-detail-item">
+                                <i class="fas fa-route text-muted" style="width: 16px;"></i>
+                                <span>Distance: <strong>{{ trip.distance|floatformat:1 }} km</strong></span>
+                            </div>
+                            <div class="trip-detail-item">
+                                <i class="fas fa-clock text-muted" style="width: 16px;"></i>
+                                <span>Duration: <strong>{% widthratio trip.distance 30 60 %} mins</strong></span>
+                            </div>
+                            <div class="trip-detail-item">
+                                <i class="fas fa-coins text-muted" style="width: 16px;"></i>
+                                <span>
+                                    {% if trip.distance > 0 %}
+                                        Rate: <strong>₹{% widthratio trip.price trip.distance 1 %}/km</strong>
+                                    {% else %}
+                                        Rate: <strong>Flat Rate</strong>
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Pricing and status -->
+                        <div class="trip-right">
+                            <div class="trip-price">₹{{ trip.price|floatformat:0 }}</div>
+                            <div class="vehicle-info-text">{{ trip.derived_vehicle_details }}</div>
+                            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+                                {% if trip.status == 'Completed' %}
+                                    <span class="status-badge completed"><i class="fas fa-check-circle"></i> Completed</span>
+                                {% elif trip.status == 'Cancelled' %}
+                                    <span class="status-badge cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
+                                {% else %}
+                                    <span class="status-badge active"><i class="fas fa-spinner fa-spin"></i> {{ trip.status }}</span>
+                                {% endif %}
+                                <a href="{% url 'ride_page' %}?pickup={{ trip.pickup|urlencode }}&drop={{ trip.drop|urlencode }}" class="btn-book-again">
+                                    <i class="fas fa-redo"></i> Book Again
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Details -->
+                    <div class="trip-card-footer">
+                        <div class="chauffeur-info">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ trip.derived_driver_name }}" alt="Chauffeur" class="chauffeur-avatar">
+                            <span>Chauffeur: <strong>{{ trip.derived_driver_name }}</strong></span>
+                        </div>
+
+                        <!-- Rating interaction -->
+                        <div class="rating-box-container" id="rating-box-{{ trip.id }}">
+                            {% if trip.status == 'Completed' %}
+                                {% if trip.rating %}
+                                    <div class="rating-display">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= trip.rating %}
+                                                <i class="fas fa-star text-warning"></i>
+                                            {% else %}
+                                                <i class="far fa-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span class="ml-1 text-muted" style="font-size:0.75rem;">({{ trip.rating }}/5)</span>
+                                    </div>
+                                {% else %}
+                                    <div class="rating-interactive" data-ride-id="{{ trip.id }}">
+                                        <span class="text-muted mr-2" style="font-size:0.8rem;">Rate ride:</span>
+                                        <i class="far fa-star star-btn" data-val="1"></i>
+                                        <i class="far fa-star star-btn" data-val="2"></i>
+                                        <i class="far fa-star star-btn" data-val="3"></i>
+                                        <i class="far fa-star star-btn" data-val="4"></i>
+                                        <i class="far fa-star star-btn" data-val="5"></i>
+                                    </div>
+                                {% endif %}
+                            {% elif trip.status == 'Cancelled' and trip.cancel_reason %}
+                                <span class="text-danger" style="font-size:0.75rem; font-weight:600;"><i class="fas fa-exclamation-triangle mr-1"></i> {{ trip.cancel_reason }}</span>
+                            {% else %}
+                                <span class="text-muted" style="font-size:0.75rem;">Pin: <strong>{{ trip.pin }}</strong></span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Feedback Input overlay -->
+                        <div class="feedback-input-group" id="feedback-group-{{ trip.id }}">
+                            <input type="text" class="feedback-text" id="feedback-text-{{ trip.id }}" placeholder="Leave a review (optional)...">
+                            <button class="feedback-submit-btn" onclick="submitTripRating({{ trip.id }})">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-road"></i></div>
+                    <h3 class="empty-title">No Trips Yet</h3>
+                    <p class="empty-desc">You haven't requested any rides yet. Book a quick bike or cab ride on our Swift Rides page!</p>
+                    <a href="{% url 'ride_page' %}" class="btn font-weight-bold rounded-pill px-4" style="background: #facc15; color: #0f172a; border: none; box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);">
+                        <i class="fas fa-motorcycle mr-2"></i>Book a Ride
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<!-- AJAX Star Rating Logic -->
+<script>
+    let selectedRatings = {};
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Wire up hover/click effects on star buttons
+        const starContainers = document.querySelectorAll(".rating-interactive");
+        starContainers.forEach(container => {
+            const rideId = container.getAttribute("data-ride-id");
+            const stars = container.querySelectorAll(".star-btn");
+
+            stars.forEach(star => {
+                // Click
+                star.addEventListener("click", () => {
+                    const val = parseInt(star.getAttribute("data-val"));
+                    selectedRatings[rideId] = val;
+                    
+                    // Highlight selected stars
+                    stars.forEach(s => {
+                        const sVal = parseInt(s.getAttribute("data-val"));
+                        if (sVal <= val) {
+                            s.className = "fas fa-star star-btn active text-warning";
+                        } else {
+                            s.className = "far fa-star star-btn text-warning";
+                        }
+                    });
+
+                    // Reveal feedback comment section
+                    const feedbackGroup = document.getElementById(`feedback-group-${rideId}`);
+                    if (feedbackGroup) {
+                        feedbackGroup.classList.add("active");
+                    }
+                });
+
+                // Hover styling
+                star.addEventListener("mouseenter", () => {
+                    if (selectedRatings[rideId]) return;
+                    const val = parseInt(star.getAttribute("data-val"));
+                    stars.forEach(s => {
+                        const sVal = parseInt(s.getAttribute("data-val"));
+                        if (sVal <= val) {
+                            s.className = "fas fa-star star-btn active text-warning";
+                        } else {
+                            s.className = "far fa-star star-btn text-warning";
+                        }
+                    });
+                });
+
+                star.addEventListener("mouseleave", () => {
+                    if (selectedRatings[rideId]) return;
+                    stars.forEach(s => {
+                        s.className = "far fa-star star-btn text-warning";
+                    });
+                });
+            });
+        });
+    });
+
+    function submitTripRating(rideId) {
+        const rating = selectedRatings[rideId];
+        const feedback = document.getElementById(`feedback-text-${rideId}`).value;
+
+        if (!rating) return;
+
+        const formData = new FormData();
+        formData.append("rating", rating);
+        formData.append("feedback", feedback);
+
+        fetch(`/api/ride/feedback/${rideId}/`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}"
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI to static stars
+                const ratingContainer = document.getElementById(`rating-box-${rideId}`);
+                const feedbackGroup = document.getElementById(`feedback-group-${rideId}`);
+                
+                // Hide input group
+                if (feedbackGroup) feedbackGroup.classList.remove("active");
+
+                // Generate static stars HTML
+                let starsHtml = `<div class="rating-display">`;
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        starsHtml += `<i class="fas fa-star text-warning"></i>`;
+                    } else {
+                        starsHtml += `<i class="far fa-star text-warning"></i>`;
+                    }
+                }
+                starsHtml += `<span class="ml-1 text-muted" style="font-size:0.75rem;">(${rating}/5)</span></div>`;
+                
+                if (feedback) {
+                    starsHtml += `<div class="w-100 text-muted mt-1" style="font-size:0.8rem; font-style:italic;">"${feedback}"</div>`;
+                }
+
+                ratingContainer.innerHTML = starsHtml;
+
+                // Show success toast
+                showHistoryToast("Feedback submitted successfully!");
+            } else {
+                showHistoryToast("Error submitting feedback: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showHistoryToast("Error connecting to server.");
+        });
+    }
+
+    function showHistoryToast(msg) {
+        let t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#0f172a;color:#fff;padding:12px 24px;border-radius:12px;font-size:14px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.05);font-family:"Rubik",sans-serif;font-weight:500;';
+        t.innerText = msg;
+        document.body.appendChild(t);
+        setTimeout(() => {
+            t.style.transition = "opacity 0.5s ease";
+            t.style.opacity = "0";
+            setTimeout(() => t.remove(), 500);
+        }, 2500);
+    }
+</script>
+
+{% endblock %}
