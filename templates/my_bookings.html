@@ -181,12 +181,14 @@
                 <div class="booking-card">
                     <div class="booking-card-header">
                         <span><i class="fas fa-bookmark mr-2 text-warning"></i>BOOKING REFERENCE: RS-{{ b.id }}</span>
-                        {% if b.status == 'Approved' %}
-                        <span class="booking-status-badge bg-success text-white" style="font-weight: 800;"><i class="fas fa-check-circle mr-1"></i>Confirmed - Car Ready</span>
-                        {% elif b.status == 'Cancelled' %}
-                        <span class="booking-status-badge bg-danger text-white" style="font-weight: 800;"><i class="fas fa-times-circle mr-1"></i>Cancelled</span>
+                        {% if b.status == 'Approved' or b.status == 'Confirmed' %}
+                        <span class="booking-status-badge text-white" style="font-weight: 800; background-color: #10b981 !important; border: 1px solid rgba(16, 185, 129, 0.4);"><i class="fas fa-check-circle mr-1"></i>Confirmed - Car Ready</span>
+                        {% elif b.status == 'Completed' %}
+                        <span class="booking-status-badge text-white" style="font-weight: 800; background-color: #3b82f6 !important; border: 1px solid rgba(59, 130, 246, 0.4);"><i class="fas fa-check-double mr-1"></i>Completed</span>
+                        {% elif b.status == 'Cancelled' or b.status == 'Canceled' %}
+                        <span class="booking-status-badge text-white" style="font-weight: 800; background-color: #ef4444 !important; border: 1px solid rgba(239, 68, 68, 0.4);"><i class="fas fa-times-circle mr-1"></i>Cancelled</span>
                         {% else %}
-                        <span class="booking-status-badge bg-warning text-dark" style="font-weight: 800;"><i class="fas fa-spinner fa-spin mr-1"></i>Pending Approval</span>
+                        <span class="booking-status-badge text-white" style="font-weight: 800; background-color: #f59e0b !important; border: 1px solid rgba(245, 158, 11, 0.4);"><i class="fas fa-clock mr-1"></i>Pending</span>
                         {% endif %}
                     </div>
                     <div class="p-4">

@@ -4,11 +4,12 @@ from .models import Contact
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Ride, CarpoolRide, CarBooking, TaxiRideRequest, CarpoolOffer, CarpoolSeatBooking, UserProfile
+from .models import Ride, CarpoolRide, CarBooking, TaxiRideRequest, CarpoolOffer, CarpoolSeatBooking, UserProfile, RemovedCar
 from datetime import datetime
 import random
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 
 
 
@@ -290,6 +291,11 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            if profile.portal_role != 'user':
+                return render(request, 'login.html', {
+                    'error': f'Invalid credentials. This account is registered for the {profile.portal_role.upper()} portal.'
+                })
             login(request, user)
             return redirect('home')
         else:
@@ -322,6 +328,10 @@ def register(request):
             password=password
         )
         user.save()
+
+        # Create user profile with 'user' role
+        profile = UserProfile.objects.create(user=user, portal_role='user')
+        profile.save()
 
         messages.success(request, "Account created successfully!")
         return redirect('login')
@@ -423,6 +433,9 @@ def detail(request):
         return redirect('/?show_auth_warning=1')
     car_name = request.GET.get('name', 'Mercedes Benz S-Class')
     car_price = request.GET.get('price', '15000')
+    if car_price:
+        import re
+        car_price = re.sub(r'[^\d.]', '', car_price)
     car_image = request.GET.get('image', 'car-rent-1.png')
     car_year = request.GET.get('year', '2023')
     car_trans = request.GET.get('trans', 'AUTO')
@@ -458,7 +471,10 @@ def booking(request):
         children = int(request.POST.get('children', 0))
         special_request = request.POST.get('special_request', '')
         car_name = request.POST.get('car_name', 'Mercedes Benz S-Class')
-        car_price = float(request.POST.get('car_price', 15000.0))
+        car_price_raw = request.POST.get('car_price', '15000.0')
+        import re
+        cleaned_price = re.sub(r'[^\d.]', '', str(car_price_raw))
+        car_price = float(cleaned_price) if cleaned_price else 15000.0
         car_image = request.POST.get('car_image', 'car-rent-1.png')
         
         addon_child_seat = request.POST.get('addon_child_seat') == 'on'
@@ -545,6 +561,9 @@ def booking(request):
     # GET request
     car_name = request.GET.get('name', 'Mercedes Benz S-Class')
     car_price = request.GET.get('price', '15000')
+    if car_price:
+        import re
+        car_price = re.sub(r'[^\d.]', '', car_price)
     car_image = request.GET.get('image', 'car-rent-1.png')
     
     context = {
@@ -625,6 +644,13 @@ def portal_login_view(request, portal_type):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            if profile.portal_role != portal_type:
+                return render(request, 'portal_login.html', {
+                    'portal_type': portal_type,
+                    'error': f'Invalid credentials. This account is registered for the {profile.portal_role.upper()} portal, not {portal_type.upper()}.'
+                })
+            
             login(request, user)
             request.session['portal_role'] = portal_type
             if portal_type == 'rental':
@@ -642,6 +668,56 @@ def portal_login_view(request, portal_type):
             })
 
     return render(request, 'portal_login.html', {'portal_type': portal_type})
+
+
+def portal_register_view(request, portal_type):
+    # portal_type can be: 'user', 'rental', 'rider', 'carpool'
+    if request.method == "POST":
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        
+        phone = request.POST.get('phone', '').strip()
+        location = request.POST.get('location', '').strip()
+        extra_detail = request.POST.get('extra_detail', '').strip()
+
+        if password != confirm_password:
+            return render(request, 'portal_register.html', {
+                'portal_type': portal_type,
+                'error': 'Passwords do not match.',
+                'form_data': request.POST
+            })
+
+        if User.objects.filter(username=username).exists():
+            return render(request, 'portal_register.html', {
+                'portal_type': portal_type,
+                'error': 'Username already exists.',
+                'form_data': request.POST
+            })
+
+        # Create user
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
+        user.save()
+
+        # Create user profile
+        user_profile = UserProfile.objects.create(
+            user=user,
+            phone=phone,
+            home_address=location,
+            work_address=extra_detail,
+            portal_role=portal_type
+        )
+        user_profile.save()
+
+        messages.success(request, f"Registration successful for {portal_type.title()} Portal! You can now log in.")
+        return redirect('portal_login', portal_type=portal_type)
+
+    return render(request, 'portal_register.html', {'portal_type': portal_type})
 
 
 
@@ -666,9 +742,54 @@ def portal_rental_view(request):
     bookings = CarBooking.objects.all().order_by('-created_at')
 
     if request.method == "POST":
-        booking_id = request.POST.get('booking_id')
         action = request.POST.get('action')
-        if booking_id and action:
+        booking_id = request.POST.get('booking_id')
+        if action == 'add_vehicle':
+            v_name = request.POST.get('vehicle_name')
+            v_type = request.POST.get('vehicle_type', 'sedan')
+            try:
+                v_price = float(request.POST.get('vehicle_price', 10000))
+            except (ValueError, TypeError):
+                v_price = 10000.0
+            v_year = request.POST.get('vehicle_year', '2024')
+            v_trans = request.POST.get('vehicle_trans', 'AUTO')
+            v_fuel = request.POST.get('vehicle_fuel', 'Petrol')
+            try:
+                v_seats = int(request.POST.get('vehicle_seats', 5))
+            except (ValueError, TypeError):
+                v_seats = 5
+            v_mileage = request.POST.get('vehicle_mileage', '12 kmpl')
+            
+            v_image = 'car-rent-1.png'
+            if request.FILES.get('vehicle_image'):
+                img_file = request.FILES['vehicle_image']
+                import os
+                from django.conf import settings
+                media_dir = os.path.join(settings.MEDIA_ROOT, 'custom_cars')
+                os.makedirs(media_dir, exist_ok=True)
+                save_path = os.path.join(media_dir, img_file.name)
+                with open(save_path, 'wb+') as destination:
+                    for chunk in img_file.chunks():
+                        destination.write(chunk)
+                v_image = f'/media/custom_cars/{img_file.name}'
+
+            new_car = {
+                'id': len(SHOWROOM_CARS) + random.randint(100, 999),
+                'name': v_name,
+                'price': v_price,
+                'image': v_image,
+                'year': v_year,
+                'trans': v_trans,
+                'mileage': v_mileage,
+                'type': v_type,
+                'seats': v_seats,
+                'fuel': v_fuel
+            }
+            SHOWROOM_CARS.append(new_car)
+            messages.success(request, f"New vehicle '{v_name}' successfully added to rental fleet inventory!")
+            return redirect('portal_rental_cars')
+
+        elif booking_id and action:
             try:
                 booking_obj = CarBooking.objects.get(id=booking_id)
                 if action == 'approve':
@@ -712,9 +833,54 @@ def portal_rental_bookings_view(request):
     bookings = CarBooking.objects.all().order_by('-created_at')
 
     if request.method == "POST":
-        booking_id = request.POST.get('booking_id')
         action = request.POST.get('action')
-        if booking_id and action:
+        booking_id = request.POST.get('booking_id')
+        if action == 'add_vehicle':
+            v_name = request.POST.get('vehicle_name')
+            v_type = request.POST.get('vehicle_type', 'sedan')
+            try:
+                v_price = float(request.POST.get('vehicle_price', 10000))
+            except (ValueError, TypeError):
+                v_price = 10000.0
+            v_year = request.POST.get('vehicle_year', '2024')
+            v_trans = request.POST.get('vehicle_trans', 'AUTO')
+            v_fuel = request.POST.get('vehicle_fuel', 'Petrol')
+            try:
+                v_seats = int(request.POST.get('vehicle_seats', 5))
+            except (ValueError, TypeError):
+                v_seats = 5
+            v_mileage = request.POST.get('vehicle_mileage', '12 kmpl')
+            
+            v_image = 'car-rent-1.png'
+            if request.FILES.get('vehicle_image'):
+                img_file = request.FILES['vehicle_image']
+                import os
+                from django.conf import settings
+                media_dir = os.path.join(settings.MEDIA_ROOT, 'custom_cars')
+                os.makedirs(media_dir, exist_ok=True)
+                save_path = os.path.join(media_dir, img_file.name)
+                with open(save_path, 'wb+') as destination:
+                    for chunk in img_file.chunks():
+                        destination.write(chunk)
+                v_image = f'/media/custom_cars/{img_file.name}'
+
+            new_car = {
+                'id': len(SHOWROOM_CARS) + random.randint(100, 999),
+                'name': v_name,
+                'price': v_price,
+                'image': v_image,
+                'year': v_year,
+                'trans': v_trans,
+                'mileage': v_mileage,
+                'type': v_type,
+                'seats': v_seats,
+                'fuel': v_fuel
+            }
+            SHOWROOM_CARS.append(new_car)
+            messages.success(request, f"New vehicle '{v_name}' successfully added to rental fleet inventory!")
+            return redirect('portal_rental_cars')
+
+        elif booking_id and action:
             try:
                 booking_obj = CarBooking.objects.get(id=booking_id)
                 if action == 'approve':
@@ -725,6 +891,10 @@ def portal_rental_bookings_view(request):
                     booking_obj.status = 'Cancelled'
                     booking_obj.save()
                     messages.warning(request, f"Car booking RS-{booking_id} cancelled.")
+                elif action == 'complete':
+                    booking_obj.status = 'Completed'
+                    booking_obj.save()
+                    messages.success(request, f"Car booking RS-{booking_id} marked as completed and moved to Rides Completed page.")
             except CarBooking.DoesNotExist:
                 pass
             return redirect('portal_rental_bookings')
@@ -741,6 +911,72 @@ def portal_rental_cars_view(request):
     import datetime
     today = datetime.date.today()
     CarBooking.objects.filter(status='Approved', drop_date__lt=today).update(status='Completed')
+
+    # --- Handle ADD vehicle ---
+    if request.method == "POST" and request.POST.get('action') == 'add_vehicle':
+        v_name = request.POST.get('vehicle_name')
+        v_type = request.POST.get('vehicle_type', 'sedan')
+        try:
+            v_price = float(request.POST.get('vehicle_price', 10000))
+        except (ValueError, TypeError):
+            v_price = 10000.0
+        v_year = request.POST.get('vehicle_year', '2024')
+        v_trans = request.POST.get('vehicle_trans', 'AUTO')
+        v_fuel = request.POST.get('vehicle_fuel', 'Petrol')
+        try:
+            v_seats = int(request.POST.get('vehicle_seats', 5))
+        except (ValueError, TypeError):
+            v_seats = 5
+        v_mileage = request.POST.get('vehicle_mileage', '12 kmpl')
+
+        v_image = 'car-rent-1.png'
+        if request.FILES.get('vehicle_image'):
+            img_file = request.FILES['vehicle_image']
+            import os
+            from django.conf import settings
+            media_dir = os.path.join(settings.MEDIA_ROOT, 'custom_cars')
+            os.makedirs(media_dir, exist_ok=True)
+            save_path = os.path.join(media_dir, img_file.name)
+            with open(save_path, 'wb+') as destination:
+                for chunk in img_file.chunks():
+                    destination.write(chunk)
+            v_image = f'/media/custom_cars/{img_file.name}'
+
+        new_car = {
+            'id': len(SHOWROOM_CARS) + random.randint(100, 999),
+            'name': v_name,
+            'price': v_price,
+            'image': v_image,
+            'year': v_year,
+            'trans': v_trans,
+            'mileage': v_mileage,
+            'type': v_type,
+            'seats': v_seats,
+            'fuel': v_fuel
+        }
+        SHOWROOM_CARS.append(new_car)
+        # Also un-remove it if it was previously removed
+        RemovedCar.objects.filter(car_name=v_name).delete()
+        messages.success(request, f"New vehicle '{v_name}' successfully added to rental fleet inventory!")
+        return redirect('portal_rental_cars')
+
+    # --- Handle REMOVE vehicle ---
+    if request.method == "POST" and request.POST.get('action') == 'remove_vehicle':
+        car_name = request.POST.get('car_name', '').strip()
+        reason = request.POST.get('remove_reason', 'out_of_service')
+        if car_name:
+            RemovedCar.objects.get_or_create(
+                car_name=car_name,
+                defaults={'reason': reason, 'removed_by': request.user}
+            )
+            # Update reason if already exists
+            RemovedCar.objects.filter(car_name=car_name).update(reason=reason)
+            messages.warning(request, f"Vehicle '{car_name}' has been removed from the active fleet ({dict(RemovedCar.REASON_CHOICES).get(reason, reason)}).")
+        return redirect('portal_rental_cars')
+
+    # --- Get removed car names to exclude from catalog ---
+    removed_car_names = set(RemovedCar.objects.values_list('car_name', flat=True))
+    removed_cars_list = list(RemovedCar.objects.select_related('removed_by').order_by('-removed_at'))
 
     # Get active approved bookings
     active_bookings = CarBooking.objects.filter(status='Approved').order_by('-created_at')
@@ -759,12 +995,14 @@ def portal_rental_cars_view(request):
                 'is_in_use': booking.pickup_date <= today
             }
 
-    # Enhance SHOWROOM_CARS with booking status
+    # Enhance SHOWROOM_CARS with booking status — exclude removed cars
     enhanced_cars = []
     currently_booked_cars = []
     currently_used_cars = []
 
     for car in SHOWROOM_CARS:
+        if car['name'] in removed_car_names:
+            continue  # skip removed vehicles
         car_copy = car.copy()
         booking_info = bookings_lookup.get(car['name'])
         if booking_info:
@@ -783,15 +1021,17 @@ def portal_rental_cars_view(request):
         'Sports': [c for c in enhanced_cars if c['type'] == 'sports']
     }
 
+    active_fleet = len(enhanced_cars)
     context = {
         'cars': enhanced_cars,
         'categories': categories,
         'currently_booked': currently_booked_cars,
         'currently_used': currently_used_cars,
-        'total_fleet': len(SHOWROOM_CARS),
+        'total_fleet': active_fleet,
         'total_booked': len(currently_booked_cars),
         'total_used': len(currently_used_cars),
-        'total_available': len(SHOWROOM_CARS) - len(currently_booked_cars) - len(currently_used_cars)
+        'total_available': active_fleet - len(currently_booked_cars) - len(currently_used_cars),
+        'removed_cars': removed_cars_list,
     }
 
     return render(request, 'portal_rental_cars.html', context)
@@ -800,6 +1040,7 @@ def portal_rental_cars_view(request):
 
 @login_required
 def portal_rental_remaining_view(request):
+
     if request.session.get('portal_role') != 'rental':
         request.session['portal_role'] = 'rental'
 
@@ -807,26 +1048,332 @@ def portal_rental_remaining_view(request):
     today = datetime.date.today()
     CarBooking.objects.filter(status='Approved', drop_date__lt=today).update(status='Completed')
 
-    rented_cars_names = CarBooking.objects.filter(status='Approved').values_list('car_name', flat=True)
-    
-    available_cars = []
-    rented_cars = []
+    # Get all approved bookings (these are "rented out" vehicles)
+    approved_bookings = CarBooking.objects.filter(status='Approved').order_by('-created_at')
+    rented_car_names = set(approved_bookings.values_list('car_name', flat=True))
 
-    for car in SHOWROOM_CARS:
-        if car['name'] in rented_cars_names:
-            active_b = CarBooking.objects.filter(status='Approved', car_name=car['name']).first()
-            car_copy = car.copy()
-            car_copy['client'] = f"{active_b.first_name} {active_b.last_name}" if active_b else "N/A"
-            car_copy['pickup_date'] = active_b.pickup_date if active_b else "N/A"
-            rented_cars.append(car_copy)
-        else:
-            available_cars.append(car)
+    # Build rented_cars list from actual DB bookings (includes all user-booked vehicles)
+    rented_cars = []
+    for booking in approved_bookings:
+        # Look for matching car in SHOWROOM_CARS for image/details
+        car_details = next((c for c in SHOWROOM_CARS if c['name'] == booking.car_name), None)
+        rented_cars.append({
+            'name': booking.car_name,
+            'image': car_details['image'] if car_details else booking.car_image,
+            'price': car_details['price'] if car_details else booking.car_price,
+            'type': car_details.get('type', 'sedan') if car_details else 'sedan',
+            'trans': car_details.get('trans', 'AUTO') if car_details else 'AUTO',
+            'client': f"{booking.first_name} {booking.last_name}",
+            'mobile': booking.mobile_number,
+            'pickup_date': booking.pickup_date,
+            'drop_date': booking.drop_date,
+            'total_price': booking.total_price,
+            'booking_id': booking.id,
+        })
+
+    # Available cars = those in SHOWROOM_CARS NOT currently booked
+    available_cars = [car for car in SHOWROOM_CARS if car['name'] not in rented_car_names]
 
     context = {
         'available_cars': available_cars,
         'rented_cars': rented_cars,
     }
     return render(request, 'portal_rental_remaining.html', context)
+
+
+@login_required
+def portal_rental_profile_view(request):
+    if request.session.get('portal_role') != 'rental':
+        request.session['portal_role'] = 'rental'
+
+    import datetime
+    today = datetime.date.today()
+    CarBooking.objects.filter(status='Approved', drop_date__lt=today).update(status='Completed')
+
+    # Get or create UserProfile for the admin
+    user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        # Save profile image if uploaded
+        if 'profile_image' in request.FILES:
+            user_profile.profile_image = request.FILES['profile_image']
+
+        # Save phone and location from form
+        phone = request.POST.get('phone', '').strip()
+        location = request.POST.get('location', '').strip()
+        if phone:
+            user_profile.phone = phone
+        if location:
+            user_profile.home_address = location
+
+        # Save first/last name
+        full_name = request.POST.get('full_name', '').strip()
+        if full_name:
+            parts = full_name.split(' ', 1)
+            request.user.first_name = parts[0]
+            request.user.last_name = parts[1] if len(parts) > 1 else ''
+            request.user.save()
+
+        # Save email
+        email = request.POST.get('email', '').strip()
+        if email:
+            request.user.email = email
+            request.user.save()
+
+        user_profile.save()
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('portal_rental_profile')
+
+    total_bookings = CarBooking.objects.count()
+    approved_bookings = CarBooking.objects.filter(status='Approved').count()
+    completed_bookings = CarBooking.objects.filter(status='Completed').count()
+    pending_bookings = CarBooking.objects.filter(status='Pending').count()
+    total_fleet = len(SHOWROOM_CARS)
+    rented_count = CarBooking.objects.filter(status='Approved').values('car_name').distinct().count()
+    available_count = max(0, total_fleet - rented_count)
+    total_revenue = sum(b.total_price for b in CarBooking.objects.filter(status__in=['Approved', 'Completed']))
+
+    context = {
+        'user': request.user,
+        'user_profile': user_profile,
+        'today': today,
+        'total_bookings': total_bookings,
+        'approved_bookings': approved_bookings,
+        'completed_bookings': completed_bookings,
+        'pending_bookings': pending_bookings,
+        'total_fleet': total_fleet,
+        'rented_count': rented_count,
+        'available_count': available_count,
+        'total_revenue': total_revenue,
+    }
+    return render(request, 'portal_rental_profile.html', context)
+
+
+@login_required
+def portal_rider_profile_view(request):
+    if request.session.get('portal_role') != 'rider':
+        request.session['portal_role'] = 'rider'
+        
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile:
+        user_profile = UserProfile.objects.create(user=request.user)
+        
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'save_image':
+            cropped_data = request.POST.get('cropped_image_data')
+            if cropped_data and ';base64,' in cropped_data:
+                import base64
+                from django.core.files.base import ContentFile
+                try:
+                    format, imgstr = cropped_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    data = ContentFile(base64.b64decode(imgstr), name=f"user_{request.user.id}_profile.{ext}")
+                    user_profile.image = data
+                    user_profile.save()
+                    messages.success(request, "Rider profile image updated successfully!")
+                except Exception as e:
+                    messages.error(request, f"Error cropping/saving image: {str(e)}")
+            elif 'profile_image' in request.FILES:
+                user_profile.image = request.FILES['profile_image']
+                user_profile.save()
+                messages.success(request, "Rider profile image uploaded successfully!")
+            return redirect('portal_rider_profile')
+            
+        elif action == 'save_details':
+            full_name = request.POST.get('full_name')
+            phone = request.POST.get('phone')
+            email = request.POST.get('email')
+            location = request.POST.get('location')
+            
+            if full_name and ' ' in full_name:
+                parts = full_name.split(' ', 1)
+                request.user.first_name = parts[0]
+                request.user.last_name = parts[1]
+            elif full_name:
+                request.user.first_name = full_name
+                request.user.last_name = ""
+                
+            if email:
+                request.user.email = email
+            request.user.save()
+            
+            if phone:
+                user_profile.mobile_number = phone
+            if location:
+                user_profile.location = location
+            user_profile.save()
+            
+            messages.success(request, "Rider account details updated successfully!")
+            return redirect('portal_rider_profile')
+            
+        elif action == 'save_security':
+            current_pass = request.POST.get('current_password')
+            new_pass = request.POST.get('new_password')
+            confirm_pass = request.POST.get('confirm_password')
+            
+            if current_pass and new_pass and confirm_pass:
+                if new_pass != confirm_pass:
+                    messages.error(request, "New passwords do not match!")
+                elif not request.user.check_password(current_pass):
+                    messages.error(request, "Incorrect current password!")
+                else:
+                    request.user.set_password(new_pass)
+                    request.user.save()
+                    from django.contrib.auth import update_session_auth_hash
+                    update_session_auth_hash(request, request.user)
+                    messages.success(request, "Password updated successfully!")
+            else:
+                messages.error(request, "All password fields are required!")
+            return redirect('portal_rider_profile')
+            
+        elif action == 'save_advanced':
+            license_number = request.POST.get('license_number')
+            if license_number:
+                user_profile.work_address = license_number
+                user_profile.save()
+            messages.success(request, "Advanced rider settings updated successfully!")
+            return redirect('portal_rider_profile')
+            
+        elif action == 'reset_avatar':
+            user_profile.profile_image = None
+            user_profile.save()
+            messages.success(request, "Profile avatar reset successfully!")
+            return redirect('portal_rider_profile')
+            
+        elif action == 'reset_fields':
+            user_profile.phone = ""
+            user_profile.home_address = ""
+            user_profile.work_address = ""
+            user_profile.save()
+            messages.success(request, "Rider profile fields reset successfully!")
+            return redirect('portal_rider_profile')
+            
+    past_trips = TaxiRideRequest.objects.filter(driver_name=request.user.username, status='Completed')
+    total_trips = past_trips.count()
+    total_earnings = sum(t.price for t in past_trips)
+    
+    context = {
+        'user': request.user,
+        'user_profile': user_profile,
+        'total_trips': total_trips,
+        'total_earnings': total_earnings,
+    }
+    return render(request, 'portal_rider_profile.html', context)
+
+
+@login_required
+def portal_carpool_profile_view(request):
+    if request.session.get('portal_role') != 'carpool':
+        request.session['portal_role'] = 'carpool'
+        
+    user_profile = UserProfile.objects.filter(user=request.user).first()
+    if not user_profile:
+        user_profile = UserProfile.objects.create(user=request.user)
+        
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'save_image':
+            cropped_data = request.POST.get('cropped_image_data')
+            if cropped_data and ';base64,' in cropped_data:
+                import base64
+                from django.core.files.base import ContentFile
+                try:
+                    format, imgstr = cropped_data.split(';base64,')
+                    ext = format.split('/')[-1]
+                    data = ContentFile(base64.b64decode(imgstr), name=f"user_{request.user.id}_profile.{ext}")
+                    user_profile.image = data
+                    user_profile.save()
+                    messages.success(request, "Pooling host profile image updated successfully!")
+                except Exception as e:
+                    messages.error(request, f"Error cropping/saving image: {str(e)}")
+            elif 'profile_image' in request.FILES:
+                user_profile.image = request.FILES['profile_image']
+                user_profile.save()
+                messages.success(request, "Pooling host profile image uploaded successfully!")
+            return redirect('portal_carpool_profile')
+            
+        elif action == 'save_details':
+            full_name = request.POST.get('full_name')
+            phone = request.POST.get('phone')
+            email = request.POST.get('email')
+            location = request.POST.get('location')
+            
+            if full_name and ' ' in full_name:
+                parts = full_name.split(' ', 1)
+                request.user.first_name = parts[0]
+                request.user.last_name = parts[1]
+            elif full_name:
+                request.user.first_name = full_name
+                request.user.last_name = ""
+                
+            if email:
+                request.user.email = email
+            request.user.save()
+            
+            if phone:
+                user_profile.mobile_number = phone
+            if location:
+                user_profile.location = location
+            user_profile.save()
+            
+            messages.success(request, "Pooling host personal details updated successfully!")
+            return redirect('portal_carpool_profile')
+            
+        elif action == 'save_security':
+            current_pass = request.POST.get('current_password')
+            new_pass = request.POST.get('new_password')
+            confirm_pass = request.POST.get('confirm_password')
+            
+            if current_pass and new_pass and confirm_pass:
+                if new_pass != confirm_pass:
+                    messages.error(request, "New passwords do not match!")
+                elif not request.user.check_password(current_pass):
+                    messages.error(request, "Incorrect current password!")
+                else:
+                    request.user.set_password(new_pass)
+                    request.user.save()
+                    from django.contrib.auth import update_session_auth_hash
+                    update_session_auth_hash(request, request.user)
+                    messages.success(request, "Password updated successfully!")
+            else:
+                messages.error(request, "All password fields are required!")
+            return redirect('portal_carpool_profile')
+            
+        elif action == 'save_advanced':
+            license_number = request.POST.get('license_number')
+            if license_number:
+                user_profile.work_address = license_number
+                user_profile.save()
+            messages.success(request, "Advanced host settings updated successfully!")
+            return redirect('portal_carpool_profile')
+            
+        elif action == 'reset_avatar':
+            user_profile.profile_image = None
+            user_profile.save()
+            messages.success(request, "Profile avatar reset successfully!")
+            return redirect('portal_carpool_profile')
+            
+        elif action == 'reset_fields':
+            user_profile.phone = ""
+            user_profile.home_address = ""
+            user_profile.work_address = ""
+            user_profile.save()
+            messages.success(request, "Profile settings and fields reset successfully!")
+            return redirect('portal_carpool_profile')
+            
+    user_offers = CarpoolOffer.objects.filter(host=request.user)
+    total_routes = user_offers.count()
+    
+    context = {
+        'user': request.user,
+        'user_profile': user_profile,
+        'total_routes': total_routes,
+    }
+    return render(request, 'portal_carpool_profile.html', context)
+
 
 
 
@@ -909,12 +1456,14 @@ def portal_rider_view(request):
 
 @login_required
 def portal_rider_active_view(request):
+    from django.db.models import Q
     if request.session.get('portal_role') != 'rider':
         request.session['portal_role'] = 'rider'
 
     active_ride = TaxiRideRequest.objects.filter(
-        driver_name=request.user.username,
-        status__in=['Accepted', 'Arrived', 'In_Progress']
+        driver_name=request.user.username
+    ).filter(
+        Q(status__in=['Accepted', 'Arrived', 'In_Progress']) | Q(status='Completed', cancel_reason='payment_pending')
     ).first()
 
     return render(request, 'portal_rider_active.html', {'active_ride': active_ride})
@@ -1024,6 +1573,7 @@ def portal_carpool_publish_view(request):
         time_str = request.POST.get('time')
         seats = int(request.POST.get('seats', 4))
         vehicle_type = request.POST.get('vehicle_type', 'car')
+        price = int(request.POST.get('price', 0))
 
         if vehicle_name and start and dest and date_str:
             CarpoolOffer.objects.create(
@@ -1036,7 +1586,8 @@ def portal_carpool_publish_view(request):
                 time=time_str if time_str else "09:00",
                 total_seats=seats,
                 available_seats=seats,
-                vehicle_type=vehicle_type
+                vehicle_type=vehicle_type,
+                price=price
             )
             messages.success(request, f"Successfully published travel plan from {start} to {dest}!")
             return redirect('portal_carpool_itineraries')
@@ -1050,7 +1601,7 @@ def portal_carpool_itineraries_view(request):
     if request.session.get('portal_role') != 'carpool':
         request.session['portal_role'] = 'carpool'
 
-    offers = CarpoolOffer.objects.filter(host=request.user).order_by('-created_at')
+    offers = CarpoolOffer.objects.filter(host=request.user).exclude(status__in=['Completed', 'Cancelled']).order_by('-created_at')
     return render(request, 'portal_carpool_itineraries.html', {'offers': offers})
 
 
@@ -1101,7 +1652,7 @@ def api_request_ride(request):
         pickup = request.POST.get('pickup')
         drop = request.POST.get('drop')
         distance = float(request.POST.get('distance', 5.0))
-        price = distance * 15 # Price calculation
+        price = round(distance * 15, 2) # Price calculation rounded to 2 decimal places
         
         # Generate 4-digit PIN
         pin = str(random.randint(1000, 9999))
@@ -1154,7 +1705,8 @@ def api_check_ride_status(request, ride_id):
             'pin': ride.pin,
             'pickup': ride.pickup,
             'drop': ride.drop,
-            'price': ride.price
+            'price': ride.price,
+            'payment_status': ride.cancel_reason or 'payment_pending'
         })
     except TaxiRideRequest.DoesNotExist:
         return JsonResponse({'success': False, 'message': 'Ride request not found.'})
@@ -1199,38 +1751,91 @@ def api_accept_ride(request, ride_id):
 
 @login_required
 def api_update_ride_status(request, ride_id):
+    from django.contrib import messages
+    from django.shortcuts import redirect
+
     if request.session.get('portal_role') != 'rider':
         request.session['portal_role'] = 'rider'
 
     try:
         ride = TaxiRideRequest.objects.get(id=ride_id)
         if ride.driver_name != request.user.username:
-            return JsonResponse({'success': False, 'message': 'Unauthorized action.'})
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                return JsonResponse({'success': False, 'message': 'Unauthorized action.'})
+            else:
+                messages.error(request, 'Unauthorized action.')
+                return redirect('portal_rider_active')
 
-        action = request.POST.get('action')
-        if action == 'arrive':
+        # Accept action or status in any case format
+        action = request.POST.get('action') or request.POST.get('status')
+        if action:
+            action = action.lower()
+
+        if action in ['arrive', 'arrived']:
             ride.status = 'Arrived'
             ride.save()
-            return JsonResponse({'success': True, 'status': ride.status})
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                return JsonResponse({'success': True, 'status': ride.status})
+            else:
+                messages.success(request, 'You have arrived at the pickup location.')
+                return redirect('portal_rider_active')
         
-        elif action == 'start':
-            # Verify PIN
+        elif action in ['start', 'in_progress']:
             entered_pin = request.POST.get('pin')
+            if not entered_pin:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                    return JsonResponse({'success': False, 'message': 'PIN is required to start the ride.'})
+                else:
+                    messages.error(request, 'PIN is required to start the ride.')
+                    return redirect('portal_rider_active')
+            
             if entered_pin == ride.pin:
                 ride.status = 'In_Progress'
                 ride.save()
-                return JsonResponse({'success': True, 'status': ride.status})
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                    return JsonResponse({'success': True, 'status': ride.status})
+                else:
+                    messages.success(request, 'Ride started successfully! Safe travels.')
+                    return redirect('portal_rider_active')
             else:
-                return JsonResponse({'success': False, 'message': 'Invalid PIN! Please ask the user for the correct PIN.'})
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                    return JsonResponse({'success': False, 'message': 'Invalid PIN! Please check with the passenger.'})
+                else:
+                    messages.error(request, 'Invalid PIN! Please ask the passenger for their correct 4-digit PIN.')
+                    return redirect('portal_rider_active')
         
-        elif action == 'complete':
+        elif action in ['complete', 'completed']:
             ride.status = 'Completed'
+            ride.cancel_reason = 'payment_pending'
             ride.save()
-            return JsonResponse({'success': True, 'status': ride.status})
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                return JsonResponse({'success': True, 'status': ride.status, 'payment_status': ride.cancel_reason})
+            else:
+                messages.success(request, 'Destination reached! Please select payment method.')
+                return redirect('portal_rider_active')
+        
+        elif action in ['confirm_payment', 'payment_completed']:
+            ride.status = 'Completed'
+            ride.cancel_reason = 'payment_completed'
+            ride.save()
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+                return JsonResponse({'success': True, 'status': ride.status, 'payment_status': ride.cancel_reason})
+            else:
+                messages.success(request, 'Payment confirmed! Ride completed successfully.')
+                return redirect('portal_rider_active')
 
-        return JsonResponse({'success': False, 'message': 'Invalid action.'})
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+            return JsonResponse({'success': False, 'message': 'Invalid action.'})
+        else:
+            messages.error(request, 'Invalid status action requested.')
+            return redirect('portal_rider_active')
+
     except TaxiRideRequest.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Ride not found.'})
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.POST.get('ajax') == 'true':
+            return JsonResponse({'success': False, 'message': 'Ride not found.'})
+        else:
+            messages.error(request, 'Ride not found.')
+            return redirect('portal_rider_active')
 
 
 @login_required
@@ -1462,3 +2067,185 @@ def passenger_settings_view(request):
         'last_login': last_login,
     }
     return render(request, 'passenger_settings.html', context)
+
+
+@login_required
+def portal_carpool_completed_view(request):
+    if request.session.get('portal_role') != 'carpool':
+        request.session['portal_role'] = 'carpool'
+
+    import datetime
+    today = datetime.date.today()
+
+    # Completed hosted offers: date < today or status in ['Completed', 'Cancelled']
+    completed_offers = CarpoolOffer.objects.filter(
+        host=request.user
+    ).filter(
+        Q(date__lt=today) | Q(status__in=['Completed', 'Cancelled'])
+    ).order_by('-date', '-time')
+
+    # Incompleted / Active / Upcoming hosted offers: date >= today and status not in ['Completed', 'Cancelled']
+    upcoming_offers = CarpoolOffer.objects.filter(
+        host=request.user
+    ).exclude(
+        status__in=['Completed', 'Cancelled']
+    ).filter(
+        date__gte=today
+    ).order_by('date', 'time')
+
+    # Totals/stats for the user:
+    total_hosted = CarpoolOffer.objects.filter(host=request.user).count()
+    total_completed = completed_offers.count()
+    total_upcoming = upcoming_offers.count()
+    
+    total_passengers = CarpoolSeatBooking.objects.filter(
+        carpool__host=request.user,
+        status='Approved'
+    ).count()
+
+    context = {
+        'completed_offers': completed_offers,
+        'upcoming_offers': upcoming_offers,
+        'total_hosted': total_hosted,
+        'total_completed': total_completed,
+        'total_upcoming': total_upcoming,
+        'total_passengers': total_passengers,
+        'today': today,
+    }
+    return render(request, 'portal_carpool_completed.html', context)
+
+
+@login_required
+def portal_carpool_active_view(request):
+    if request.session.get('portal_role') != 'carpool':
+        request.session['portal_role'] = 'carpool'
+
+    import datetime
+    today = datetime.date.today()
+
+    # Find active ride (status='In_Progress') or next upcoming ride today/future
+    active_pool = CarpoolOffer.objects.filter(
+        host=request.user,
+        status='In_Progress'
+    ).first()
+
+    if not active_pool:
+        # Get next upcoming pool
+        active_pool = CarpoolOffer.objects.filter(
+            host=request.user,
+            status='Upcoming',
+            date__gte=today
+        ).order_by('date', 'time').first()
+
+    bookings = []
+    if active_pool:
+        bookings = CarpoolSeatBooking.objects.filter(
+            carpool=active_pool,
+            status='Approved'
+        )
+
+    context = {
+        'active_pool': active_pool,
+        'bookings': bookings,
+    }
+    return render(request, 'portal_carpool_active.html', context)
+
+
+@login_required
+def portal_carpool_chats_view(request):
+    if request.session.get('portal_role') != 'carpool':
+        request.session['portal_role'] = 'carpool'
+
+    # Get bookings on user's carpools to find chat partners
+    bookings = CarpoolSeatBooking.objects.filter(
+        carpool__host=request.user,
+        status='Approved'
+    ).select_related('user', 'carpool').order_by('-booked_at')
+
+    # Group by passenger to show unique chat users
+    unique_passengers = {}
+    for b in bookings:
+        p_username = b.user.username
+        if p_username not in unique_passengers:
+            unique_passengers[p_username] = {
+                'user': b.user,
+                'last_booking': b
+            }
+
+    context = {
+        'chat_partners': unique_passengers.values(),
+    }
+    return render(request, 'portal_carpool_chats.html', context)
+
+
+@login_required
+def portal_carpool_analytics_view(request):
+    if request.session.get('portal_role') != 'carpool':
+        request.session['portal_role'] = 'carpool'
+
+    offers = CarpoolOffer.objects.filter(host=request.user)
+    total_rides = offers.count()
+    completed_rides = offers.filter(status='Completed').count()
+    
+    total_passengers = CarpoolSeatBooking.objects.filter(
+        carpool__host=request.user,
+        status='Approved'
+    ).count()
+
+    co2_saved = round(total_passengers * 15.0 * 0.45, 1) # in kg
+    fuel_saved = round(total_passengers * 15.0 / 12.0, 1) # in gallons, assuming 12km/liter
+    money_earned = total_passengers * 450.0 # assume flat 450 per seat split
+
+    # Mock reviews/ratings
+    avg_rating = 4.8 if total_rides > 0 else 5.0
+
+    context = {
+        'total_rides': total_rides,
+        'completed_rides': completed_rides,
+        'total_passengers': total_passengers,
+        'co2_saved': co2_saved,
+        'fuel_saved': fuel_saved,
+        'money_earned': money_earned,
+        'avg_rating': avg_rating,
+    }
+    return render(request, 'portal_carpool_analytics.html', context)
+
+
+@login_required
+def api_update_carpool_status(request, carpool_id):
+    if request.method == "POST":
+        try:
+            carpool = CarpoolOffer.objects.get(id=carpool_id, host=request.user)
+            action = request.POST.get('action')
+            if action == 'start':
+                carpool.status = 'In_Progress'
+                carpool.save()
+                return JsonResponse({'success': True, 'status': carpool.status, 'message': 'Ride is now active! Happy sharing.'})
+            elif action == 'complete':
+                carpool.status = 'Completed'
+                carpool.save()
+                return JsonResponse({'success': True, 'status': carpool.status, 'message': 'Ride completed successfully. Thank you!'})
+            elif action == 'cancel':
+                carpool.status = 'Cancelled'
+                carpool.save()
+                return JsonResponse({'success': True, 'status': carpool.status, 'message': 'Ride cancelled.'})
+            return JsonResponse({'success': False, 'message': 'Invalid action.'})
+        except CarpoolOffer.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Carpool not found.'})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})
+
+
+@login_required
+def api_bulk_remove_carpools(request):
+    if request.method == "POST":
+        import json
+        try:
+            data = json.loads(request.body)
+            ids = data.get('ids', [])
+            if ids:
+                CarpoolOffer.objects.filter(id__in=ids, host=request.user).update(status='Cancelled')
+                return JsonResponse({'success': True, 'message': 'Selected plans successfully removed.'})
+            return JsonResponse({'success': False, 'message': 'No plans selected.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'})

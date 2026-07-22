@@ -5,285 +5,629 @@
     <meta charset="utf-8">
     <title>Chauffeur Portal - Earnings</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
     <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
     <style>
-        .premium-navbar {
-            background-color: #f59e0b !important; /* Amber tone for rider admin */
-            border: none !important;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
-            width: 100% !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-            padding: 0 !important;
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1030;
-            font-family: 'Rubik', sans-serif !important;
+        @keyframes livePulseDot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
         }
-
-        .premium-navbar .container-fluid {
-            padding-left: 15px !important;
-            padding-right: 15px !important;
-            display: flex !important;
-            align-items: stretch !important;
-            height: 60px !important;
+        @keyframes dynamicShimmerAmber {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-
-        .navbar-brand {
-            display: flex !important;
-            align-items: center !important;
-            height: 60px !important;
-            padding: 0 20px !important;
-            color: #ffffff !important;
-            font-size: 1.25rem !important;
-            letter-spacing: 1px !important;
-            text-decoration: none !important;
-            margin: 0 !important;
-        }
-
-        .navbar-nav {
-            display: flex !important;
-            align-items: stretch !important;
-            height: 100% !important;
-        }
-
-        .premium-navbar .nav-item {
-            display: flex !important;
-            align-items: stretch !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .premium-navbar .nav-link {
-            color: #ffffff !important;
-            font-weight: 500 !important;
-            font-size: 14px !important;
-            padding: 0 18px !important;
-            display: flex !important;
-            align-items: center !important;
-            height: 60px !important;
-            text-decoration: none !important;
-            transition: all 0.3s ease;
-        }
-
-        .premium-navbar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-        }
+        .live-dot { width:6px; height:6px; background:#ffffff; border-radius:50%; display:inline-block; }
+        .premium-navbar { background-color:#f59e0b !important; border:none !important; box-shadow:0 4px 15px rgba(245,158,11,.3) !important; position:fixed !important; top:0; left:0; right:0; z-index:1030; padding:0 !important; }
+        .premium-navbar .container-fluid { height:60px !important; padding:0 16px !important; display:flex !important; align-items:center !important; }
+        .navbar-brand { color:#fff !important; font-size:1.15rem !important; font-weight:700 !important; display:flex !important; align-items:center !important; gap:8px; text-decoration:none !important; }
+        .premium-navbar .nav-link { color:#fff !important; font-weight:500 !important; font-size:13.5px !important; padding:0 10px !important; height:60px !important; display:flex !important; align-items:center; text-decoration:none !important; transition:.25s; }
+        .premium-navbar .nav-link:hover { background:rgba(255,255,255,.16) !important; }
+        .premium-navbar .nav-link.active-nav { background:rgba(0,0,0,.12) !important; font-weight:700 !important; }
 
         body {
-            padding-top: 80px !important;
-            background-color: var(--body-bg) !important;
-            color: var(--text-color) !important;
+            padding-top: 85px !important;
+            background-color: var(--body-bg, #f8fafc) !important;
+            color: var(--text-color, #0f172a) !important;
         }
+
+        .portal-section-container {
+            border-top: 4px solid #f59e0b !important;
+            border-radius: 18px;
+            background: var(--card-bg, #ffffff);
+            border-left: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-right: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.22) !important;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
         .earnings-card {
-            border-radius: 16px;
+            border-top: 4px solid #f59e0b !important;
+            border-radius: 18px;
             padding: 24px;
-            border: 1px solid rgba(234, 179, 8, 0.2) !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            border-left: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-right: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.22) !important;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.08);
+            background: var(--card-bg, #ffffff);
         }
         .table-container {
-            border-radius: 16px;
+            border-radius: 18px;
             overflow: hidden;
-            border: 1px solid rgba(0, 0, 128, 0.08);
+            border-top: 4px solid #f59e0b !important;
+            border-left: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-right: 1px solid rgba(245, 158, 11, 0.22) !important;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.22) !important;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.08);
+            background: var(--card-bg, #ffffff);
         }
         .admin-table th {
-            background: rgba(234, 179, 8, 0.05) !important;
-            border-bottom: 2px solid rgba(234, 179, 8, 0.15) !important;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.03) 100%) !important;
+            border-bottom: 2px solid rgba(245, 158, 11, 0.25) !important;
             text-transform: uppercase;
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             letter-spacing: 1px;
-            color: var(--text-color);
-            padding: 12px 16px !important;
+            color: #f59e0b !important;
+            font-weight: 700;
+            padding: 14px 18px !important;
         }
         .admin-table td {
             vertical-align: middle !important;
             color: var(--text-color);
-            border-top: 1px solid rgba(0,0,0,0.05) !important;
-            padding: 11px 16px !important;
+            border-top: 1px solid rgba(245, 158, 11, 0.08) !important;
+            padding: 12px 18px !important;
         }
         [data-theme="dark"] .admin-table td {
             border-top: 1px solid rgba(255,255,255,0.05) !important;
         }
         /* Compact stat cards with consistent hover */
         .stat-card {
-            border-radius: 12px;
-            padding: 14px 16px !important;
+            border-radius: 14px;
+            padding: 16px 18px !important;
             cursor: default;
+            background: var(--card-bg, #ffffff);
+            border: 1px solid rgba(245, 158, 11, 0.2) !important;
+            border-top: 3px solid #f59e0b !important;
             transition: transform 0.22s ease, box-shadow 0.22s ease;
         }
         .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.10) !important;
+            box-shadow: 0 12px 28px rgba(245, 158, 11, 0.15) !important;
         }
         /* Fee explainer hover — same effect */
         .fee-explainer {
-            border-radius: 12px;
+            border-radius: 14px;
             transition: transform 0.22s ease, box-shadow 0.22s ease;
             cursor: default;
+            border: 1px solid rgba(245, 158, 11, 0.2) !important;
+            border-left: 4px solid #f59e0b !important;
+            background: var(--card-bg, #ffffff);
         }
         .fee-explainer:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.10) !important;
+            box-shadow: 0 12px 28px rgba(245, 158, 11, 0.15) !important;
         }
-    </style>
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #f59e0b;
+            border-radius: 50%;
+            display: inline-block;
+            animation: livePulseDot 1.8s infinite ease-in-out;
+        }
+        .shimmer-text-amber {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24, #b45309, #f59e0b);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: dynamicShimmerAmber 4s linear infinite;
+        }
+    
+        /* Dynamic Premium Dropdown Menu Card - Compact Height & Dynamic Container Colors */
+        .premium-user-dropdown {
+            min-width: 290px !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin-top: 8px !important;
+            animation: none !important;
+            transform-origin: top left !important;
+        }
+
+        @keyframes dropdownSlideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .dropdown-section-label {
+            font-size: 0.6rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            text-transform: uppercase !important;
+            padding: 4px 14px 2px 14px !important;
+            margin: 0 !important;
+        }
+
+        .premium-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 5px 10px !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            margin: 1px 6px !important;
+            width: calc(100% - 12px) !important;
+        }
+
+        
+
+        .dropdown-icon-box {
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.8rem !important;
+            margin-right: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .icon-box-indigo { background: rgba(99, 102, 241, 0.14) !important; color: #6366f1 !important; }
+        .icon-box-emerald { background: rgba(16, 185, 129, 0.14) !important; color: #10b981 !important; }
+        .icon-box-amber { background: rgba(245, 158, 11, 0.14) !important; color: #f59e0b !important; }
+        .icon-box-rose { background: rgba(244, 63, 94, 0.14) !important; color: #f43f5e !important; }
+        .icon-box-cyan { background: rgba(6, 182, 212, 0.14) !important; color: #06b6d4 !important; }
+        .icon-box-sky { background: rgba(2, 132, 199, 0.14) !important; color: #0284c7 !important; }
+        .icon-box-purple { background: rgba(139, 92, 246, 0.14) !important; color: #8b5cf6 !important; }
+        .icon-box-red { background: rgba(239, 68, 68, 0.14) !important; color: #ef4444 !important; }
+
+        .text-title-indigo { color: #4f46e5 !important; }
+        .text-title-emerald { color: #059669 !important; }
+        .text-title-amber { color: #d97706 !important; }
+        .text-title-rose { color: #e11d48 !important; }
+        .text-title-cyan { color: #0891b2 !important; }
+        .text-title-sky { color: #0284c7 !important; }
+        .text-title-purple { color: #7c3aed !important; }
+        .text-title-red { color: #dc2626 !important; }
+
+        .dropdown-item-title {
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0 !important;
+            line-height: 1.15 !important;
+        }
+
+        .dropdown-item-sub {
+            font-size: 0.65rem !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+
+        .dropdown-divider-premium {
+            height: 1px !important;
+            margin: 3px 10px !important;
+            background: rgba(226, 232, 240, 0.8) !important;
+        }
+
+
+        /* Dynamic Premium Dropdown Menu Card - Dashboard Matching Colors */
+        .premium-user-dropdown {
+            min-width: 295px !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin-top: 8px !important;
+            animation: none !important;
+            transform-origin: top left !important;
+        }
+
+        @keyframes dropdownSlideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .dropdown-section-label {
+            font-size: 0.6rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            text-transform: uppercase !important;
+            padding: 4px 14px 2px 14px !important;
+            margin: 0 !important;
+        }
+
+        .premium-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 5px 10px !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            margin: 1px 6px !important;
+            width: calc(100% - 12px) !important;
+        }
+
+        
+
+        .dropdown-icon-box {
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.8rem !important;
+            margin-right: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Profile & Settings and Logout Colored Items */
+        .item-colored-profile-rider { background: rgba(16, 185, 129, 0.14) !important; }
+        .item-colored-profile-rider .dropdown-item-title { color: #059669 !important; font-weight: 750 !important; }
+
+        .item-colored-profile-rider { background: rgba(245, 158, 11, 0.14) !important; }
+        .item-colored-profile-rider .dropdown-item-title { color: #d97706 !important; font-weight: 750 !important; }
+
+        .item-colored-profile-rider { background: rgba(236, 72, 153, 0.14) !important; }
+        .item-colored-profile-rider .dropdown-item-title { color: #be185d !important; font-weight: 750 !important; }
+
+        .item-colored-logout { background: rgba(239, 68, 68, 0.14) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+
+        /* Remaining pages dark black text color */
+        .dropdown-item-title {
+            font-size: 0.8rem !important;
+            font-weight: 750 !important;
+            color: #0f172a !important; /* Crisp Dark Black text color */
+            margin-bottom: 0 !important;
+            line-height: 1.15 !important;
+        }
+
+        .dropdown-item-sub {
+            font-size: 0.65rem !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+
+        .dropdown-divider-premium {
+            height: 1px !important;
+            margin: 3px 10px !important;
+            background: rgba(226, 232, 240, 0.8) !important;
+        }
+
+
+        .premium-dropdown-item:hover,
+        .dropdown-item-green:hover,
+        .dropdown-item-red:hover,
+        
+    
+
+        .item-colored-profile-rider { background: rgba(245, 158, 11, 0.1) !important; }
+        .item-colored-profile-rider .dropdown-item-title { color: #d97706 !important; font-weight: 750 !important; }
+        .item-colored-logout { background: rgba(239, 68, 68, 0.12) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+    
+
+        .premium-dropdown-item:hover,
+        .dropdown-item-green:hover,
+        .dropdown-item-red:hover,
+        .dropdown-item-normal:hover {
+            text-decoration: none !important;
+            background: rgba(15, 23, 42, 0.05) !important;
+            transform: none !important;
+        }
+    
+
+        .item-colored-profile-rider { background: rgba(245, 158, 11, 0.1) !important; }
+        .item-colored-profile-rider .dropdown-item-title { color: #d97706 !important; font-weight: 750 !important; }
+        .item-colored-logout { background: rgba(239, 68, 68, 0.12) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+    
+
+        /* Refined Spacing - Adjusting margins & padding for premium look */
+        .portal-section-container {
+            padding: 24px 30px !important;
+            margin-bottom: 24px !important;
+        }
+        .profile-hero {
+            padding: 24px 30px !important;
+            margin-bottom: 24px !important;
+        }
+        .glass-card, 
+        .settings-card, 
+        .admin-card, 
+        .form-card, 
+        .plan-card {
+            padding: 22px !important;
+            margin-bottom: 20px !important;
+        }
+        /* Tighten vertical table heading padding while keeping left/right space */
+        .table-container > div:first-child, 
+        .glass-card > div:first-child.border-bottom {
+            padding: 14px 24px !important;
+        }
+        /* Table headers cell padding optimization */
+        .admin-table th {
+            padding: 12px 20px !important;
+        }
+        .admin-table td {
+            padding: 12px 20px !important;
+        }
+        /* Outer page container side borders space & Centering */
+        .container-fluid {
+            max-width: 1300px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 28px !important;
+            padding-right: 28px !important;
+        }
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+            .portal-section-container, 
+            .profile-hero {
+                padding: 20px !important;
+                margin-bottom: 20px !important;
+            }
+            .glass-card, 
+            .settings-card, 
+            .admin-card, 
+            .form-card, 
+            .plan-card {
+                padding: 16px !important;
+                margin-bottom: 16px !important;
+            }
+        }
+
+
+        /* Dropdown custom item styles matching profile settings dropdown */
+        .dropdown-item-theme {
+            color: #d97706 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-red {
+            color: #ef4444 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-normal {
+            color: var(--text-color, #1e293b) !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-size: .84rem;
+            font-weight: 500;
+        }
+        .dropdown-item-theme:hover {
+            text-decoration: none !important;
+            background: rgba(245, 158, 11, 0.1) !important;
+        }
+        .dropdown-item-red:hover {
+            text-decoration: none !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+        .dropdown-item-normal:hover {
+            text-decoration: none !important;
+            background: rgba(15, 23, 42, 0.05) !important;
+            transform: none !important;
+        }
+
+</style>
 </head>
 <body>
     <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
+        <!-- Rider Header Navbar -->
     <nav class="navbar navbar-expand-lg premium-navbar p-0">
-        <div class="container-fluid d-flex align-items-center">
-            <!-- Dropdown Menu Icon (Hamburger) -->
-            <div class="dropdown mr-2 d-flex align-items-center" style="align-self: center;">
-                <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
-                    <i class="fas fa-bars"></i>
-                </a>
-                <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="min-width: 310px !important; transform-origin: top left !important;">
-                    <!-- Menu Header -->
-                    <div class="dropdown-user-header d-flex align-items-center" style="background: linear-gradient(135deg, #eab308 0%, #854d0e 100%) !important;">
-                        <i class="fas fa-motorcycle" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
-                        <div>
-                            <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Rider Settings Console</h6>
-                            <small class="text-white-50" style="font-size: 0.75rem;">Interactive Controls & Settings</small>
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+                <!-- Dropdown Menu Icon (Hamburger) -->
+                <div class="dropdown mr-2 d-flex align-items-center">
+                    <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                    <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="position: absolute !important; left: 0 !important; right: auto !important; margin-top: 8px !important; transform-origin: top left !important; min-width: 295px !important; z-index: 1050 !important; padding: 0; overflow: hidden; border-radius: 16px; border: 1.5px solid rgba(245, 158, 11, 0.4); box-shadow: 0 16px 45px rgba(245, 158, 11, 0.18), 0 4px 15px rgba(0,0,0,0.08); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important; backdrop-filter: blur(20px);">
+                        <!-- Dynamic Compact Menu Header -->
+                        <div class="dropdown-user-header d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%) !important; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;">
+                            <div class="d-flex align-items-center">
+                                <div style="width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; margin-right: 10px; backdrop-filter: blur(4px); overflow:hidden;">
+                                    {% if user_profile and user_profile.image %}
+                                    <img src="{{ user_profile.image.url }}" id="navDropdownAvatar" style="width:100%; height:100%; object-fit:cover;">
+                                    {% else %}
+                                    <i class="fas fa-motorcycle" style="font-size: 14px; color: #ffffff;"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold text-white" style="font-size: 0.82rem; line-height: 1.1;">{{ user.get_full_name|default:user.username }}</h6>
+                                    <small class="text-white-50" style="font-size: 0.65rem;"><i class="fas fa-circle text-light mr-1" style="font-size: 5px;"></i>Live Dispatch</small>
+                                </div>
+                            </div>
+                            <span class="badge" style="background: rgba(255,255,255,0.25); color: #ffffff; font-size: 0.6rem; padding: 3px 6px; border-radius: 8px; font-weight: 700;">Active Captain</span>
+                        </div>
+
+                        <div class="py-2" style="background: #ffffff !important;">
+                            <div class="dropdown-section-label" style="color: #d97706 !important; font-size: 0.64rem; letter-spacing: .7px; font-weight: 800; padding: 4px 14px;">Rider Profile &amp; Settings</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-theme" href="{% url 'portal_rider_profile' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-user-cog" style="width:16px; color:#d97706 !important;"></i><span>Profile &amp; Settings</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;"><i class="fas fa-shield-alt mr-1"></i>Verified</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div style="height:1px;background:rgba(245,158,11,0.15);margin:6px 10px;"></div>
+                            <div class="px-3 py-1 font-weight-bold text-uppercase" style="font-size:.64rem;letter-spacing:.7px;color:#d97706;">Real-Time Scenario Centers</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="if(typeof showToast==='function') showToast('Duty Diagnostics: Online 4h 22m, Acceptance Rate 98.4%, 0 Missed pings'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-clipboard-list" style="width:16px; color:#d97706 !important;"></i><span>Duty &amp; Dispatch Log</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(15, 23, 42, 0.08); color: #0f172a; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">98.4%</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="if(typeof showToast==='function') showToast('Captain Rating: 4.95 Rating, 120 Total ratings, feedback: Excellent safety & clean vehicle'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-star-half-alt" style="width:16px; color:#d97706 !important;"></i><span>Captain Scorecard</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(15, 23, 42, 0.08); color: #0f172a; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">★ 4.95</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="if(typeof showToast==='function') showToast('Vehicle Health: Fitness Certificate Valid till 2029, Emission Test Valid till Dec 2026'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-car-crash" style="width:16px; color:#d97706 !important;"></i><span>Vehicle Inspection</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(15, 23, 42, 0.08); color: #0f172a; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Compliant</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="if(typeof showToast==='function') showToast('SOS Protocols: Emergency contacts notified, dispatch center pinged'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-shield-alt" style="width:16px; color:#d97706 !important;"></i><span>Safety &amp; SOS Center</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(15, 23, 42, 0.08); color: #0f172a; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Active SOS</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div style="height:1px;background:rgba(245,158,11,0.15);margin:6px 10px;"></div>
+                            <div class="px-3 py-1 font-weight-bold text-uppercase" style="font-size:.64rem;letter-spacing:.7px;color:#d97706;">Captain Fleet Utilities</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="if(typeof showToast==='function') showToast('Captain Hotline: Connecting to 24/7 Support Operator...'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-headset" style="width:16px; color:#d97706 !important;"></i><span>24x7 Captain Helpline</span>
+                                        </div>
+                                        <span class="badge" style="font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; color: #0f172a; background: rgba(15, 23, 42, 0.08); font-weight: 700;">24/7 SOS</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div style="height:1px;background:rgba(245,158,11,0.15);margin:6px 10px;"></div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-red" href="{% url 'portal_logout' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-sign-out-alt" style="width:16px;"></i><span>Logout Session</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="py-2">
-                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Real-Time Controls</div>
-                        <ul class="dropdown-list-container">
+                </div>
 
-                            <li>
-                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
-                                        <i class="fas fa-robot"></i><span>Auto-Accept Rides</span>
-                                    </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="switch-rider-autoaccept" checked onclick="showToast('Auto-Accept Status Updated')">
-                                        <label class="custom-control-label" for="switch-rider-autoaccept"></label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
-                                        <i class="fas fa-fire"></i><span>Demand Heatmap</span>
-                                    </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="switch-rider-heatmap" checked onclick="showToast('Live Demand Heatmap Layer Toggled')">
-                                        <label class="custom-control-label" for="switch-rider-heatmap"></label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Surge Area Boost: 1.5x active')">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-chart-line"></i><span>Peak Surge Rate</span>
-                                    </div>
-                                    <span class="menu-badge badge-gold">1.5x</span>
-                                </a>
-                            </li>
-                        </ul>
-                        
-                        <div class="dropdown-divider-premium"></div>
-                        
-                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Console Settings</div>
-                        <ul class="dropdown-list-container">
+                {% if request.path != '/portal/rider/profile/' %}
+                <a class="navbar-brand font-weight-bold mr-3" href="{% url 'portal_rider' %}" style="font-size: 1.05rem;">
+                    <i class="fas fa-motorcycle mr-1"></i>Chauffeur Console
+                </a>
+                {% endif %}
+            </div>
 
-                            <li>
-                                <a class="premium-dropdown-item" href="#" onclick="showToast('Routing to nearest Gas Station...')">
-                                    <i class="fas fa-gas-pump"></i><span>Auto-Nav to Gas Station</span>
-                                </a>
-                            </li>
-                            <li>
-                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
-                                        <i class="fas fa-volume-up"></i><span>Audio Alerts</span>
-                                    </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="switch-rider-sound" checked onclick="showToast('Console Sounds Muted/Unmuted')">
-                                        <label class="custom-control-label" for="switch-rider-sound"></label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Switching to Vector 3D Mode...')">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-layer-group"></i><span>Map Style Mode</span>
-                                    </div>
-                                    <span class="menu-badge badge-neutral">3D View</span>
-                                </a>
-                            </li>
-                        </ul>
-                        
-                        <div class="dropdown-divider-premium"></div>
-                        
-                        <ul class="dropdown-list-container">
-                            <li>
-                                <a class="premium-dropdown-item" href="{% url 'home' %}">
-                                    <i class="fas fa-home"></i><span>Exit to User Portal</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
-                                    <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+            {% if request.path == '/portal/rider/profile/' %}
+            <div class="d-flex align-items-center ml-auto">
+                <a class="navbar-brand font-weight-bold mr-0" href="{% url 'portal_rider' %}" style="font-size: 1.05rem; color: #ffffff; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                    <i class="fas fa-motorcycle mr-1"></i>Chauffeur Console
+                </a>
+            </div>
+            {% else %}
+            <div class="collapse navbar-collapse" id="adminNavbarContent">
+                <div class="d-flex align-items-center ml-2">
+                    <a class="nav-link {% if request.path == '/portal/rider/' %}active-nav{% endif %}" href="{% url 'portal_rider' %}"><i class="fas fa-tachometer-alt mr-1"></i> Rider Home</a>
+                    <a class="nav-link {% if request.path == '/portal/rider/active/' %}active-nav{% endif %}" href="{% url 'portal_rider_active' %}"><i class="fas fa-crosshairs mr-1"></i> Active Ride Ticket</a>
+                    <a class="nav-link {% if request.path == '/portal/rider/trips/' %}active-nav{% endif %}" href="{% url 'portal_rider_trips' %}"><i class="fas fa-history mr-1"></i> Trip History</a>
+                    <a class="nav-link {% if request.path == '/portal/rider/earnings/' %}active-nav{% endif %}" href="{% url 'portal_rider_earnings' %}"><i class="fas fa-wallet mr-1"></i> Earnings Ledger</a>
                 </div>
             </div>
-            
-            <a class="navbar-brand font-weight-bold" href="{% url 'portal_rider' %}" style="margin-bottom: 0; align-self: center;">
-                <i class="fas fa-motorcycle mr-2"></i>Chauffeur Console
-            </a>
-            <div class="collapse navbar-collapse" id="adminNavbarContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link " href="{% url 'portal_rider' %}"><i class="fas fa-chart-line mr-1"></i> Overview</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{% url 'portal_rider_active' %}"><i class="fas fa-map-marked-alt mr-1"></i> Active Navigation</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link font-weight-bold" style="background: rgba(0,0,0,0.06);" href="{% url 'portal_rider_earnings' %}"><i class="fas fa-wallet mr-1"></i> Earnings Ledger</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link " href="{% url 'portal_rider_trips' %}"><i class="fas fa-history mr-1"></i> Trip Logs</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link text-navy" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit to User Portal</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="{% url 'portal_logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a>
-                    </li>
-                </ul>
+
+            <!-- Far Right: Exit Button & Duty Toggle -->
+            <div class="d-flex align-items-center ml-auto" style="gap: 10px;">
+                <a href="/" class="btn btn-sm font-weight-bold px-2 py-1 rounded-pill" style="background: rgba(255,255,255,0.2); color: #ffffff; border: 1px solid #ffffff; font-size: 0.72rem; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; line-height: 1;">
+                    <i class="fas fa-sign-out-alt"></i> Exit
+                </a>
+                <button id="riderDutyToggleBtn" onclick="toggleRiderDutyState()" class="btn btn-sm font-weight-bold px-2 py-1 rounded-pill" style="background: #10b981; color: #ffffff; border: 1px solid #ffffff; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4); font-size: 0.72rem; display: inline-flex; align-items: center; gap: 4px; line-height: 1;">
+                    <span id="dutyPulseDot" class="live-dot" style="width: 6px; height: 6px; background-color: #ffffff;"></span>
+                    <span id="dutyBtnText">ON DUTY</span>
+                </button>
             </div>
+            {% endif %}
         </div>
     </nav>
 
     <div class="container-fluid px-4 mt-4">
 
-        <!-- Page Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-            <div class="text-left">
-                <h3 class="font-weight-bold text-title mb-1"><i class="fas fa-wallet mr-2 text-warning"></i>Earnings Ledger</h3>
-                <p class="text-subtitle mb-0">Complete payout records with platform fee deductions and net settlements.</p>
+        <!-- SECTION 1: Dynamic Hero Header Section -->
+        <div class="portal-section-container p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 text-left">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="font-weight-bold outfit-font mb-0 text-title shimmer-text-amber" style="font-size: 1.8rem;">Earnings &amp; Payout Ledger</h1>
+                        <span class="badge ml-2" style="background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); padding: 5px 12px; border-radius: 12px; font-weight: 700; font-size: 0.72rem;">
+                            <span class="live-dot mr-1"></span> SETTLED INSTANTLY
+                        </span>
+                    </div>
+                    <p class="text-subtitle mb-0">Complete payout records with 10% platform fee deductions and 90% net driver settlements.</p>
+                </div>
+                <a href="{% url 'portal_rider_trips' %}" class="btn btn-warning font-weight-bold rounded-pill px-4 text-dark" style="background: linear-gradient(135deg, #f59e0b, #d97706); border:none;">
+                    <i class="fas fa-history mr-2"></i>Trip Logs
+                </a>
             </div>
-            <a href="{% url 'portal_rider_trips' %}" class="btn btn-outline-warning font-weight-bold rounded-pill px-4">
-                <i class="fas fa-history mr-2"></i>Trip Logs
-            </a>
         </div>
 
-        <!-- ============ SUMMARY STATS ============ -->
+        <!-- SECTION 2: SUMMARY STATS -->
         <div class="row mb-3">
             <div class="col-md-3 col-6 mb-3">
-                <div class="glass-card stat-card text-left border-left-warning">
+                <div class="stat-card text-left">
                     <div class="d-flex align-items-center mb-1" style="gap:8px;">
-                        <div style="width:30px;height:30px;background:rgba(234,179,8,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <div style="width:30px;height:30px;background:rgba(245,158,11,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                             <i class="fas fa-sun text-warning" style="font-size:13px;"></i>
                         </div>
                         <span class="text-muted font-weight-bold" style="font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;">Today's Earnings</span>
@@ -428,6 +772,30 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    function updateDutyUI(isDutyOn) {
+        let btn = document.getElementById('riderDutyToggleBtn');
+        let text = document.getElementById('dutyBtnText');
+        let dot = document.getElementById('dutyPulseDot');
+
+        if (isDutyOn) {
+            if (btn) { btn.style.background = '#10b981'; btn.style.borderColor = '#ffffff'; btn.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.4)'; }
+            if (text) text.innerText = 'ON DUTY';
+            if (dot) dot.style.display = 'inline-block';
+        } else {
+            if (btn) { btn.style.background = '#ef4444'; btn.style.borderColor = '#ffffff'; btn.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.4)'; }
+            if (text) text.innerText = 'OFF DUTY';
+            if (dot) dot.style.display = 'none';
+        }
+    }
+
+    function toggleRiderDutyState() {
+        let currentStatus = localStorage.getItem('riderDutyStatus') || 'ON';
+        let newStatus = (currentStatus === 'ON') ? 'OFF' : 'ON';
+        localStorage.setItem('riderDutyStatus', newStatus);
+        updateDutyUI(newStatus === 'ON');
+        showToast(newStatus === 'ON' ? 'Duty Turned ON' : 'Duty Turned OFF');
+    }
+
     function showToast(msg) {
         let t = document.createElement('div');
         t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,0.3);';
@@ -435,6 +803,11 @@
         document.body.appendChild(t);
         setTimeout(() => t.remove(), 3000);
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let savedStatus = localStorage.getItem('riderDutyStatus') || 'ON';
+        updateDutyUI(savedStatus === 'ON');
+    });
     </script>
 </body>
-</html>
+</html>

@@ -1,0 +1,293 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+<!-- Premium Styles -->
+<link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+<style>
+    .auth-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 60px 20px;
+    }
+
+    .auth-card {
+        max-width: 520px;
+        width: 100%;
+        animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Dynamic Border Accent based on portal type */
+    .portal-user { border-top: 5px solid #0d6efd !important; }
+    .portal-rental { border-top: 5px solid #10b981 !important; }
+    .portal-rider { border-top: 5px solid #eab308 !important; }
+    .portal-carpool { border-top: 5px solid #ec4899 !important; }
+
+    /* Dynamic Icon Colors */
+    .icon-user { color: #0d6efd !important; }
+    .icon-rental { color: #10b981 !important; }
+    .icon-rider { color: #eab308 !important; }
+    .icon-carpool { color: #ec4899 !important; }
+
+    /* Dynamic Inputs Styles */
+    .auth-card .input-group {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.6);
+        display: flex;
+    }
+
+    [data-theme="dark"] .auth-card .input-group {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-card .input-group:hover {
+        transform: translateY(-3px) scale(1.02);
+    }
+
+    .input-left-border {
+        border-left: 4px solid var(--primary-accent) !important;
+        background: rgba(var(--accent-rgb), 0.04) !important;
+    }
+
+    .input-left-border:hover,
+    .input-left-border:focus-within {
+        border-color: var(--primary-accent) !important;
+        box-shadow: 0 5px 15px rgba(var(--accent-rgb), 0.25);
+    }
+
+    .auth-card .form-control {
+        background: transparent !important;
+        border: none;
+        height: auto;
+        padding: 12px 15px;
+        color: var(--text-color);
+        font-size: 0.9rem;
+    }
+
+    .auth-card .input-group-text {
+        background: transparent !important;
+        border: none;
+        padding: 12px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-card .form-control:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .input-group-text i {
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-left-border:focus-within i {
+        color: var(--primary-accent) !important;
+        transform: scale(1.2);
+    }
+</style>
+
+<!-- Hero Background -->
+<img src="{% static '../media/images/premium_hero.png' %}" alt="Background" class="hero-bg" onerror="this.style.display='none'">
+
+<!-- Set CSS Variable Values dynamically depending on portal -->
+<script>
+    const portal = "{{ portal_type }}";
+    let accentColor = "#0d6efd";
+    let rgb = "13, 110, 253";
+    if (portal === "rental") {
+        accentColor = "#10b981";
+        rgb = "16, 185, 129";
+    } else if (portal === "rider") {
+        accentColor = "#eab308";
+        rgb = "234, 179, 8";
+    } else if (portal === "carpool") {
+        accentColor = "#ec4899";
+        rgb = "236, 72, 153";
+    }
+    document.documentElement.style.setProperty('--primary-accent', accentColor);
+    document.documentElement.style.setProperty('--accent-rgb', rgb);
+</script>
+
+<div class="auth-container">
+    <div class="glass-card auth-card text-center hover-lift portal-{{ portal_type }}">
+        <div class="feature-icon mx-auto mb-4 icon-{{ portal_type }}" style="background: rgba(var(--accent-rgb), 0.15); border: 1px solid rgba(var(--accent-rgb), 0.3);">
+            {% if portal_type == 'user' %}
+                <i class="fas fa-user-circle"></i>
+            {% elif portal_type == 'rental' %}
+                <i class="fas fa-car-side"></i>
+            {% elif portal_type == 'rider' %}
+                <i class="fas fa-motorcycle"></i>
+            {% elif portal_type == 'carpool' %}
+                <i class="fas fa-users"></i>
+            {% endif %}
+        </div>
+        
+        <h2 class="font-weight-bold mb-1">
+            {% if portal_type == 'user' %}
+                User Sign Up
+            {% elif portal_type == 'rental' %}
+                Rental Admin Sign Up
+            {% elif portal_type == 'rider' %}
+                Chauffeur Registration
+            {% elif portal_type == 'carpool' %}
+                Pooling Registration
+            {% endif %}
+        </h2>
+        <p class="text-muted mb-4">
+            Create an account with portal details to authenticate.
+        </p>
+
+        {% if error %}
+        <div class="alert alert-danger mb-4" style="background: rgba(220,53,69,0.08); border: 1.5px solid #dc3545; color: #dc3545; border-radius: 12px; font-weight: 500; font-size: 0.85rem;">
+            <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="text-left">
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- Account Info -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user text-muted"></i></span>
+                        </div>
+                        <input type="text" name="username" class="form-control" placeholder="Choose a username" value="{{ form_data.username }}" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-envelope text-muted"></i></span>
+                        </div>
+                        <input type="email" name="email" class="form-control" placeholder="Enter email" value="{{ form_data.email }}" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Password</label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-lock text-muted"></i></span>
+                        </div>
+                        <input type="password" name="password" class="form-control" placeholder="Choose password" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">Confirm Password</label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-check-circle text-muted"></i></span>
+                        </div>
+                        <input type="password" name="confirm_password" class="form-control" placeholder="Verify password" required>
+                    </div>
+                </div>
+
+                <!-- Profile Info -->
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        {% if portal_type == 'rental' %}
+                            Business Phone
+                        {% elif portal_type == 'rider' %}
+                            Mobile Phone
+                        {% else %}
+                            Phone Number
+                        {% endif %}
+                    </label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-phone-alt text-muted"></i></span>
+                        </div>
+                        <input type="text" name="phone" class="form-control" placeholder="e.g. +91 9876543210" value="{{ form_data.phone }}" required>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        {% if portal_type == 'user' %}
+                            Home Address
+                        {% elif portal_type == 'rental' %}
+                            Dealership Location
+                        {% elif portal_type == 'rider' %}
+                            Operating City
+                        {% elif portal_type == 'carpool' %}
+                            Resident City
+                        {% endif %}
+                    </label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-map-marker-alt text-muted"></i></span>
+                        </div>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. Hyderabad, TS" value="{{ form_data.location }}" required>
+                    </div>
+                </div>
+
+                <!-- Custom Portal Detail Field -->
+                <div class="col-12 mb-4">
+                    <label class="font-weight-bold mb-1" style="color: var(--text-color); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        {% if portal_type == 'user' %}
+                            Work Address
+                        {% elif portal_type == 'rental' %}
+                            Company Name / Dealership Brand
+                        {% elif portal_type == 'rider' %}
+                            Driver's License Number (RC)
+                        {% elif portal_type == 'carpool' %}
+                            Vehicle Model &amp; License Plate Number
+                        {% endif %}
+                    </label>
+                    <div class="input-group input-left-border">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                {% if portal_type == 'user' %}
+                                    <i class="fas fa-briefcase text-muted"></i>
+                                {% elif portal_type == 'rental' %}
+                                    <i class="fas fa-building text-muted"></i>
+                                {% elif portal_type == 'rider' %}
+                                    <i class="fas fa-id-card text-muted"></i>
+                                {% elif portal_type == 'carpool' %}
+                                    <i class="fas fa-car text-muted"></i>
+                                {% endif %}
+                            </span>
+                        </div>
+                        <input type="text" name="extra_detail" class="form-control" 
+                            {% if portal_type == 'user' %}
+                                placeholder="Enter your work address (Optional)"
+                            {% elif portal_type == 'rental' %}
+                                placeholder="e.g. Hyderabad Prestige Dealerships Ltd" required
+                            {% elif portal_type == 'rider' %}
+                                placeholder="e.g. DL-1234567890" required
+                            {% elif portal_type == 'carpool' %}
+                                placeholder="e.g. Maruti Swift Dzire, TS09AB1234" required
+                            {% endif %}
+                            value="{{ form_data.extra_detail }}">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-premium w-100 hover-lift mb-3 py-3" style="background: var(--primary-accent); box-shadow: 0 4px 14px rgba(var(--accent-rgb), 0.3); font-size: 1rem; border-radius: 12px; font-weight: 700;">
+                Register Account
+            </button>
+        </form>
+
+        <p class="text-muted mt-3">
+            Already have an account? <a href="{% url 'portal_login' portal_type %}" class="font-weight-bold text-decoration-none" style="color: var(--primary-accent);">Login here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

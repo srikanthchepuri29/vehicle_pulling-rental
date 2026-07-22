@@ -366,6 +366,63 @@
         [data-theme="dark"] .dropdown-divider-premium {
             background-color: rgba(255, 255, 255, 0.08) !important;
         }
+
+        /* Dropdown custom item styles matching profile settings dropdown */
+        .dropdown-item-theme {
+            color: #3b82f6 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-red {
+            color: #ef4444 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-normal {
+            color: var(--text-color, #1e293b) !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-size: .84rem;
+            font-weight: 500;
+        }
+        .dropdown-item-theme:hover {
+            text-decoration: none !important;
+            background: rgba(59, 130, 246, 0.1) !important;
+        }
+        .dropdown-item-red:hover {
+            text-decoration: none !important;
+            background: rgba(239, 68, 68, 0.1) !important;
+        }
+        .dropdown-item-normal:hover {
+            text-decoration: none !important;
+            background: rgba(15, 23, 42, 0.05) !important;
+            transform: none !important;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -397,44 +454,98 @@
                         <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ user.username }}" alt="Profile" style="width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1.5px solid #ffffff;">
                         {{ user.username }}
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right premium-user-dropdown" aria-labelledby="userDropdown">
-                        <!-- User Header Card -->
-                        <div class="dropdown-user-header d-flex align-items-center">
-                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ user.username }}" alt="Profile" style="width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 2px solid #ffffff; margin-right: 12px;">
-                            <div>
-                                <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">{{ user.username }}</h6>
-                                <small class="text-white-50" style="font-size: 0.75rem;">{{ user.email|default:"Passenger Partner" }}</small>
+                    <div class="dropdown-menu dropdown-menu-right premium-user-dropdown" aria-labelledby="userDropdown" style="position: absolute !important; margin-top: 8px !important; transform-origin: top right !important; min-width: 295px !important; z-index: 1050 !important; padding: 0; overflow: hidden; border-radius: 16px; border: 1.5px solid rgba(59, 130, 246, 0.4); box-shadow: 0 16px 45px rgba(59, 130, 246, 0.18), 0 4px 15px rgba(0,0,0,0.08); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important; backdrop-filter: blur(20px);">
+                        <!-- User Dynamic Compact Header Card -->
+                        <div class="dropdown-user-header d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #65a7e9 0%, #3b82f6 50%, #1d4ed8 100%) !important; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;">
+                            <div class="d-flex align-items-center">
+                                <div style="position: relative; margin-right: 10px;">
+                                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed={{ user.username }}" alt="Profile" style="width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1.5px solid #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,0.12);">
+                                    <span style="position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-radius: 50%; background: #10b981; border: 1.5px solid #ffffff;"></span>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold text-white" style="font-size: 0.82rem; line-height: 1.1;">{{ user.username }}</h6>
+                                    <small class="text-white-50" style="font-size: 0.65rem;">{{ user.email|default:"Passenger Renter" }}</small>
+                                </div>
                             </div>
+                            <span class="badge" style="background: rgba(255,255,255,0.25); color: #ffffff; font-size: 0.6rem; padding: 3px 6px; border-radius: 8px; font-weight: 700;">Active Renter</span>
                         </div>
-                        <!-- Dropdown Links in Order -->
-                        <div class="py-2">
-                            <a class="premium-dropdown-item" href="{% url 'passenger_settings' %}">
-                                <i class="fas fa-cog text-primary"></i><span>Profile Settings</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'your_trips' %}">
-                                <i class="fas fa-history text-primary"></i><span>Your Trips</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="/Contact_us/">
-                                <i class="fas fa-shield-alt text-primary"></i><span>Contact Us</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'About' %}">
-                                <i class="fas fa-info-circle text-primary"></i><span>About Us</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'Reports' %}">
-                                <i class="fas fa-chart-line text-primary"></i><span>Reports</span>
-                            </a>
-                            <!-- Real-time features -->
-                            <div class="dropdown-divider-premium"></div>
-                            <a class="premium-dropdown-item" href="#" onclick="alert('Wallet balance: ₹250.00\nPayment Method: UPI Auto-pay')">
-                                <i class="fas fa-wallet text-success"></i><span>Ridesharing Wallet</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="#" onclick="alert('No active promos at the moment. Check back soon!')">
-                                <i class="fas fa-tag text-warning"></i><span>Promos &amp; Discounts</span>
-                            </a>
-                            <div class="dropdown-divider-premium"></div>
-                            <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
-                                <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
-                            </a>
+
+                        <div class="py-2" style="background: #ffffff !important;">
+                            <div class="dropdown-section-label" style="color: #3b82f6 !important; font-size: 0.64rem; letter-spacing: .7px; font-weight: 800; padding: 4px 14px;">Account &amp; Activity</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-theme" href="{% url 'passenger_settings' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-cog" style="width:16px; color:#3b82f6 !important;"></i><span>Profile Settings</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #2563eb; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;"><i class="fas fa-shield-alt mr-1"></i>Verified</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'your_trips' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-history" style="width:16px; color:#3b82f6 !important;"></i><span>Your Trips</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;"><i class="fas fa-sync-alt mr-1"></i>Live Sync</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'Reports' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-chart-line" style="width:16px; color:#3b82f6 !important;"></i><span>Reports</span>
+                                        </div>
+                                        <i class="fas fa-chevron-right" style="font-size:.65rem;opacity:.6;"></i>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div style="height:1px;background:rgba(59,130,246,0.15);margin:6px 10px;"></div>
+                            <div class="px-3 py-1 font-weight-bold text-uppercase" style="font-size:.64rem;letter-spacing:.7px;color:#3b82f6;">Services &amp; Perks</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="alert('Wallet balance: ₹250.00\\nPayment Method: UPI Auto-pay'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-wallet" style="width:16px; color:#3b82f6 !important;"></i><span>Ridesharing Wallet</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #b45309; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">₹250.00</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="#" onclick="alert('No active promos at the moment. Check back soon!'); return false;">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-tag" style="width:16px; color:#3b82f6 !important;"></i><span>Promos &amp; Discounts</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(244, 63, 94, 0.12); color: #e11d48; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">2 Active</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="/Contact_us/">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-headset" style="width:16px; color:#3b82f6 !important;"></i><span>Contact Us</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(6, 182, 212, 0.12); color: #0891b2; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;"><i class="fas fa-headset mr-1"></i>24/7 Live</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'About' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-info-circle" style="width:16px; color:#3b82f6 !important;"></i><span>About Us</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(2, 132, 199, 0.12); color: #0284c7; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">v2.4</span>
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div style="height:1px;background:rgba(59,130,246,0.15);margin:6px 10px;"></div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-red" href="{% url 'portal_logout' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-sign-out-alt" style="width:16px;"></i><span>Logout Session</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -443,29 +554,57 @@
                     <a class="profile-nav-btn dropdown-toggle" href="#" id="portalDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fas fa-sign-in-alt"></i> Portal Login
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right premium-user-dropdown" aria-labelledby="portalDropdown">
+                    <div class="dropdown-menu dropdown-menu-right premium-user-dropdown" aria-labelledby="portalDropdown" style="position: absolute !important; margin-top: 8px !important; transform-origin: top right !important; min-width: 295px !important; z-index: 1050 !important; padding: 0; overflow: hidden; border-radius: 16px; border: 1.5px solid rgba(59, 130, 246, 0.4); box-shadow: 0 16px 45px rgba(59, 130, 246, 0.18), 0 4px 15px rgba(0,0,0,0.08); background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important; backdrop-filter: blur(20px);">
                         <!-- Portal Header Card -->
-                        <div class="dropdown-user-header d-flex align-items-center">
-                            <i class="fas fa-car-side" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
-                            <div>
-                                <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Partner Portals</h6>
-                                <small class="text-white-50" style="font-size: 0.75rem;">Access your dashboard</small>
+                        <div class="dropdown-user-header d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #65a7e9 0%, #3b82f6 50%, #1d4ed8 100%) !important; padding: 10px 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;">
+                            <div class="d-flex align-items-center">
+                                <div style="width: 32px; height: 32px; border-radius: 10px; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; margin-right: 10px; backdrop-filter: blur(4px);">
+                                    <i class="fas fa-car-side" style="font-size: 14px; color: #ffffff;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 font-weight-bold text-white" style="font-size: 0.82rem; line-height: 1.1;">Partner Portals</h6>
+                                    <small class="text-white-50" style="font-size: 0.65rem;">Access your dashboard</small>
+                                </div>
                             </div>
+                            <span class="badge" style="background: rgba(255,255,255,0.25); color: #ffffff; font-size: 0.6rem; padding: 3px 6px; border-radius: 8px; font-weight: 700;">Portals</span>
                         </div>
-                        <!-- Portal Options -->
-                        <div class="py-2">
-                            <a class="premium-dropdown-item" href="{% url 'portal_login' 'user' %}">
-                                <i class="fas fa-user text-primary"></i><span>User Portal</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'portal_login' 'rider' %}">
-                                <i class="fas fa-motorcycle text-primary"></i><span>Rider Portal</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'portal_login' 'rental' %}">
-                                <i class="fas fa-car text-primary"></i><span>Rental Portal</span>
-                            </a>
-                            <a class="premium-dropdown-item" href="{% url 'portal_login' 'carpool' %}">
-                                <i class="fas fa-users text-primary"></i><span>Pooling Portal</span>
-                            </a>
+
+                        <div class="py-2" style="background: #ffffff !important;">
+                            <div class="dropdown-section-label" style="color: #3b82f6 !important; font-size: 0.64rem; letter-spacing: .7px; font-weight: 800; padding: 4px 14px;">Management Dashboards</div>
+                            <ul style="list-style:none;padding:0;margin:0;">
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'portal_login' 'user' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-user" style="width:16px; color:#3b82f6 !important;"></i><span>User Portal</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(99, 102, 241, 0.12); color: #4f46e5; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Online</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'portal_login' 'rider' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-motorcycle" style="width:16px; color:#d97706 !important;"></i><span>Rider Portal</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #b45309; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Live Dispatch</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'portal_login' 'rental' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-car" style="width:16px; color:#059669 !important;"></i><span>Rental Portal</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #059669; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Telemetry</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item-normal" href="{% url 'portal_login' 'carpool' %}">
+                                        <div class="d-flex align-items-center" style="gap:10px;">
+                                            <i class="fas fa-users" style="width:16px; color:#7c3aed !important;"></i><span>Pooling Portal</span>
+                                        </div>
+                                        <span class="badge" style="background: rgba(139, 92, 246, 0.12); color: #7c3aed; font-size: 0.58rem; padding: 2px 5px; border-radius: 5px; font-weight: 700;">Active Pool</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>

@@ -19,12 +19,13 @@
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
+            padding-top: 60px !important;
+            font-family: 'Outfit', 'Rubik', 'Inter', sans-serif !important;
             background-color: var(--bg-light);
             color: var(--text-dark);
             overflow: hidden;
             height: 100vh;
+            box-sizing: border-box;
         }
 
         /* Leaflet Map Styling */
@@ -968,84 +969,17 @@
                         Confirm Cancel
                     </button>
                 </div>
-            </div>
-
-            <!-- PAYMENT OVERLAY CONTAINER (Initially Hidden) -->
+               <!-- PAYMENT OVERLAY CONTAINER (Initially Hidden, now as a placeholder) -->
             <div id="payment-panel" style="display: none; margin-top: 20px; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 20px;">
-                <h4 class="font-weight-bold text-dark mb-3 text-center" style="font-family: 'Oswald', sans-serif;">Select Payment Method</h4>
-                
-                <div class="payment-options" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
-                    <!-- Option 1: UPI QR Code -->
-                    <label class="payment-option-card active" id="pay-opt-upi" onclick="selectPaymentMethod('upi')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid var(--primary); padding: 15px; border-radius: 12px; cursor: pointer; background: rgba(234,179,8,0.05); transition: all 0.2s;">
-                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-                            <i class="fas fa-qrcode text-primary" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <strong class="text-dark d-block">UPI QR Code</strong>
-                                <small class="text-muted">Scan & Pay using any UPI App</small>
-                            </div>
-                        </div>
-                        <i class="fas fa-check-circle text-primary" id="pay-check-upi" style="font-size: 1.25rem;"></i>
-                    </label>
-
-                    <!-- Option 2: Cash -->
-                    <label class="payment-option-card" id="pay-opt-cash" onclick="selectPaymentMethod('cash')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid rgba(0,0,0,0.08); padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-                            <i class="fas fa-money-bill-wave text-success" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <strong class="text-dark d-block">Pay Cash to Rider</strong>
-                                <small class="text-muted">Hand over cash to chauffeur</small>
-                            </div>
-                        </div>
-                        <i class="far fa-circle text-muted" id="pay-check-cash" style="font-size: 1.25rem;"></i>
-                    </label>
-
-                    <!-- Option 3: Net Banking / Cards -->
-                    <label class="payment-option-card" id="pay-opt-card" onclick="selectPaymentMethod('card')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid rgba(0,0,0,0.08); padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
-                        <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
-                            <i class="fas fa-credit-card text-info" style="font-size: 1.5rem;"></i>
-                            <div>
-                                <strong class="text-dark d-block">Online Card / Wallet</strong>
-                                <small class="text-muted">Credit/Debit card or digital wallets</small>
-                            </div>
-                        </div>
-                        <i class="far fa-circle text-muted" id="pay-check-card" style="font-size: 1.25rem;"></i>
-                    </label>
+                <div class="text-center py-3 px-2 mb-3" style="background: rgba(245,158,11,0.05); border: 1.5px dashed rgba(245,158,11,0.4); border-radius: 12px; color: #d97706;">
+                    <i class="fas fa-hand-holding-usd mb-2" style="font-size: 1.8rem;"></i>
+                    <div class="font-weight-bold" style="font-size:0.9rem;">Payment Pending</div>
+                    <div class="small text-muted mb-2">Please complete fare payment with the Chauffeur.</div>
+                    <button type="button" onclick="showUserPaymentModal()" class="btn btn-warning btn-sm font-weight-bold px-3 py-2 rounded-pill shadow-sm" style="background:#f59e0b; border:none; color:white;">
+                        <i class="fas fa-external-link-alt mr-1"></i> View Payment Methods
+                    </button>
                 </div>
-
-                <!-- QR Code Block (Visible only when UPI is selected) -->
-                <div id="upi-qr-block" class="text-center p-3 border rounded-lg mb-3" style="background: #f8f9fa;">
-                    <div style="margin: 10px auto; width: 150px; height: 150px; background: white; padding: 10px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; position: relative;">
-                        <!-- Styled Simulated QR Code -->
-                        <div style="background: url('https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=upi://pay?pa=rideshare@ybl%26pn=RideShare%26am=145') no-repeat center; background-size: contain; width: 130px; height: 130px;"></div>
-                        <div style="position: absolute; width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
-                            <i class="fas fa-car-side text-navy" style="font-size: 0.9rem;"></i>
-                        </div>
-                    </div>
-                    <span class="badge bg-warning text-dark font-weight-bold py-1 px-3">UPI ID: rideshare@ybl</span>
-                    <p class="text-muted mt-2 mb-0" style="font-size: 0.75rem;">Scan this code using PhonePe, GPay, Paytm, or BHIM to pay the fare.</p>
-                </div>
-
-                <!-- Card Details Block (Visible only when CARD is selected) -->
-                <div id="card-details-block" class="p-3 border rounded-lg mb-3" style="background: #f8f9fa; display: none;">
-                    <div class="form-group mb-2">
-                        <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">Card Number</label>
-                        <input type="text" class="form-control form-control-sm" placeholder="4111 2222 3333 4444" maxlength="19">
-                    </div>
-                    <div class="row">
-                        <div class="col-6 pr-1">
-                            <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">Expiry Date</label>
-                            <input type="text" class="form-control form-control-sm" placeholder="MM/YY" maxlength="5">
-                        </div>
-                        <div class="col-6 pl-1">
-                            <label class="text-muted font-weight-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase;">CVV</label>
-                            <input type="password" class="form-control form-control-sm" placeholder="•••" maxlength="3" autocomplete="new-password">
-                        </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button onclick="processPayment()" class="btn success-btn w-100 py-3 font-weight-bold text-uppercase" style="font-size: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(46,204,113,0.25); background: #2ecc71; border: none; color: white;">
-                    Confirm & Pay <span id="payment-fare-val">₹145</span>
-                </button>
+            </div>
             </div>
 
             <!-- SUCCESS PANEL (Initially Hidden) -->
@@ -1109,6 +1043,67 @@
         </div>
     </div>
 
+    <!-- User Payment Methods Modal Overlay (Initially Hidden, auto-triggered) -->
+    <div id="user-payment-method-modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.8); z-index: 14000; align-items: center; justify-content: center; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); transition: all 0.3s ease;">
+        <div class="glass-card shadow" style="background: rgba(255,255,255,0.98); max-width: 420px; width: 90%; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 45px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.4); display: flex; flex-direction: column;">
+            <div style="font-size: 2.2rem; color: #f59e0b; margin-bottom: 12px;">
+                <i class="fas fa-hand-holding-usd"></i>
+            </div>
+            <h3 class="font-weight-bold text-dark mb-1" style="font-family: 'Oswald', sans-serif; font-size: 1.4rem;">Select Payment Method</h3>
+            <p class="text-muted mb-3" style="font-size: 0.85rem;">Please select your preferred payment mode and pay the captain.</p>
+            
+            <div class="payment-options" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                <!-- Option 1: UPI QR Code -->
+                <label class="payment-option-card active" id="pay-opt-upi" onclick="selectPaymentMethod('upi')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid var(--primary); padding: 15px; border-radius: 12px; cursor: pointer; background: rgba(234,179,8,0.05); transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                        <i class="fas fa-qrcode text-primary" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong class="text-dark d-block">UPI QR Code</strong>
+                            <small class="text-muted">Scan & Pay using any UPI App</small>
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle text-primary" id="pay-check-upi" style="font-size: 1.25rem;"></i>
+                </label>
+
+                <!-- Option 2: Cash -->
+                <label class="payment-option-card" id="pay-opt-cash" onclick="selectPaymentMethod('cash')" style="display: flex; align-items: center; justify-content: space-between; border: 2px solid rgba(0,0,0,0.08); padding: 15px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">
+                    <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
+                        <i class="fas fa-money-bill-wave text-success" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <strong class="text-dark d-block">Pay Cash to Rider</strong>
+                            <small class="text-muted">Hand over cash to chauffeur</small>
+                        </div>
+                    </div>
+                    <i class="far fa-circle text-muted" id="pay-check-cash" style="font-size: 1.25rem;"></i>
+                </label>
+            </div>
+
+            <!-- QR Code Block (Visible only when UPI is selected) -->
+            <div id="upi-qr-block" class="text-center p-3 border rounded-lg mb-3" style="background: #f8f9fa;">
+                <div style="margin: 10px auto; width: 150px; height: 150px; background: white; padding: 10px; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <div id="user-payment-qr" style="background: no-repeat center; background-size: contain; width: 130px; height: 130px;"></div>
+                    <div style="position: absolute; width: 30px; height: 30px; background: white; display: flex; align-items: center; justify-content: center; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                        <i class="fas fa-car-side text-navy" style="font-size: 0.9rem;"></i>
+                    </div>
+                </div>
+                <span class="badge bg-warning text-dark font-weight-bold py-1 px-3">UPI ID: swift@ybl</span>
+                <p class="text-muted mt-2 mb-0" style="font-size: 0.75rem;">Scan this code using PhonePe, GPay, Paytm, or BHIM to pay the fare.</p>
+            </div>
+
+            <!-- Cash Notice Block -->
+            <div id="user-cash-block" class="text-center p-3 border rounded-lg mb-3" style="background: #f8f9fa; display: none;">
+                <i class="fas fa-money-bill-wave text-success mb-2" style="font-size: 2rem;"></i>
+                <div class="font-weight-bold text-dark">Please Pay ₹<span id="user-cash-fare-val">145</span> in Cash</div>
+                <p class="text-muted mt-1 mb-0" style="font-size: 0.75rem;">Hand over the exact cash amount directly to the chauffeur.</p>
+            </div>
+
+            <!-- Dynamic Status alert to wait for captain's confirmation -->
+            <div id="userPaymentStatusAlert" style="text-align:center; padding:12px; border-radius:12px; background:rgba(245, 158, 11, 0.06); color:#d97706; border: 1.5px dashed rgba(245, 158, 11, 0.4); margin-bottom:0px; font-weight:600; font-size:0.82rem;">
+                <i class="fas fa-spinner fa-spin mr-2"></i>Waiting for Captain to confirm payment...
+            </div>
+        </div>
+    </div>
+
     <!-- Beautiful Popup Notification Modal (Initially Hidden) -->
     <div id="status-popup-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(5px); transition: all 0.3s ease;">
         <div class="glass-card" style="background: rgba(255,255,255,0.98); max-width: 400px; width: 90%; padding: 25px; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.4); animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
@@ -1138,7 +1133,7 @@
             id: {% if active_ride %}{{ active_ride.id }}{% else %}null{% endif %},
             pickup: "{% if active_ride %}{{ active_ride.pickup|escapejs }}{% endif %}",
             drop: "{% if active_ride %}{{ active_ride.drop|escapejs }}{% endif %}",
-            price: "{% if active_ride %}₹{{ active_ride.price }}{% endif %}",
+            price: "{% if active_ride %}₹{{ active_ride.price|floatformat:2 }}{% endif %}",
             vehicle: "{% if active_ride %}{{ active_ride.vehicle }}{% endif %}"
         };
 
@@ -1871,20 +1866,34 @@
 
                             resetToNewBooking();
                         } else if (status === 'Completed') {
-                            clearInterval(statusPollInterval);
-                            // Clean localStorage
-                            localStorage.removeItem('active_ride_id');
-                            localStorage.removeItem('active_ride_pickup_lat');
-                            localStorage.removeItem('active_ride_pickup_lng');
-                            localStorage.removeItem('active_ride_drop_lat');
-                            localStorage.removeItem('active_ride_drop_lng');
-                            localStorage.removeItem('active_ride_pname');
-                            localStorage.removeItem('active_ride_dname');
-                            localStorage.removeItem('active_ride_price');
-                            localStorage.removeItem('active_ride_vehicle');
+                            const payStatus = data.payment_status;
 
-                            // Show payment panel with the real fare
-                            showPaymentOverlay();
+                            if (payStatus === 'payment_pending') {
+                                // Show payment panel with the real fare
+                                showPaymentOverlay();
+                            } else if (payStatus === 'payment_completed') {
+                                clearInterval(statusPollInterval);
+                                statusPollInterval = null;
+                                
+                                // Clean localStorage
+                                localStorage.removeItem('active_ride_id');
+                                localStorage.removeItem('active_ride_pickup_lat');
+                                localStorage.removeItem('active_ride_pickup_lng');
+                                localStorage.removeItem('active_ride_drop_lat');
+                                localStorage.removeItem('active_ride_drop_lng');
+                                localStorage.removeItem('active_ride_pname');
+                                localStorage.removeItem('active_ride_dname');
+                                localStorage.removeItem('active_ride_price');
+                                localStorage.removeItem('active_ride_vehicle');
+
+                                // Hide payment panel & modal
+                                document.getElementById('payment-panel').style.display = 'none';
+                                const userModal = document.getElementById('user-payment-method-modal-overlay');
+                                if (userModal) userModal.style.display = 'none';
+                                
+                                // Show payment successful modal overlay
+                                document.getElementById('payment-success-modal-overlay').style.display = 'flex';
+                            }
                         }
                     }
                 });
@@ -1994,7 +2003,7 @@
         function selectPaymentMethod(method) {
             activePaymentMethod = method;
             
-            document.querySelectorAll('.payment-option-card').forEach(card => {
+            document.querySelectorAll('#user-payment-method-modal-overlay .payment-option-card').forEach(card => {
                 card.classList.remove('active');
                 card.style.border = '2px solid rgba(0,0,0,0.08)';
                 card.style.background = 'transparent';
@@ -2002,25 +2011,28 @@
             
             document.getElementById('pay-check-upi').className = 'far fa-circle text-muted';
             document.getElementById('pay-check-cash').className = 'far fa-circle text-muted';
-            document.getElementById('pay-check-card').className = 'far fa-circle text-muted';
 
             const activeCard = document.getElementById('pay-opt-' + method);
-            activeCard.classList.add('active');
-            activeCard.style.border = '2px solid var(--primary)';
-            activeCard.style.background = 'rgba(234,179,8,0.05)';
+            if (activeCard) {
+                activeCard.classList.add('active');
+                activeCard.style.border = '2px solid var(--primary)';
+                activeCard.style.background = 'rgba(234,179,8,0.05)';
+            }
             
-            document.getElementById('pay-check-' + method).className = 'fas fa-check-circle text-primary';
+            const checkIcon = document.getElementById('pay-check-' + method);
+            if (checkIcon) checkIcon.className = 'fas fa-check-circle text-primary';
 
             if (method === 'upi') {
                 document.getElementById('upi-qr-block').style.display = 'block';
-                document.getElementById('card-details-block').style.display = 'none';
-            } else if (method === 'card') {
-                document.getElementById('upi-qr-block').style.display = 'none';
-                document.getElementById('card-details-block').style.display = 'block';
+                document.getElementById('user-cash-block').style.display = 'none';
             } else {
                 document.getElementById('upi-qr-block').style.display = 'none';
-                document.getElementById('card-details-block').style.display = 'none';
+                document.getElementById('user-cash-block').style.display = 'block';
             }
+        }
+
+        function showUserPaymentModal() {
+            document.getElementById('user-payment-method-modal-overlay').style.display = 'flex';
         }
 
         function showPaymentOverlay() {
@@ -2033,10 +2045,21 @@
             document.getElementById('tracking-status-subtitle').innerText = "Please complete the fare payment to end your session.";
 
             const finalFare = document.getElementById('lbl-price').innerText;
-            document.getElementById('payment-fare-val').innerText = finalFare;
-            document.getElementById('success-price-val').innerText = finalFare;
+            const cleanFareNum = finalFare.replace(/[^\d]/g, '');
+
+            const qrContainer = document.getElementById('user-payment-qr');
+            if (qrContainer) {
+                qrContainer.style.backgroundImage = `url('https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=upi://pay?pa=swift@ybl%26pn=SwiftRide%26am=${cleanFareNum}%26cu=INR')`;
+            }
+            const cashVal = document.getElementById('user-cash-fare-val');
+            if (cashVal) cashVal.innerText = cleanFareNum;
+            const successFare = document.getElementById('success-price-val');
+            if (successFare) successFare.innerText = finalFare;
 
             document.getElementById('payment-panel').style.display = 'block';
+
+            // Auto-open payment methods modal popup
+            showUserPaymentModal();
         }
 
         function processPayment() {
@@ -2354,10 +2377,10 @@
 
             let currentPos = points[0];
             let speed = 42; 
-            const intervalTime = 50; 
+            const intervalTime = 800; 
 
             const smoothRoute = [];
-            const segments = 15;
+            const segments = 8;
             for(let i=0; i<points.length - 1; i++){
                 const start = points[i];
                 const end = points[i+1];
@@ -2372,6 +2395,7 @@
 
             let stepCount = 0;
             let totalSteps = smoothRoute.length;
+            let stopTicks = 0;
 
             if(window.animInterval) clearInterval(window.animInterval);
 
@@ -2379,10 +2403,27 @@
             let distanceAccrued = 0;
 
             window.animInterval = setInterval(() => {
+                // If stopped at traffic light, count down ticks
+                if (stopTicks > 0) {
+                    stopTicks--;
+                    document.getElementById('live-speed').innerText = "0 km/h";
+                    document.getElementById('tracking-status-subtitle').innerText = "Stopped at Traffic Signal (Simulated)";
+                    return;
+                }
+
                 if (stepCount >= totalSteps) {
                     clearInterval(window.animInterval);
                     document.getElementById('live-speed').innerText = "0 km/h";
                     if (onComplete) onComplete();
+                    return;
+                }
+
+                // Periodic signal stops at 30% and 75% progress
+                const percentProgress = Math.round((stepCount / totalSteps) * 100);
+                if ((percentProgress === 30 || percentProgress === 75) && Math.random() > 0.4) {
+                    stopTicks = 4; // Stop for 4 intervals (approx 3.2 seconds)
+                    document.getElementById('live-speed').innerText = "0 km/h";
+                    document.getElementById('tracking-status-subtitle').innerText = "Stopped at Traffic Signal (Simulated)";
                     return;
                 }
 
@@ -2392,9 +2433,9 @@
                 vehicleMarker.setLatLng(currentPos);
                 map.panTo(currentPos);
 
-                speed = 38 + Math.floor(Math.random() * 18);
-                if (Math.random() < 0.15) {
-                    speed = 12; // simulated traffic halt
+                speed = 32 + Math.floor(Math.random() * 14); // 32 - 46 km/h
+                if (Math.random() < 0.12) {
+                    speed = 14; // simulated traffic slowdown
                 }
 
                 const segmentDist = getDistanceMeters(prevPos[0], prevPos[1], currentPos[0], currentPos[1]);

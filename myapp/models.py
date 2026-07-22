@@ -122,6 +122,17 @@ class CarpoolOffer(models.Model):
     available_seats = models.IntegerField()
     plans_free_booking = models.BooleanField(default=True)
     vehicle_type = models.CharField(max_length=20, default='car')
+    price = models.IntegerField(default=0)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('Upcoming', 'Upcoming'),
+            ('In_Progress', 'In Progress'),
+            ('Completed', 'Completed'),
+            ('Cancelled', 'Cancelled')
+        ],
+        default='Upcoming'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -145,8 +156,50 @@ class UserProfile(models.Model):
     home_address = models.CharField(max_length=255, blank=True, null=True)
     work_address = models.CharField(max_length=255, blank=True, null=True)
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    portal_role = models.CharField(max_length=20, default='user')
 
     def __str__(self):
         return f"{self.user.username}'s profile"
 
+    @property
+    def image(self):
+        return self.profile_image
+
+    @image.setter
+    def image(self, value):
+        self.profile_image = value
+
+    @property
+    def mobile_number(self):
+        return self.phone
+
+    @mobile_number.setter
+    def mobile_number(self, value):
+        self.phone = value
+        
+    @property
+    def location(self):
+        return self.home_address
+
+    @location.setter
+    def location(self, value):
+        self.home_address = value
+
     
+
+class RemovedCar(models.Model):
+    REASON_CHOICES = [
+        ('damaged', 'Damaged'),
+        ('out_of_service', 'Out of Service'),
+        ('sold', 'Sold / Decommissioned'),
+        ('maintenance', 'Under Maintenance'),
+        ('other', 'Other'),
+    ]
+    car_name = models.CharField(max_length=150, unique=True)
+    reason = models.CharField(max_length=30, choices=REASON_CHOICES, default='out_of_service')
+    removed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    removed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.car_name} ({self.get_reason_display()})"
+

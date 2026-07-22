@@ -5,15 +5,25 @@
     <meta charset="utf-8">
     <title>Fleet Admin - Booking Orders</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min-1.css'%}">
     <link rel="stylesheet" href="{% static 'css/premium_home.css' %}">
     <style>
+        @keyframes livePulseDot {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        @keyframes dynamicShimmerGreen {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
         .premium-navbar {
             background-color: #10b981 !important; /* Green tone for rental admin */
             border: none !important;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3) !important;
             width: 100% !important;
             margin: 0 !important;
             border-radius: 0 !important;
@@ -71,33 +81,51 @@
             transition: all 0.3s ease;
         }
 
-        .premium-navbar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-        }
+
 
         body {
-            padding-top: 80px !important;
-            background-color: var(--body-bg) !important;
-            color: var(--text-color) !important;
+            padding-top: 85px !important;
+            background-color: var(--body-bg, #f8fafc) !important;
+            color: var(--text-color, #0f172a) !important;
         }
-        .table-container {
-            border-radius: 16px;
+
+        .portal-section-container {
+            border-top: 4px solid #10b981 !important;
+            border-radius: 18px;
+            background: var(--card-bg, #ffffff);
+            border-left: 1px solid rgba(16, 185, 129, 0.22) !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.22) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.22) !important;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             overflow: hidden;
-            border: 1px solid rgba(0, 0, 128, 0.08);
+        }
+
+        .table-container {
+            border-radius: 18px;
+            overflow: hidden;
+            border-top: 4px solid #10b981 !important;
+            border-left: 1px solid rgba(16, 185, 129, 0.22) !important;
+            border-right: 1px solid rgba(16, 185, 129, 0.22) !important;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.22) !important;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.08);
+            background: var(--card-bg, #ffffff);
         }
         .admin-table th {
-            background: rgba(16, 185, 129, 0.05) !important;
-            border-bottom: 2px solid rgba(16, 185, 129, 0.15) !important;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.03) 100%) !important;
+            border-bottom: 2px solid rgba(16, 185, 129, 0.25) !important;
             text-transform: uppercase;
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             letter-spacing: 1px;
-            color: var(--text-color);
+            color: #10b981 !important;
+            font-weight: 700;
             padding: 15px 20px !important;
         }
         .admin-table td {
             vertical-align: middle !important;
             color: var(--text-color);
-            border-top: 1px solid rgba(0,0,0,0.05) !important;
+            border-top: 1px solid rgba(16, 185, 129, 0.08) !important;
             padding: 15px 20px !important;
         }
         [data-theme="dark"] .admin-table td {
@@ -109,103 +137,424 @@
             object-fit: cover;
             border-radius: 6px;
         }
-    </style>
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            animation: livePulseDot 1.8s infinite ease-in-out;
+        }
+        .shimmer-text-green {
+            background: linear-gradient(90deg, #10b981, #34d399, #047857, #10b981);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: dynamicShimmerGreen 4s linear infinite;
+        }
+    
+        /* Dynamic Premium Dropdown Menu Card - Compact Height & Dynamic Container Colors */
+        .premium-user-dropdown {
+            min-width: 290px !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin-top: 8px !important;
+            animation: none !important;
+            transform-origin: top left !important;
+        }
+
+        @keyframes dropdownSlideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .dropdown-section-label {
+            font-size: 0.6rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            text-transform: uppercase !important;
+            padding: 4px 14px 2px 14px !important;
+            margin: 0 !important;
+        }
+
+        .premium-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 5px 10px !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            margin: 1px 6px !important;
+            width: calc(100% - 12px) !important;
+        }
+
+        
+
+        .dropdown-icon-box {
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.8rem !important;
+            margin-right: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .icon-box-indigo { background: rgba(99, 102, 241, 0.14) !important; color: #6366f1 !important; }
+        .icon-box-emerald { background: rgba(16, 185, 129, 0.14) !important; color: #10b981 !important; }
+        .icon-box-amber { background: rgba(245, 158, 11, 0.14) !important; color: #f59e0b !important; }
+        .icon-box-rose { background: rgba(244, 63, 94, 0.14) !important; color: #f43f5e !important; }
+        .icon-box-cyan { background: rgba(6, 182, 212, 0.14) !important; color: #06b6d4 !important; }
+        .icon-box-sky { background: rgba(2, 132, 199, 0.14) !important; color: #0284c7 !important; }
+        .icon-box-purple { background: rgba(139, 92, 246, 0.14) !important; color: #8b5cf6 !important; }
+        .icon-box-red { background: rgba(239, 68, 68, 0.14) !important; color: #ef4444 !important; }
+
+        .text-title-indigo { color: #4f46e5 !important; }
+        .text-title-emerald { color: #059669 !important; }
+        .text-title-amber { color: #d97706 !important; }
+        .text-title-rose { color: #e11d48 !important; }
+        .text-title-cyan { color: #0891b2 !important; }
+        .text-title-sky { color: #0284c7 !important; }
+        .text-title-purple { color: #7c3aed !important; }
+        .text-title-red { color: #dc2626 !important; }
+
+        .dropdown-item-title {
+            font-size: 0.8rem !important;
+            font-weight: 700 !important;
+            margin-bottom: 0 !important;
+            line-height: 1.15 !important;
+        }
+
+        .dropdown-item-sub {
+            font-size: 0.65rem !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+
+        .dropdown-divider-premium {
+            height: 1px !important;
+            margin: 3px 10px !important;
+            background: rgba(226, 232, 240, 0.8) !important;
+        }
+
+
+        /* Dynamic Premium Dropdown Menu Card - Dashboard Matching Colors */
+        .premium-user-dropdown {
+            min-width: 295px !important;
+            border-radius: 16px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            margin-top: 8px !important;
+            animation: none !important;
+            transform-origin: top left !important;
+        }
+
+        @keyframes dropdownSlideIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-8px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .dropdown-section-label {
+            font-size: 0.6rem !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.8px !important;
+            text-transform: uppercase !important;
+            padding: 4px 14px 2px 14px !important;
+            margin: 0 !important;
+        }
+
+        .premium-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 5px 10px !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            background: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            margin: 1px 6px !important;
+            width: calc(100% - 12px) !important;
+        }
+
+        
+
+        .dropdown-icon-box {
+            width: 28px !important;
+            height: 28px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.8rem !important;
+            margin-right: 8px !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Profile & Settings and Logout Colored Items */
+        .item-colored-profile-rental { background: rgba(16, 185, 129, 0.14) !important; }
+        .item-colored-profile-rental .dropdown-item-title { color: #059669 !important; font-weight: 750 !important; }
+
+        .item-colored-profile-rental { background: rgba(245, 158, 11, 0.14) !important; }
+        .item-colored-profile-rental .dropdown-item-title { color: #d97706 !important; font-weight: 750 !important; }
+
+        .item-colored-profile-rental { background: rgba(236, 72, 153, 0.14) !important; }
+        .item-colored-profile-rental .dropdown-item-title { color: #be185d !important; font-weight: 750 !important; }
+
+        .item-colored-logout { background: rgba(239, 68, 68, 0.14) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+
+        /* Remaining pages dark black text color */
+        .dropdown-item-title {
+            font-size: 0.8rem !important;
+            font-weight: 750 !important;
+            color: #0f172a !important; /* Crisp Dark Black text color */
+            margin-bottom: 0 !important;
+            line-height: 1.15 !important;
+        }
+
+        .dropdown-item-sub {
+            font-size: 0.65rem !important;
+            color: #64748b !important;
+            font-weight: 500 !important;
+        }
+
+        .dropdown-divider-premium {
+            height: 1px !important;
+            margin: 3px 10px !important;
+            background: rgba(226, 232, 240, 0.8) !important;
+        }
+
+
+        .premium-navbar .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.16) !important;
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+        .premium-navbar .nav-link.active-nav {
+            background-color: rgba(0, 0, 0, 0.12) !important;
+            font-weight: 750 !important;
+            color: #ffffff !important;
+        }
+    
+
+        .premium-dropdown-item:hover,
+        .dropdown-item-green:hover,
+        .dropdown-item-red:hover,
+        
+    
+
+        .item-colored-profile-rental { background: rgba(16, 185, 129, 0.1) !important; }
+        .item-colored-profile-rental .dropdown-item-title { color: #059669 !important; font-weight: 750 !important; }
+        .item-colored-logout { background: rgba(239, 68, 68, 0.12) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+    
+
+        .premium-dropdown-item:hover,
+        .dropdown-item-green:hover,
+        .dropdown-item-red:hover,
+        .dropdown-item-normal:hover {
+            text-decoration: none !important;
+            background: rgba(15, 23, 42, 0.05) !important;
+            transform: none !important;
+        }
+    
+
+        .item-colored-profile-rental { background: rgba(16, 185, 129, 0.1) !important; }
+        .item-colored-profile-rental .dropdown-item-title { color: #059669 !important; font-weight: 750 !important; }
+        .item-colored-logout { background: rgba(239, 68, 68, 0.12) !important; }
+        .item-colored-logout .dropdown-item-title { color: #dc2626 !important; font-weight: 750 !important; }
+    
+
+        /* Dropdown custom item styles matching profile settings dropdown */
+        .dropdown-item-green {
+            color: #10b981 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-red {
+            color: #ef4444 !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-weight: 600;
+            font-size: .84rem;
+        }
+        .dropdown-item-normal {
+            color: var(--text-color, #1e293b) !important;
+            background: transparent !important;
+            border-radius: 10px;
+            padding: 8px 14px;
+            margin: 3px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            transition: .25s;
+            font-size: .84rem;
+            font-weight: 500;
+        }
+        .dropdown-item-green:hover,
+        .dropdown-item-red:hover,
+        .dropdown-item-normal:hover {
+            text-decoration: none !important;
+            background: rgba(15, 23, 42, 0.05) !important;
+            transform: none !important;
+        }
+
+
+        /* Refined Spacing - Adjusting margins & padding for premium look */
+        .portal-section-container {
+            padding: 24px 30px !important;
+            margin-bottom: 24px !important;
+        }
+        .profile-hero {
+            padding: 24px 30px !important;
+            margin-bottom: 24px !important;
+        }
+        .glass-card, 
+        .settings-card, 
+        .admin-card, 
+        .form-card, 
+        .kpi-card,
+        .table-container {
+            padding: 22px !important;
+            margin-bottom: 20px !important;
+        }
+        /* Tighten vertical table heading padding while keeping left/right space */
+        .table-container > div:first-child, 
+        .glass-card > div:first-child.border-bottom {
+            padding: 14px 24px !important;
+        }
+        /* Table headers cell padding optimization */
+        .admin-table th {
+            padding: 12px 20px !important;
+        }
+        .admin-table td {
+            padding: 12px 20px !important;
+        }
+        /* Outer page container side borders space & Centering */
+        .container-fluid {
+            max-width: 1300px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding-left: 28px !important;
+            padding-right: 28px !important;
+        }
+        @media (max-width: 768px) {
+            .container-fluid {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+            }
+            .portal-section-container, 
+            .profile-hero {
+                padding: 20px !important;
+                margin-bottom: 20px !important;
+            }
+            .glass-card, 
+            .settings-card, 
+            .admin-card, 
+            .form-card, 
+            .kpi-card,
+            .table-container {
+                padding: 16px !important;
+                margin-bottom: 16px !important;
+            }
+        }
+
+</style>
 </head>
 <body>
     <!-- Rental Header Navbar -->
     <nav class="navbar navbar-expand-lg premium-navbar p-0">
         <div class="container-fluid d-flex align-items-center">
             <!-- Dropdown Menu Icon (Hamburger) -->
-            <div class="dropdown mr-2 d-flex align-items-center" style="align-self: center;">
-                <a class="nav-menu-trigger dropdown-toggle" href="#" id="dashboardDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: #ffffff; text-decoration: none;">
+                        <!-- Hamburger dropdown -->
+            <div class="dropdown mr-2 d-flex align-items-center" style="align-self:center;">
+                <a class="dropdown-toggle" href="#" id="dropMenu" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:#fff; text-decoration:none;">
                     <i class="fas fa-bars"></i>
                 </a>
-                <div class="dropdown-menu premium-user-dropdown" aria-labelledby="dashboardDropdown" style="min-width: 310px !important; transform-origin: top left !important;">
-                    <!-- Menu Header -->
-                    <div class="dropdown-user-header d-flex align-items-center" style="background: linear-gradient(135deg, #10b981 0%, #065f46 100%) !important;">
-                        <i class="fas fa-car" style="font-size: 24px; margin-right: 12px; color: #ffffff;"></i>
-                        <div>
-                            <h6 class="mb-0 font-weight-bold" style="color: #ffffff;">Rental Settings Console</h6>
-                            <small class="text-white-50" style="font-size: 0.75rem;">Interactive Controls & Settings</small>
+                <div class="dropdown-menu" aria-labelledby="dropMenu" style="position:absolute !important; left:0 !important; margin-top:8px !important; min-width:270px; z-index:1050; padding:0; overflow:hidden; border-radius:16px; border:1px solid rgba(16,185,129,.4); box-shadow:0 16px 45px rgba(16,185,129,.25); background:var(--card-bg,#fff) !important;">
+                    <div style="background:linear-gradient(135deg,#10b981 0%,#047857 100%); padding:14px 18px; display:flex; align-items:center;">
+                        <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;margin-right:12px;">
+                            <i class="fas fa-car-side" style="font-size:18px;color:#fff;"></i>
                         </div>
+                        <h6 class="mb-0 font-weight-bold text-white" style="font-size:.9rem;">Rental Settings Console</h6>
                     </div>
-                    <div class="py-2">
-                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Real-Time Controls</div>
-                        <ul class="dropdown-list-container">
-
+                    <div class="py-2" style="background:var(--card-bg,#fff) !important;">
+                        <ul style="list-style:none;padding:0;margin-bottom:2px;">
                             <li>
-                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
-                                        <i class="fas fa-tools"></i><span>Deactivate Maintenance</span>
+                                <a class="dropdown-item-green" href="{% url 'portal_rental_profile' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-user-cog" style="width:16px;color:#10b981 !important;"></i><span>Profile &amp; Settings</span>
                                     </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="switch-rental-maintenance" onclick="showToast('Fleet Auto-deactivation settings updated')">
-                                        <label class="custom-control-label" for="switch-rental-maintenance"></label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="premium-dropdown-item d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center gap-2" style="color: #2563eb;">
-                                        <i class="fas fa-map-marker-alt"></i><span>Live GPS Tracking</span>
-                                    </div>
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="switch-rental-gps" checked onclick="showToast('Live Fleet Tracking active')">
-                                        <label class="custom-control-label" for="switch-rental-gps"></label>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="{% url 'portal_rental_bookings' %}">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-bell"></i><span>Active Booking Alerts</span>
-                                    </div>
-                                    <span class="menu-badge badge-active pulsing">3 Active</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="{% url 'portal_rental_completed' %}">
-                                    <div class="d-flex align-items-center gap-2" style="color: #10b981;">
-                                        <i class="fas fa-check-circle"></i><span>Completed Rides</span>
-                                    </div>
+                                    <i class="fas fa-chevron-right" style="font-size:.65rem;opacity:.6;"></i>
                                 </a>
                             </li>
                         </ul>
-                        
-                        <div class="dropdown-divider-premium"></div>
-                        
-                        <div class="px-4 py-1 font-weight-bold text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">Console Settings</div>
-                        <ul class="dropdown-list-container">
-
+                        <div style="height:1px;background:rgba(16,185,129,.15);margin:6px 10px;"></div>
+                        <div class="px-3 py-1 font-weight-bold text-uppercase" style="font-size:.64rem;letter-spacing:.7px;color:#10b981;">Real-Time Fleet Controls</div>
+                        <ul style="list-style:none;padding:0;margin-bottom:2px;">
                             <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Security deposit configuration set')">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-shield-alt"></i><span>Security Deposit Level</span>
+                                <a class="dropdown-item-normal" href="{% url 'portal_rental_bookings' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-book" style="width:16px;color:#10b981 !important;"></i><span>Booking Requests</span>
                                     </div>
-                                    <span class="menu-badge badge-neutral">₹5,000</span>
+                                    <span class="badge" style="font-size:.65rem;padding:3px 8px;border-radius:10px;background:linear-gradient(135deg,#10b981,#047857);color:#fff;font-weight:700;">Live Log</span>
                                 </a>
                             </li>
                             <li>
-                                <a class="premium-dropdown-item d-flex align-items-center justify-content-between" href="#" onclick="showToast('Gold Partner payout benefits active')">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-star"></i><span>Partner Tier Rank</span>
+                                <a class="dropdown-item-normal" href="{% url 'portal_rental_remaining' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-clipboard-list" style="width:16px;color:#10b981 !important;"></i><span>Remaining Fleet</span>
                                     </div>
-                                    <span class="menu-badge badge-gold">Gold</span>
+                                    <span class="badge" style="font-size:.65rem;padding:3px 8px;border-radius:10px;background:rgba(16,185,129,.15);color:#10b981;font-weight:700;">Active</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item-normal" href="{% url 'portal_rental_completed' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-check-double" style="width:16px;color:#10b981 !important;"></i><span>Rides Completed</span>
+                                    </div>
+                                    <span class="badge" style="font-size:.65rem;padding:3px 8px;border-radius:10px;background:rgba(16,185,129,.15);color:#10b981;font-weight:700;">Done</span>
                                 </a>
                             </li>
                         </ul>
-                        
-                        <div class="dropdown-divider-premium"></div>
-                        
-                        <ul class="dropdown-list-container">
+                        <div style="height:1px;background:rgba(16,185,129,.15);margin:6px 10px;"></div>
+                        <ul style="list-style:none;padding:0;margin-bottom:4px;">
                             <li>
-                                <a class="premium-dropdown-item" href="{% url 'home' %}">
-                                    <i class="fas fa-home"></i><span>Exit to User Portal</span>
+                                <a class="dropdown-item-normal" href="{% url 'home' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-home text-muted" style="width:16px;"></i><span>Exit</span>
+                                    </div>
                                 </a>
                             </li>
                             <li>
-                                <a class="premium-dropdown-item text-danger font-weight-bold" href="{% url 'portal_logout' %}">
-                                    <i class="fas fa-sign-out-alt text-danger"></i><span>Logout</span>
+                                <a class="dropdown-item-red" href="{% url 'portal_logout' %}">
+                                    <div class="d-flex align-items-center" style="gap:10px;">
+                                        <i class="fas fa-sign-out-alt" style="width:16px;"></i><span>Logout</span>
+                                    </div>
                                 </a>
                             </li>
                         </ul>
@@ -213,16 +562,14 @@
                 </div>
             </div>
             
-            <a class="navbar-brand font-weight-bold" href="{% url 'portal_rental' %}" style="margin-bottom: 0; align-self: center;">
-                <i class="fas fa-car mr-2"></i>Rental Console
-            </a>
+            <a class="navbar-brand font-weight-bold d-flex align-items-center" href="{% url 'portal_rental' %}" style="margin-bottom: 0; align-self: center; font-size: 1.15rem; gap: 8px;"><i class="fas fa-car mr-2"></i>Rental Console</a>
             <div class="collapse navbar-collapse" id="adminNavbarContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <a class="nav-link " href="{% url 'portal_rental' %}"><i class="fas fa-building mr-1"></i> Rental Portal Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link font-weight-bold" style="background: rgba(0,0,0,0.06);" href="{% url 'portal_rental_bookings' %}"><i class="fas fa-book mr-1"></i> Rental Bookings</a>
+                        <a class="nav-link active-nav font-weight-bold"  href="{% url 'portal_rental_bookings' %}"><i class="fas fa-book mr-1"></i> Rental Bookings</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link " href="{% url 'portal_rental_cars' %}"><i class="fas fa-car mr-1"></i> Rental Cars Fleet</a>
@@ -230,14 +577,10 @@
                     <li class="nav-item">
                         <a class="nav-link " href="{% url 'portal_rental_remaining' %}"><i class="fas fa-clipboard-list mr-1"></i> Remaining Inventory</a>
                     </li>
-
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link text-navy" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit to User Portal</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="{% url 'portal_logout' %}"><i class="fas fa-sign-out-alt mr-1"></i> Logout</a>
+                        <a class="nav-link text-white font-weight-bold" href="{% url 'home' %}"><i class="fas fa-home mr-1"></i> Exit</a>
                     </li>
                 </ul>
             </div>
@@ -245,13 +588,22 @@
     </nav>
     <!-- Main Container -->
     <div class="container-fluid px-5 py-4">
-        <!-- Welcome Message -->
-        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-2 text-left">
-            <div>
-                <h1 class="font-weight-bold outfit-font mb-1 text-title">Booking Orders Log</h1>
-                <p class="text-subtitle mb-0">Detailed list of all reservations made by commuters in Hyderabad showroom.</p>
+        
+        <!-- SECTION 1: Dynamic Hero Header Section -->
+        <div class="portal-section-container p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 text-left">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <h1 class="font-weight-bold outfit-font mb-0 text-title shimmer-text-green" style="font-size: 1.8rem;">Booking Orders Log</h1>
+                        <span class="badge ml-2" style="background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); padding: 5px 12px; border-radius: 12px; font-weight: 700; font-size: 0.72rem;">
+                            <span class="live-dot mr-1"></span> LIVE RESERVATIONS
+                        </span>
+                    </div>
+                    <p class="text-subtitle mb-0">Detailed list of all reservations made by commuters in real time.</p>
+                </div>
             </div>
         </div>
+
         {% if messages %}
         <div class="row">
             <div class="col-12">
@@ -266,8 +618,9 @@
             </div>
         </div>
         {% endif %}
-        <!-- Bookings Table -->
-        <div class="glass-card p-0 table-container">
+
+        <!-- SECTION 2: Bookings Table Section -->
+        <div class="table-container p-0">
             <div class="table-responsive">
                 <table class="table admin-table text-left mb-0">
                     <thead>
@@ -306,6 +659,8 @@
                             <td>
                                 {% if b.status == 'Approved' %}
                                 <span class="badge badge-success px-2 py-1"><i class="fas fa-check-circle mr-1"></i>Approved</span>
+                                {% elif b.status == 'Completed' %}
+                                <span class="badge px-2 py-1 text-white" style="background: linear-gradient(135deg, #6366f1, #4f46e5);"><i class="fas fa-check-double mr-1"></i>Completed</span>
                                 {% elif b.status == 'Cancelled' %}
                                 <span class="badge badge-danger px-2 py-1"><i class="fas fa-times-circle mr-1"></i>Cancelled</span>
                                 {% else %}
@@ -316,10 +671,15 @@
                                 <form method="POST" style="display: flex !important; flex-direction: row; gap: 8px; margin: 0;">
                                     {% csrf_token %}
                                     <input type="hidden" name="booking_id" value="{{ b.id }}">
-                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-success px-3 rounded font-weight-bold" {% if b.status == 'Approved' %}disabled{% endif %}>
+                                    <button type="submit" name="action" value="approve" class="btn btn-sm btn-success px-3 rounded font-weight-bold" {% if b.status == 'Approved' or b.status == 'Completed' %}disabled{% endif %}>
                                         Approve
                                     </button>
-                                    <button type="submit" name="action" value="cancel" class="btn btn-sm btn-outline-danger px-3 rounded font-weight-bold" {% if b.status == 'Cancelled' %}disabled{% endif %}>
+                                    {% if b.status == 'Approved' %}
+                                    <button type="submit" name="action" value="complete" class="btn btn-sm px-3 rounded font-weight-bold text-white" style="background: linear-gradient(135deg, #6366f1, #4f46e5); border: none;">
+                                        <i class="fas fa-check-double mr-1"></i> Completed
+                                    </button>
+                                    {% endif %}
+                                    <button type="submit" name="action" value="cancel" class="btn btn-sm btn-outline-danger px-3 rounded font-weight-bold" {% if b.status == 'Cancelled' or b.status == 'Completed' %}disabled{% endif %}>
                                         Cancel
                                     </button>
                                 </form>
@@ -338,9 +698,163 @@
             </div>
         </div>
     </div>
+    <!-- Modal for Adding New Vehicle -->
+    <div class="modal fade" id="addNewVehicleModal" tabindex="-1" role="dialog" aria-labelledby="addNewVehicleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 24px; border: none; overflow: hidden; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);">
+                <div class="modal-header text-white" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); padding: 24px 32px;">
+                    <div class="d-flex align-items-center">
+                        <div style="width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin-right: 18px; backdrop-filter: blur(4px);">
+                            <i class="fas fa-car-side" style="font-size: 24px; color: #ffffff;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-weight-bold mb-1" id="addNewVehicleModalLabel" style="letter-spacing: 0.5px; font-size: 1.25rem;">Add New Vehicle to Fleet</h5>
+                            <small class="text-white-50" style="font-size: 0.82rem;">Upload vehicle images and fill in details for rental showroom listing</small>
+                        </div>
+                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="opacity: 0.9; outline: none;">
+                        <span aria-hidden="true" style="font-size: 1.8rem;">&times;</span>
+                    </button>
+                </div>
+                <form id="addNewVehicleForm" method="POST" action="{% url 'portal_rental_cars' %}" enctype="multipart/form-data" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add_vehicle">
+                    <div class="modal-body" style="background-color: #f8fafc; max-height: 75vh; overflow-y: auto; padding: 28px 32px;">
+                        
+                        <!-- Vehicle Image Upload Card -->
+                        <div class="card mb-4 border-0 shadow-sm" style="border-radius: 16px; background: #ffffff; border: 1px solid rgba(16, 185, 129, 0.15) !important;">
+                            <div class="card-body p-4">
+                                <label class="font-weight-bold text-dark mb-3 d-flex align-items-center justify-content-between" style="font-size: 0.95rem;">
+                                    <span><i class="fas fa-camera text-success mr-2"></i>Vehicle Showroom Image Upload</span>
+                                    <span class="badge badge-success px-3 py-1" style="font-size: 0.72rem; font-weight: 600; border-radius: 8px;">Required</span>
+                                </label>
+                                
+                                <div id="imageUploadDropzone" class="text-center" style="border: 2px dashed #10b981; border-radius: 16px; background: rgba(16, 185, 129, 0.04); cursor: pointer; padding: 32px 20px; transition: all 0.3s ease;" onclick="document.getElementById('vehicleImageInput').click();">
+                                    <div class="mb-3">
+                                        <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); display: inline-flex; align-items: center; justify-content: center; color: #10b981;">
+                                            <i class="fas fa-cloud-upload-alt" style="font-size: 28px;"></i>
+                                        </div>
+                                    </div>
+                                    <h6 class="font-weight-bold text-dark mb-2" style="font-size: 1rem;">Click to Upload or Drag &amp; Drop Vehicle Photo</h6>
+                                    <p class="text-muted mb-3" style="font-size: 0.84rem;">Supports PNG, JPG, JPEG, WEBP files up to 10MB</p>
+                                    <button type="button" class="btn btn-sm text-white font-weight-bold px-4 py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #10b981, #047857); border: none; font-size: 0.85rem;">
+                                        <i class="fas fa-upload mr-2"></i> Choose Image File
+                                    </button>
+                                    <input type="file" id="vehicleImageInput" name="vehicle_image" accept="image/*" style="display: none;" onchange="previewVehicleImage(this)">
+                                </div>
+                                
+                                <!-- Image Preview Area -->
+                                <div id="vehicleImagePreview" class="mt-4 text-center" style="display: none;">
+                                    <div class="position-relative d-inline-block" style="border-radius: 14px; overflow: hidden; border: 2px solid #10b981; box-shadow: 0 6px 20px rgba(0,0,0,0.12);">
+                                        <img id="vehiclePreviewImg" src="#" alt="Preview" style="max-height: 200px; max-width: 100%; object-fit: cover; display: block;">
+                                        <button type="button" class="btn btn-sm btn-danger position-absolute" style="top: 10px; right: 10px; border-radius: 50%; width: 30px; height: 30px; padding: 0; display: flex; align-items: center; justify-content: center;" onclick="removeVehicleImage(event)">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div id="vehicleImageFileName" class="small text-success font-weight-bold mt-2" style="font-size: 0.85rem;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Specification Form Fields -->
+                        <div class="row mb-2">
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-car mr-2 text-success"></i>Vehicle Name / Model</label>
+                                <input type="text" class="form-control" name="vehicle_name" placeholder="e.g. Mercedes Benz S-Class" required style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-list-alt mr-2 text-success"></i>Category / Type</label>
+                                <select class="form-control" name="vehicle_type" required style="border-radius: 12px; padding: 12px 16px; height: auto; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                                    <option value="sedan">Luxury Sedan</option>
+                                    <option value="suv">Premium SUV</option>
+                                    <option value="electric">EV / Electric</option>
+                                    <option value="sports">Sports / Performance</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-tag mr-2 text-success"></i>Daily Rental Price (₹)</label>
+                                <input type="number" class="form-control" name="vehicle_price" placeholder="e.g. 15000" required style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-calendar-alt mr-2 text-success"></i>Model Year</label>
+                                <input type="text" class="form-control" name="vehicle_year" placeholder="e.g. 2024" value="2024" required style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                        </div>
+
+                        <div class="row mb-2">
+                            <div class="col-md-4 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-cogs mr-2 text-success"></i>Transmission</label>
+                                <select class="form-control" name="vehicle_trans" style="border-radius: 12px; padding: 12px 16px; height: auto; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                                    <option value="AUTO">Automatic</option>
+                                    <option value="MANUAL">Manual</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-gas-pump mr-2 text-success"></i>Fuel Type</label>
+                                <select class="form-control" name="vehicle_fuel" style="border-radius: 12px; padding: 12px 16px; height: auto; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                                    <option value="Petrol">Petrol</option>
+                                    <option value="Diesel">Diesel</option>
+                                    <option value="Electric">Electric</option>
+                                    <option value="Hybrid">Hybrid</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-users mr-2 text-success"></i>Seating Capacity</label>
+                                <input type="number" class="form-control" name="vehicle_seats" placeholder="5" value="5" style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-tachometer-alt mr-2 text-success"></i>Mileage / Battery Range</label>
+                                <input type="text" class="form-control" name="vehicle_mileage" placeholder="e.g. 12 kmpl or 450 km range" value="12 kmpl" style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label class="font-weight-bold text-dark d-block mb-2" style="font-size: 0.88rem;"><i class="fas fa-info-circle mr-2 text-success"></i>Key Features / Details</label>
+                                <input type="text" class="form-control" name="vehicle_details" placeholder="e.g. GPS, Sunroof, Leather Interior, Autopilot" style="border-radius: 12px; padding: 12px 16px; border: 1px solid #cbd5e1; font-size: 0.92rem; background: #ffffff;">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" style="background-color: #ffffff; border-top: 1px solid #f1f5f9; padding: 20px 32px;">
+                        <button type="button" class="btn btn-light font-weight-bold px-4 py-2 rounded-pill mr-2" data-dismiss="modal" style="font-size: 0.9rem; color: #64748b;">Cancel</button>
+                        <button type="submit" class="btn text-white font-weight-bold px-4 py-2 rounded-pill shadow-sm" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%); border: none; font-size: 0.9rem;">
+                            <i class="fas fa-plus-circle mr-2"></i> Upload Image &amp; Add Vehicle
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function previewVehicleImage(input) {
+        const previewContainer = document.getElementById('vehicleImagePreview');
+        const previewImg = document.getElementById('vehiclePreviewImg');
+        const fileNameText = document.getElementById('vehicleImageFileName');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewContainer.style.display = 'block';
+                fileNameText.textContent = '✓ Uploaded: ' + input.files[0].name + ' (' + Math.round(input.files[0].size / 1024) + ' KB)';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function removeVehicleImage(e) {
+        e.stopPropagation();
+        const input = document.getElementById('vehicleImageInput');
+        const previewContainer = document.getElementById('vehicleImagePreview');
+        input.value = '';
+        previewContainer.style.display = 'none';
+    }
+    </script>
 
-    
 </body>
 </html>

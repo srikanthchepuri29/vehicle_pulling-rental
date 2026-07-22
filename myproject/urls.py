@@ -19,12 +19,15 @@ from django.urls import path
 from myapp.views import home,Reports,Contact_us,login_view,register,logout_view,About,ride_page,book_ride,add_ride,passenger_settings_view, your_trips
 from myapp.views import car, detail, booking, my_bookings, user_carpools_view, passenger_settings_view
 from myapp.views import (
-    portal_login_view, portal_logout_view, portal_rental_view, portal_rider_view, portal_carpool_view,
+    portal_login_view, portal_register_view, portal_logout_view, portal_rental_view, portal_rider_view, portal_carpool_view,
     portal_rental_bookings_view, portal_rental_cars_view, portal_rental_remaining_view, portal_rental_completed_view,
+    portal_rental_profile_view, portal_rider_profile_view, portal_carpool_profile_view,
     portal_carpool_publish_view, portal_carpool_itineraries_view, portal_carpool_bookings_view,
     portal_rider_active_view, portal_rider_earnings_view, portal_rider_trips_view,
     api_request_ride, api_check_ride_status, api_accept_ride, api_update_ride_status, api_book_carpool_seat,
-    get_carpool_offers, api_cancel_ride, api_submit_feedback
+    get_carpool_offers, api_cancel_ride, api_submit_feedback,
+    portal_carpool_completed_view, portal_carpool_active_view, portal_carpool_chats_view, portal_carpool_analytics_view,
+    api_update_carpool_status, api_bulk_remove_carpools
 )
 from django.conf.urls.static import static
 from django.conf import settings
@@ -36,20 +39,28 @@ urlpatterns = [
     path('user/carpools/', user_carpools_view, name='user_carpools'),
     path('login/', login_view, name='login'),
     path('login/<str:portal_type>/', portal_login_view, name='portal_login'),
+    path('register/<str:portal_type>/', portal_register_view, name='portal_register'),
     path('portal/logout/', portal_logout_view, name='portal_logout'),
     path('portal/rental/', portal_rental_view, name='portal_rental'),
     path('portal/rental/bookings/', portal_rental_bookings_view, name='portal_rental_bookings'),
     path('portal/rental/cars/', portal_rental_cars_view, name='portal_rental_cars'),
     path('portal/rental/remaining/', portal_rental_remaining_view, name='portal_rental_remaining'),
     path('portal/rental/completed/', portal_rental_completed_view, name='portal_rental_completed'),
+    path('portal/rental/profile/', portal_rental_profile_view, name='portal_rental_profile'),
     path('portal/rider/', portal_rider_view, name='portal_rider'),
     path('portal/rider/active/', portal_rider_active_view, name='portal_rider_active'),
     path('portal/rider/earnings/', portal_rider_earnings_view, name='portal_rider_earnings'),
     path('portal/rider/trips/', portal_rider_trips_view, name='portal_rider_trips'),
+    path('portal/rider/profile/', portal_rider_profile_view, name='portal_rider_profile'),
     path('portal/carpool/', portal_carpool_view, name='portal_carpool'),
     path('portal/carpool/publish/', portal_carpool_publish_view, name='portal_carpool_publish'),
     path('portal/carpool/itineraries/', portal_carpool_itineraries_view, name='portal_carpool_itineraries'),
     path('portal/carpool/bookings/', portal_carpool_bookings_view, name='portal_carpool_bookings'),
+    path('portal/carpool/profile/', portal_carpool_profile_view, name='portal_carpool_profile'),
+    path('portal/carpool/completed/', portal_carpool_completed_view, name='portal_carpool_completed'),
+    path('portal/carpool/active/', portal_carpool_active_view, name='portal_carpool_active'),
+    path('portal/carpool/chats/', portal_carpool_chats_view, name='portal_carpool_chats'),
+    path('portal/carpool/analytics/', portal_carpool_analytics_view, name='portal_carpool_analytics'),
 
     # Real-Time AJAX API endpoints
     path('api/ride/request/', api_request_ride, name='api_request_ride'),
@@ -60,6 +71,8 @@ urlpatterns = [
     path('api/ride/feedback/<int:ride_id>/', api_submit_feedback, name='api_submit_feedback'),
     path('api/carpool/book/<int:carpool_id>/', api_book_carpool_seat, name='api_book_carpool_seat'),
     path('api/carpool/list/', get_carpool_offers, name='get_carpool_offers'),
+    path('api/carpool/update-status/<int:carpool_id>/', api_update_carpool_status, name='api_update_carpool_status'),
+    path('api/carpool/bulk-remove/', api_bulk_remove_carpools, name='api_bulk_remove_carpools'),
 
     path('Reports/',Reports,name="Reports"),
     path('About/', About, name='About'),
